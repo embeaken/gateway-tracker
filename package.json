@@ -15,7 +15,6 @@
     "lint": "eslint . --fix --cache"
   },
   "dependencies": {
-    "@datadog/browser-rum": "^6.25.0",
     "vue": "^3.5.25"
   },
   "devDependencies": {
