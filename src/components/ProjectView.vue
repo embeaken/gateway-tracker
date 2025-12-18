@@ -9,7 +9,7 @@ defineProps<{
   <div class="project">
     <h1>{{ project.name }}</h1>
     <p>{{ project.desc }}</p>
-    <iframe :src="project.earthcam" />
+    <iframe :src="project.earthcam" allow="fullscreen" />
   </div>
 </template>
 
