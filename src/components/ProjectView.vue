@@ -34,6 +34,9 @@ defineProps<{
       p {
         max-width: 100%;
       }
+      iframe {
+        height: 300px;
+      }
     }
   }
 </style>
