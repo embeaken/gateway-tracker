@@ -28,4 +28,12 @@ defineProps<{
       height: 720px;
     }
   }
+
+  @media (max-width: 1280px) {
+    .project {
+      p {
+        max-width: 100%;
+      }
+    }
+  }
 </style>
