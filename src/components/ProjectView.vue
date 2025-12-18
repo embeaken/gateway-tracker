@@ -6,7 +6,7 @@ defineProps<{
 </script>
 
 <template>
-  <div class="earthcam">
+  <div class="project">
     <h1>{{ project.name }}</h1>
     <p>{{ project.desc }}</p>
     <iframe :src="project.earthcam" />
@@ -14,8 +14,18 @@ defineProps<{
 </template>
 
 <style scoped>
-  iframe {
-    width: 100%;
-    height: 720px;
+  .project {
+    h1 {
+      font-size: 24px;
+    }
+    p {
+      margin-top: 0;
+      font-size: 18px;
+      max-width: 85%;
+    }
+    iframe {
+      width: 100%;
+      height: 720px;
+    }
   }
 </style>
