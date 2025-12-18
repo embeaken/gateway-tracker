@@ -15,7 +15,7 @@ defineProps<{
 
 <style scoped>
   iframe {
-    width: 800px;
-    height: 600px;
+    width: 100%;
+    height: 720px;
   }
 </style>
