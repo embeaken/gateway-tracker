@@ -1,36 +1,40 @@
 <script setup lang="ts">
-import ProjectView from './components/ProjectView.vue'
+import AppHeader from './components/AppHeader.vue'
+import AlertNotice from './components/AlertNotice.vue'
+import AppFooter from './components/AppFooter.vue'
+import MainLayout from './components/MainLayout.vue'
+import ProjectCard from './components/ProjectCard.vue'
+import Sidebar from './components/Sidebar.vue'
+import ActivityTimeline from './components/ActivityTimeline.vue'
 import { projects } from './assets/data'
 </script>
 
 <template>
-  <header>
-    <h1>hudson.tube 🚇</h1>
-    <p>We're tracking <em>the most urgent infrastructure project in America</em>: a pair of new passenger rail tunnels under the Hudson River.</p>
-  </header>
+  <AppHeader />
+
+  <AlertNotice />
 
   <main>
-    <div v-for="project in projects" :key="project.name">
-      <ProjectView :project />
-    </div>
+    <MainLayout>
+      <template #content>
+        <ProjectCard
+          v-for="project in projects"
+          :key="project.name"
+          :project="project"
+        />
+      </template>
+
+      <template #sidebar>
+        <Sidebar>
+          <ActivityTimeline />
+        </Sidebar>
+      </template>
+    </MainLayout>
   </main>
 
-  <footer>
-    <hr />
-    All data is from the <a href="https://www.gatewayprogram.org" target="_blank">Gateway Program website</a>.
-  </footer>
+  <AppFooter />
 </template>
 
 <style scoped>
-  header {
-    h1 {
-      font-size: 40px;
-    }
-    p {
-      font-size: 20px;
-    }
-  }
-  footer {
-    margin-top: 20px;
-  }
+/* App-level styles if needed */
 </style>
