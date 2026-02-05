@@ -119,22 +119,29 @@ const closeImage = () => {
           </div>
           <div v-else-if="item.type === 'tweet'" class="item-body">
             <p class="item-text">{{ item.content }}</p>
+            <a
+              v-if="item.link"
+              :href="item.link"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="item-link"
+            >
+              View on X →
+            </a>
           </div>
           <div v-else class="item-body">
             <h4 class="item-title">{{ item.title }}</h4>
             <p class="item-text">{{ item.content }}</p>
+            <a
+              v-if="item.link"
+              :href="item.link"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="item-link"
+            >
+              View PDF →
+            </a>
           </div>
-
-          <!-- Link -->
-          <a
-            v-if="item.link"
-            :href="item.link"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="item-link"
-          >
-            View →
-          </a>
         </div>
       </article>
     </div>

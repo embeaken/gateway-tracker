@@ -17,22 +17,13 @@
           <h3 class="alert-title">Project Funding Update</h3>
           <div class="alert-body">
             <p>
-              Federal funding for the Gateway Program has been temporarily suspended pending ongoing litigation.
-              The project, which would replace the 114-year-old North River Tunnels and expand capacity for
-              200,000 daily commuters, is currently subject to legal challenges regarding its environmental
-              impact statements and funding allocation.
+              One
             </p>
             <p>
-              Multiple lawsuits are currently pending in federal court, with oral arguments scheduled for the
-              coming months. Despite the funding freeze, preliminary site work and planning activities continue
-              under existing appropriations. Local and state officials have pledged to explore alternative
-              funding mechanisms to keep the project moving forward.
+              Two.
             </p>
             <p>
-              <strong>This is critical infrastructure:</strong> The existing tunnels are deteriorating and
-              could fail at any time, which would be catastrophic for the Northeast Corridor and the national
-              economy. Delays in funding put thousands of jobs at risk and jeopardize the $19.6 billion in
-              economic activity this project represents.
+              <strong>This is critical infrastructure:</strong> three.
             </p>
           </div>
         </div>
