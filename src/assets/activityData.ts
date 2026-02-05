@@ -12,7 +12,6 @@ export type Tweet = {
 
 export type PressRelease = {
   title: string
-  content: string
   date: string
   link: string
 }
@@ -123,21 +122,23 @@ export const tweets: Tweet[] = [
 
 export const pressReleases: PressRelease[] = [
   {
-    title: 'Federal Funding Suspension Announcement',
-    content: 'Gateway Program funding temporarily suspended pending ongoing litigation regarding environmental impact statements and funding allocation.',
-    date: '2026-01-25',
-    link: 'https://www.gatewayprogram.org'
+    title: 'Gateway Development Commission Files Breach of Contract Claim Against Federal Government',
+    date: '2026-02-02',
+    link: 'https://www.gatewayprogram.org/wp-content/uploads/2026/02/GDC-2026.02.02-Press-Release-for-Website.pdf'
   },
   {
-    title: 'TBM Manufacturing Milestone Reached',
-    content: 'Completion of tunnel boring machine manufacturing marks critical milestone. Equipment delivery to begin in coming weeks.',
-    date: '2026-01-15',
-    link: 'https://www.gatewayprogram.org'
+    title: 'Gateway Development Commission Announces Construction of Hudson Tunnel Project Will Pause if Federal Funding Is Not Restored',
+    date: '2026-01-27',
+    link: 'https://www.gatewayprogram.org/wp-content/uploads/2026/01/01.27.2026-Board-Meeting-Press-Release-for-Website.pdf',
   },
   {
-    title: 'Year-End Progress Report Published',
-    content: 'Major milestones achieved in 2025 including advancement of all five construction packages and preliminary site work.',
-    date: '2026-01-02',
+    title: 'Gateway Development Commission Completes Manufacturing of First Pair of Tunnel Boring Machines for Hudson Tunnel Project',
+    date: '2025-12-15',
+    link: 'https://www.gatewayprogram.org/wp-content/uploads/2025/12/GDC-December-Board-Meeting-Press-Release-for-website.pdf',
+  },
+  {
+    title: 'Gateway Development Commission, Amtrak, and Related Companies Joint Statement on Incident at HYCC-3 Construction Site',
+    date: '2025-10-23',
     link: 'https://www.gatewayprogram.org'
   }
 ]

@@ -53,7 +53,7 @@ const timelineItems = computed<TimelineItem[]>(() => {
       date: parseDate(press.date),
       dateDisplay: press.date,
       title: press.title,
-      content: press.content,
+      content: '',
       link: press.link
     })
   })
@@ -137,7 +137,7 @@ const closeImage = () => {
               rel="noopener noreferrer"
               class="item-link"
             >
-              View PDF →
+              View →
             </a>
           </div>
         </div>
