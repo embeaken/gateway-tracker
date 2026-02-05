@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { images, tweets, pressReleases } from '../assets/activityData'
+import { images, pressReleases } from '../assets/activityData'
 
 type TimelineItemType = 'photo' | 'tweet' | 'press'
 
@@ -14,9 +14,7 @@ type TimelineItem = {
   link?: string
 }
 
-// Parse date strings to Date objects for sorting
 const parseDate = (dateStr: string): Date => {
-  // Handle various date formats
   return new Date(dateStr)
 }
 
@@ -37,16 +35,16 @@ const timelineItems = computed<TimelineItem[]>(() => {
   })
 
   // Add tweets
-  tweets.forEach(tweet => {
-    items.push({
-      type: 'tweet',
-      date: parseDate(tweet.date),
-      dateDisplay: tweet.date,
-      title: tweet.text.substring(0, 60) + (tweet.text.length > 60 ? '...' : ''),
-      content: tweet.text,
-      link: tweet.link
-    })
-  })
+  // tweets.forEach(tweet => {
+  //   items.push({
+  //     type: 'tweet',
+  //     date: parseDate(tweet.date),
+  //     dateDisplay: tweet.date,
+  //     title: tweet.text.substring(0, 60) + (tweet.text.length > 60 ? '...' : ''),
+  //     content: tweet.text,
+  //     link: tweet.link
+  //   })
+  // })
 
   // Add press releases
   pressReleases.forEach(press => {

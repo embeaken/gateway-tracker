@@ -17,13 +17,12 @@
           <h3 class="alert-title">Project Funding Update</h3>
           <div class="alert-body">
             <p>
-              One
+              As of October 2025, the US DOT has <a href="https://www.nytimes.com/2025/10/01/nyregion/trump-nyc-subway-gateway-infrastructure-funding.html" target="_blank">illegally halted</a> the distribution of $18 billion in federal funds for the Gateway Project.
+              Two lawsuits have been filed to try and reverse this - <a href="https://www.gatewayprogram.org/wp-content/uploads/2026/02/GDC-2026.02.02-Press-Release-for-Website.pdf" target="_blank">one</a> by the Gateway Development Commission and <a href="https://www.njoag.gov/new-jersey-new-york-sue-trump-administration-for-illegally-withholding-gateway-tunnel-funding/" target="_blank">another</a> by the Attorneys General of NY and NJ.
             </p>
             <p>
-              Two.
-            </p>
-            <p>
-              <strong>This is critical infrastructure:</strong> three.
+              Unless this federal money is released, <strong>constructon will cease on February 6th, resulting in the immediate loss of over 1,000 jobs.</strong>
+              This number is expected to grow as the halt continues.
             </p>
           </div>
         </div>
