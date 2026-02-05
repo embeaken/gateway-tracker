@@ -88,7 +88,7 @@ const closeImage = () => {
 
 <template>
   <div class="activity-timeline">
-    <h3 class="timeline-title">Construction Activity</h3>
+    <h3 class="timeline-title">Latest updates</h3>
 
     <div class="timeline">
       <article

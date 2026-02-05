@@ -37,7 +37,7 @@
   border-bottom: 4px solid #742a2a;
   color: white;
   padding: var(--spacing-xl) 0;
-  margin-bottom: var(--spacing-xl);
+  margin-bottom: var(--spacing-l);
 }
 
 .alert-content {

@@ -8,7 +8,7 @@
       <hr class="divider" />
       <p>
         <a href="https://www.gatewayprogram.org" target="_blank" rel="noopener noreferrer">
-          Official Gateway Program website
+          All data is sourced from the Gateway Program's official channels
         </a>
       </p>
     </div>
@@ -17,7 +17,7 @@
 
 <style scoped>
 .app-footer {
-  margin-top: var(--spacing-3xl);
+  margin-top: var(--spacing-1xl);
   padding: var(--spacing-xl) 0;
   background-color: var(--color-background);
 }
@@ -31,7 +31,6 @@
 .app-footer p {
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
-  text-align: center;
   margin: 0;
 }
 
