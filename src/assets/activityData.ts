@@ -122,6 +122,11 @@ export const tweets: Tweet[] = [
 
 export const pressReleases: PressRelease[] = [
   {
+    title: 'Hudson Tunnel Project Construction To Be Suspended Due to Lack of Federal Funding',
+    date: '2026-02-06',
+    link: 'https://www.gatewayprogram.org/wp-content/uploads/2026/02/Construction-Pause-Press-Release-Feb-6-2026.pdf'
+  },
+  {
     title: 'Gateway Development Commission Files Breach of Contract Claim Against Federal Government',
     date: '2026-02-02',
     link: 'https://www.gatewayprogram.org/wp-content/uploads/2026/02/GDC-2026.02.02-Press-Release-for-Website.pdf'

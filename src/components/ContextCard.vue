@@ -10,22 +10,21 @@
       <div class="context-section">
         <p>
           The North River Tunnels, built in <strong>1910</strong>, carry Amtrak and NJ Transit trains under the Hudson River, connecting New York and New Jersey.
-          These tunnels have exceeded their useful lifespan after serving the region for over a century, and are at risk of a catastrophic failure that could cause
-          the loss of many lives and billions of dollars in economic damage.
+          These tunnels have exceeded their useful lifespan after serving the region for over a century, and are <strong>at risk of catastrophic failure</strong>.
         </p>
       </div>
 
       <div class="context-section">
         <p>
-          To keep safely serving the region by rail, <strong>we're building two new tunnels under the Hudson River</strong>.
-          It's the largest infrastructure project in America, creating <strong>95,000 jobs</strong> and <strong>$19.6 billion</strong> in economic activity.
+          To keep safely serving the region by rail, <strong>we're building two new tunnels under the Hudson River</strong>, then gut-renovating the old ones.
+          It's the largest infrastructure project in America, expected to create <strong>95,000 jobs</strong> and generate <strong>$19.6 billion</strong> in economic activity.
         </p>
       </div>
 
       <div class="context-section">
         <p>
-          It's also a symbol of hope that America can still build inspiring works of infrastructure, standing on the shoulders of New Deal giants.
-          Over the next few years, <strong>20,000 workers</strong> will build something that will serve <strong>hundreds of thousands of passengers</strong> every day for generations to come.
+          This project is visible proof that America can still build massive, inspiring public works.
+          These tunnels will serve <strong>hundreds of thousands of passengers</strong> every day for generations to come.
           Five construction sites are currently active. The first tunnel boring machines are about to start drilling through the New Jersey Palisades.
           <strong>This is happening.</strong>
         </p>
@@ -58,9 +57,7 @@
 }
 
 .context-section p {
-  font-size: var(--font-size-xs);
   line-height: var(--line-height-relaxed);
-  color: var(--color-text-secondary);
   margin: 0;
 }
 

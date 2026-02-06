@@ -17,6 +17,7 @@ import { projects } from './assets/data'
   <main>
     <MainLayout>
       <template #content>
+        <ContextCard />
         <ProjectCard
           v-for="project in projects"
           :key="project.name"
@@ -26,7 +27,6 @@ import { projects } from './assets/data'
 
       <template #sidebar>
         <Sidebar>
-          <ContextCard />
           <ActivityTimeline />
         </Sidebar>
       </template>

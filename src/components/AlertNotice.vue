@@ -18,11 +18,11 @@
           <div class="alert-body">
             <p>
               In October 2025, US DOT <a href="https://www.nytimes.com/2025/10/01/nyregion/trump-nyc-subway-gateway-infrastructure-funding.html" target="_blank">illegally froze</a> $18 billion in federal funds for the Gateway Project.
-              Two lawsuits have been filed to challenge the funding freeze - <a href="https://www.gatewayprogram.org/wp-content/uploads/2026/02/GDC-2026.02.02-Press-Release-for-Website.pdf" target="_blank">one</a> by the Gateway Development Commission and <a href="https://www.njoag.gov/new-jersey-new-york-sue-trump-administration-for-illegally-withholding-gateway-tunnel-funding/" target="_blank">another</a> by the Attorneys General of NY and NJ.
+              Two lawsuits have been filed to challenge the funding freeze: <a href="https://www.gatewayprogram.org/wp-content/uploads/2026/02/GDC-2026.02.02-Press-Release-for-Website.pdf" target="_blank">one</a> by the Gateway Development Commission and <a href="https://www.njoag.gov/new-jersey-new-york-sue-trump-administration-for-illegally-withholding-gateway-tunnel-funding/" target="_blank">another</a> by the Attorneys General of NY and NJ.
             </p>
             <p>
-              As of February 6, <strong>construction is paused pending the release of federal funds</strong>.
-              Further delays will result in the <strong>loss of thousands of jobs</strong> and <strong>increased construction costs</strong> due to inflation.
+              On February 6, <strong>construction will be <a href="https://gothamist.com/news/one-of-americas-biggest-construction-jobs-halts-as-trump-defunds-hudson-river-tunnels" target="_blank">halted</a> pending the release of federal funds</strong>.
+              Further delays will result in the <strong>loss of thousands of jobs</strong> and <strong>increased construction costs</strong>.
             </p>
           </div>
         </div>
