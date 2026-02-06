@@ -25,8 +25,8 @@
       <div class="context-section">
         <p>
           It's also a symbol of hope that America can still build inspiring works of infrastructure, standing on the shoulders of New Deal giants.
-          Over the next few years, <strong>20,000 workers</strong> will build something that will serve generations to come.
-          Five construction sites are currently active. The tunnel boring machines are being assembled.
+          Over the next few years, <strong>20,000 workers</strong> will build something that will serve <strong>hundreds of thousands of passengers</strong> every day for generations to come.
+          Five construction sites are currently active. The first tunnel boring machines are about to start drilling through the New Jersey Palisades.
           <strong>This is happening.</strong>
         </p>
       </div>
