@@ -17,12 +17,12 @@
           <h3 class="alert-title">Project Funding Update</h3>
           <div class="alert-body">
             <p>
-              As of October 2025, the US DOT has <a href="https://www.nytimes.com/2025/10/01/nyregion/trump-nyc-subway-gateway-infrastructure-funding.html" target="_blank">illegally frozen</a> the distribution of $18 billion in federal funds for the Gateway Project.
+              As of October 2025, US DOT has <a href="https://www.nytimes.com/2025/10/01/nyregion/trump-nyc-subway-gateway-infrastructure-funding.html" target="_blank">illegally frozen</a> $18 billion in federal funds for the Gateway Project.
               Two lawsuits have been filed to challenge the funding freeze - <a href="https://www.gatewayprogram.org/wp-content/uploads/2026/02/GDC-2026.02.02-Press-Release-for-Website.pdf" target="_blank">one</a> by the Gateway Development Commission and <a href="https://www.njoag.gov/new-jersey-new-york-sue-trump-administration-for-illegally-withholding-gateway-tunnel-funding/" target="_blank">another</a> by the Attorneys General of NY and NJ.
             </p>
             <p>
-              Unless this federal money is released, <strong>construction will cease on February 6th, resulting in the immediate loss of over 1,000 jobs.</strong>
-              This number is expected to grow by the thousands if the freeze continues.
+              As of February 6, <strong>construction is paused pending the release of federal funds</strong>.
+              Further delays will result in the <strong>loss of thousands of jobs</strong> and <strong>increased construction costs</strong> due to inflation.
             </p>
           </div>
         </div>

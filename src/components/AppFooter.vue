@@ -6,11 +6,7 @@
   <footer class="app-footer">
     <div class="container">
       <hr class="divider" />
-      <p>
-        <a href="https://www.gatewayprogram.org" target="_blank" rel="noopener noreferrer">
-          All data is sourced from the Gateway Program's official channels
-        </a>
-      </p>
+      <p>Made with civic pride by <a href="https://ilya.pizza" target="_blank">Ilya Rubnich</a> &hearts;</p>
     </div>
   </footer>
 </template>
