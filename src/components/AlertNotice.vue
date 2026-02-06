@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// Alert notice for important project updates
+// Alert notice for funding crisis
 </script>
 
 <template>

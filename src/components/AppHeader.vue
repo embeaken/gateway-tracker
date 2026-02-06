@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// Gateway Tracker Header with Stats Banner
+// Gateway Tracker Header
 </script>
 
 <template>
@@ -19,7 +19,7 @@
 .app-header {
   background: linear-gradient(135deg, #005E71 0%, #004555 100%);
   color: white;
-  padding: var(--spacing-xl) 0;
+  padding: var(--spacing-lg) 0;
 }
 
 .header-content h1 {

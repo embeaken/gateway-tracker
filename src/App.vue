@@ -5,13 +5,13 @@ import AppFooter from './components/AppFooter.vue'
 import MainLayout from './components/MainLayout.vue'
 import ProjectCard from './components/ProjectCard.vue'
 import Sidebar from './components/Sidebar.vue'
+import ContextCard from './components/ContextCard.vue'
 import ActivityTimeline from './components/ActivityTimeline.vue'
 import { projects } from './assets/data'
 </script>
 
 <template>
   <AppHeader />
-
   <AlertNotice />
 
   <main>
@@ -26,6 +26,7 @@ import { projects } from './assets/data'
 
       <template #sidebar>
         <Sidebar>
+          <ContextCard />
           <ActivityTimeline />
         </Sidebar>
       </template>
