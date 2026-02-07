@@ -21,6 +21,7 @@
             </p>
             <p>
               <strong>Construction is still paused</strong> as of February 6 and no date has been announced for when work could resume.
+              GDC <a href="https://www.gatewayprogram.org/wp-content/uploads/2026/02/GDC-2026.02.06-GDC-Statement-on-NY-NJ-Lawsuit.pdf" target="_blank">says</a> they are "hopeful this means funding disbursements will resume soon, and we can restart site operations and get our workers back on the job."
             </p>
           </div>
         </div>

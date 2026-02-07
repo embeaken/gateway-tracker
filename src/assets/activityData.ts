@@ -10,6 +10,13 @@ export type Tweet = {
   link?: string
 }
 
+export type BlueskyPost = {
+  text: string
+  date: string
+  link: string
+  imageUrl?: string
+}
+
 export type PressRelease = {
   title: string
   date: string
@@ -69,58 +76,75 @@ export const images: GalleryImage[] = [
   }
 ]
 
-export const tweets: Tweet[] = [
+export const blueskyPosts: BlueskyPost[] = [
   {
-    text: '“Superstorm Sandy showed us that at any moment, we could be shut down. And if we\’re shut down, we\’re screwed.” Steve Valeira discussed the stakes of stopping construction of the Hudson Tunnel Project at our Board Meeting last week. Watch his statement here: https://t.co/AztXbL0bdA',
-    date: '2026-01-29',
-    link: 'https://x.com/GatewayProgNews/status/2019462094551491010'
+    text: "We've already put more than $1 billion and countless hours into construction of the Hudson Tunnel Project. We have active construction sites across New York and New Jersey, and we're ready to start tunnel boring. Funding must be restored now so we can keep building.",
+    date: '2026-02-06T23:30:16Z',
+    link: 'https://bsky.app/profile/gatewayprogram.bsky.social/post/3mea2pznas22r',
+    imageUrl: 'https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:skgfj7jggympcb2nxuiadj4i/bafkreibstslenlwc6n6a43fsv2ubjhyhlmcuj546easewge3achc3zbuuq@jpeg'
   },
   {
-    text: 'Construction continues on the Hudson Yards Concrete Casing with significant progress on Section 3. The tunnel box is taking shape beneath Manhattan streets.',
-    date: '2026-01-29',
-    link: 'https://www.gatewayprogram.org'
+    text: 'Stopping construction of the Hudson Tunnel Project will hurt our regional and national economy. An extended construction pause would put nearly 100,000 total jobs at risk.',
+    date: '2026-02-06T21:39:43Z',
+    link: 'https://bsky.app/profile/gatewayprogram.bsky.social/post/3me7ukdnu422r',
+    imageUrl: 'https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:skgfj7jggympcb2nxuiadj4i/bafkreic7kbl6u64eqbfjnnyfg2zplv4ymg46jtbqanvfvhcl6p3lq33fqq@jpeg'
   },
   {
-    text: 'TBM components have arrived at the Tonnelle Avenue launch site. Assembly of the massive tunnel boring machines will begin in the coming weeks.',
-    date: '2026-01-28'
+    text: 'Construction of the Hudson Tunnel Project will be suspended today if disbursements of federal funding obligated to the project do not resume.',
+    date: '2026-02-06T16:27:36Z',
+    link: 'https://bsky.app/profile/gatewayprogram.bsky.social/post/3me7d4a6we22r',
+    imageUrl: 'https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:skgfj7jggympcb2nxuiadj4i/bafkreigqc6uahuznoeydu6rjsaym652vhqygvmr4a23mkzwiy4ascjj3xy@jpeg'
   },
   {
-    text: 'Despite challenging winter conditions, ground stabilization work under the frozen Hudson River continues on schedule. This critical work prepares the river bed for tunnel boring.',
-    date: '2026-01-25'
+    text: "Nearly 1,000 workers will lose their jobs immediately when construction of the Hudson Tunnel Project pauses tomorrow, and an extended pause will put many more jobs at risk. Funding must be restored ASAP so these hardworking men and women can get back to work.",
+    date: '2026-02-05T23:51:50Z',
+    link: 'https://bsky.app/profile/gatewayprogram.bsky.social/post/3me5lhnpijs2r',
+    imageUrl: 'https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:skgfj7jggympcb2nxuiadj4i/bafkreih6sue3op6fj5unxeu6z4oy5t3heljo7th67azj4hn5rmcvet7fti@jpeg'
   },
   {
-    text: 'The Gateway Program represents the most urgent infrastructure project in America. With 200,000 daily riders depending on these tunnels, we cannot afford delays.',
-    date: '2026-01-22'
+    text: "'Superstorm Sandy showed us that at any moment, we could be shut down. And if we're shut down, we're screwed.' Steve Valeira discussed the stakes of stopping construction of the Hudson Tunnel Project at our Board Meeting last week.",
+    date: '2026-02-05T17:23:44Z',
+    link: 'https://bsky.app/profile/gatewayprogram.bsky.social/post/3me4vroymqs2r'
   },
   {
-    text: 'Concrete pour completed for the portal launch box at the Palisades site. This structure will serve as the entry point for the TBMs to begin drilling.',
-    date: '2026-01-20'
+    text: "'If we don't work, we don't get paid, and playing politics does not put food on the table for us.' Davon Lomax shared how stopping construction will impact the thousands of men and women building the Hudson Tunnel Project.",
+    date: '2026-02-05T14:53:44Z',
+    link: 'https://bsky.app/profile/gatewayprogram.bsky.social/post/3me4nfhqgts2r'
   },
   {
-    text: 'New aerial footage shows the scale of work happening across all five active construction sites. Check out the latest photos in our gallery.',
-    date: '2026-01-18',
-    link: 'https://www.gatewayprogram.org/photo-gallery.html'
+    text: "'We're already 10,000 yards plus of concrete into this job. Why waste it?' At our Board Meeting, Teamster Raymond Klein highlighted the progress already made by the hundreds of workers who will lose their jobs if funding for the Hudson Tunnel Project isn't restored.",
+    date: '2026-02-05T00:39:23Z',
+    link: 'https://bsky.app/profile/gatewayprogram.bsky.social/post/3me35nr2h322k'
   },
   {
-    text: 'The TBM main drive unit has been loaded for delivery to New Jersey. This 400-ton piece of equipment is the heart of the tunnel boring machine.',
-    date: '2026-01-15'
+    text: "'I urge everyone involved: Please find a solution to keep this project moving. We're all depending on you.' Robert Fawcett spoke out for the workers who will lose their jobs if construction of the Hudson Tunnel Project pauses at our Board Meeting.",
+    date: '2026-02-03T13:36:40Z',
+    link: 'https://bsky.app/profile/gatewayprogram.bsky.social/post/3mdxi5sole22f'
   },
   {
-    text: 'Slurry wall installation continues at the Hudson County access shaft. These walls will support the vertical shaft where TBMs will be extracted and replaced.',
-    date: '2026-01-12'
+    text: "We're ready to build! The components of the first tunnel boring machine are on site in North Bergen, ready to be assembled in the portal launch box. Federal funding disbursements must resume ASAP so we can start tunneling.",
+    date: '2026-02-02T16:26:28Z',
+    link: 'https://bsky.app/profile/gatewayprogram.bsky.social/post/3mdvb6jqxrk2b',
+    imageUrl: 'https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:skgfj7jggympcb2nxuiadj4i/bafkreigfd7po3kjzokbst3ilsmjf6kui5yuxjd5bmqzlxs6wwu33pdlrpu@jpeg'
   },
   {
-    text: 'Construction crews are working around the clock to keep the Gateway Program on track. Over 3,000 workers are currently employed across all project sites.',
-    date: '2026-01-08'
+    text: "Delays like this will become more frequent and impact more riders the longer we rely on the North River Tunnel. We need to complete the Hudson Tunnel Project as soon as possible to deliver reliable, modern rail infrastructure that riders can count on.",
+    date: '2026-01-30T15:56:32Z',
+    link: 'https://bsky.app/profile/gatewayprogram.bsky.social/post/3mdno47yrn222'
   },
   {
-    text: 'Year-end progress report: Major milestones achieved in 2025 including completion of TBM manufacturing and advancement of all five construction packages.',
-    date: '2026-01-02',
-    link: 'https://www.gatewayprogram.org'
+    text: "'President Donald Trump, free this money up now, so I can get to work and make my neighborhood better.' Ironworker John Mooney spoke for the hundreds of workers building the Hudson Tunnel Project at our Board Meeting.",
+    date: '2026-01-29T22:07:10Z',
+    link: 'https://bsky.app/profile/gatewayprogram.bsky.social/post/3mdlse23nuc23'
   }
 ]
 
 export const pressReleases: PressRelease[] = [
+  {
+    title: 'Gateway Development Commission Statement on New York, New Jersey’s Hudson Tunnel Project Lawsuit Hearing',
+    date: '2026-02-07T02:07:00Z',
+    link: 'https://www.gatewayprogram.org/wp-content/uploads/2026/02/GDC-2026.02.06-GDC-Statement-on-NY-NJ-Lawsuit.pdf'
+  },
   {
     title: 'Hudson Tunnel Project Construction To Be Suspended Due to Lack of Federal Funding',
     date: '2026-02-06',

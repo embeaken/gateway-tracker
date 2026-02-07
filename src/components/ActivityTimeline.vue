@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { images, pressReleases } from '../assets/activityData'
+import { images, blueskyPosts, pressReleases } from '../assets/activityData'
 
-type TimelineItemType = 'photo' | 'tweet' | 'press'
+type TimelineItemType = 'photo' | 'tweet' | 'bluesky' | 'press'
 
 type TimelineItem = {
   type: TimelineItemType
@@ -18,6 +18,14 @@ const parseDate = (dateStr: string): Date => {
   return new Date(dateStr)
 }
 
+const formatDate = (date: Date, includeTime = false): string => {
+  const d = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear() % 100}`
+  if (!includeTime) return d
+  const h = date.getHours()
+  const m = date.getMinutes().toString().padStart(2, '0')
+  return `${d} ${h % 12 || 12}:${m}${h >= 12 ? 'pm' : 'am'}`
+}
+
 // Create unified timeline from all sources
 const timelineItems = computed<TimelineItem[]>(() => {
   const items: TimelineItem[] = []
@@ -27,31 +35,32 @@ const timelineItems = computed<TimelineItem[]>(() => {
     items.push({
       type: 'photo',
       date: parseDate(image.date),
-      dateDisplay: image.date,
+      dateDisplay: formatDate(parseDate(image.date)),
       title: image.caption,
       content: image.caption,
       imageUrl: image.url
     })
   })
 
-  // Add tweets
-  // tweets.forEach(tweet => {
-  //   items.push({
-  //     type: 'tweet',
-  //     date: parseDate(tweet.date),
-  //     dateDisplay: tweet.date,
-  //     title: tweet.text.substring(0, 60) + (tweet.text.length > 60 ? '...' : ''),
-  //     content: tweet.text,
-  //     link: tweet.link
-  //   })
-  // })
+  // Add Bluesky posts
+  blueskyPosts.forEach(post => {
+    items.push({
+      type: 'bluesky',
+      date: parseDate(post.date),
+      dateDisplay: formatDate(parseDate(post.date), true),
+      title: post.text.substring(0, 60) + (post.text.length > 60 ? '...' : ''),
+      content: post.text,
+      link: post.link,
+      imageUrl: post.imageUrl
+    })
+  })
 
   // Add press releases
   pressReleases.forEach(press => {
     items.push({
       type: 'press',
       date: parseDate(press.date),
-      dateDisplay: press.date,
+      dateDisplay: formatDate(parseDate(press.date)),
       title: press.title,
       content: '',
       link: press.link
@@ -101,19 +110,34 @@ const closeImage = () => {
           <!-- Header with type badge and date -->
           <div class="item-header">
             <span class="item-badge" :class="`badge-${item.type}`">
-              {{ item.type === 'photo' ? 'Photo' : item.type === 'tweet' ? 'X Post' : 'Press Release' }}
+              {{ item.type === 'photo' ? 'Photo' : item.type === 'bluesky' ? 'Bluesky' : item.type === 'tweet' ? 'X Post' : 'Press Release' }}
             </span>
             <time class="item-date">{{ item.dateDisplay }}</time>
           </div>
 
-          <!-- Photo with thumbnail -->
+          <!-- Image thumbnail -->
           <div v-if="item.type === 'photo' && item.imageUrl" class="item-photo" @click="openImage(item)">
             <img :src="transformImage(item.imageUrl, 400)" :alt="item.title" loading="lazy" />
           </div>
+          <a v-else-if="item.type === 'bluesky' && item.imageUrl" :href="item.link" target="_blank" rel="noopener noreferrer" class="item-photo">
+            <img :src="item.imageUrl" :alt="item.title" loading="lazy" />
+          </a>
 
           <!-- Content based on type -->
           <div v-if="item.type === 'photo'" class="item-body">
             <p class="item-caption">{{ item.content }}</p>
+          </div>
+          <div v-else-if="item.type === 'bluesky'" class="item-body">
+            <p class="item-text">{{ item.content }}</p>
+            <a
+              v-if="item.link"
+              :href="item.link"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="item-link"
+            >
+              View on Bluesky →
+            </a>
           </div>
           <div v-else-if="item.type === 'tweet'" class="item-body">
             <p class="item-text">{{ item.content }}</p>
@@ -222,6 +246,11 @@ const closeImage = () => {
 .badge-tweet {
   background: rgba(29, 155, 240, 0.1);
   color: #1d9bf0;
+}
+
+.badge-bluesky {
+  background: rgba(0, 133, 255, 0.1);
+  color: #0085ff;
 }
 
 .badge-press {
