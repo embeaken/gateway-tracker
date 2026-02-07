@@ -1,2 +1,6 @@
+[build]
+  command = "pnpm run build-only"
+  publish = "dist/"
+
 [images]
-    remote_images = ["https://www.gatewayprogram.org/.*"]
+  remote_images = ["https://www.gatewayprogram.org/.*"]
