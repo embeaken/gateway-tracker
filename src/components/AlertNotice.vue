@@ -17,12 +17,10 @@
           <h3 class="alert-title">Project Funding Update</h3>
           <div class="alert-body">
             <p>
-              In October 2025, US DOT <a href="https://www.nytimes.com/2025/10/01/nyregion/trump-nyc-subway-gateway-infrastructure-funding.html" target="_blank">illegally froze</a> $18 billion in federal funds for the Gateway Project.
-              Two lawsuits have been filed to challenge the funding freeze: <a href="https://www.gatewayprogram.org/wp-content/uploads/2026/02/GDC-2026.02.02-Press-Release-for-Website.pdf" target="_blank">one</a> by the Gateway Development Commission and <a href="https://www.njoag.gov/new-jersey-new-york-sue-trump-administration-for-illegally-withholding-gateway-tunnel-funding/" target="_blank">another</a> by the Attorneys General of NY and NJ.
+              A federal judge has <a href="https://www.nydailynews.com/2026/02/06/ny-judge-tro-trump-administration-resume-funding-hudson-river-tunnel/" target="_blank">ordered</a> the government to temporarily stop withholding payments to the Gateway Development Commission while lawsuits play out in court.
             </p>
             <p>
-              On February 6, <strong>construction will be <a href="https://gothamist.com/news/one-of-americas-biggest-construction-jobs-halts-as-trump-defunds-hudson-river-tunnels" target="_blank">halted</a> pending the release of federal funds</strong>.
-              Further delays will result in the <strong>loss of thousands of jobs</strong> and <strong>increased construction costs</strong>.
+              <strong>Construction is still paused</strong> as of February 6 and no date has been announced for when work could resume.
             </p>
           </div>
         </div>
@@ -33,9 +31,9 @@
 
 <style scoped>
 .alert-notice {
-  background: linear-gradient(135deg, #c53030 0%, #9b2c2c 100%);
-  border-bottom: 4px solid #742a2a;
-  color: white;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-bottom: 4px solid #d97706;
+  color: #78350f;
   padding: var(--spacing-xl) 0;
   margin-bottom: var(--spacing-l);
 }
@@ -50,12 +48,12 @@
   flex-shrink: 0;
   width: 48px;
   height: 48px;
-  background: rgba(255, 255, 255, 0.15);
+  background: #d97706;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #FFD700;
+  color: white;
 }
 
 .alert-icon svg {
@@ -72,7 +70,7 @@
 .alert-title {
   font-size: var(--font-size-md);
   font-weight: var(--font-weight-bold);
-  color: white;
+  color: #451a03;
   margin: 0 0 var(--spacing-sm) 0;
   letter-spacing: -0.01em;
 }
@@ -86,24 +84,24 @@
 .alert-body p {
   font-size: var(--font-size-base);
   line-height: var(--line-height-relaxed);
-  color: rgba(255, 255, 255, 0.95);
+  color: #78350f;
   margin: 0;
 }
 
 .alert-body strong {
-  color: #FFD700;
+  color: #451a03;
   font-weight: var(--font-weight-bold);
 }
 
 /* Links in alert */
 .alert-body a {
-  color: #FFD700;
+  color: #b45309;
   text-decoration: underline;
   border-bottom: none;
 }
 
 .alert-body a:hover {
-  color: white;
+  color: #451a03;
 }
 
 @media (max-width: 768px) {
