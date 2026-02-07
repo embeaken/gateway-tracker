@@ -17,13 +17,13 @@
       <div class="context-section">
         <p>
           To keep safely serving the region by rail, <strong>we're building two new tunnels under the Hudson River</strong>, then gut-renovating the old ones.
-          It's the largest infrastructure project in America, expected to create <strong>95,000 jobs</strong> and generate <strong>$19.6 billion</strong> in economic activity.
+          It's called the <strong>Gateway Program</strong> and it's the largest infrastructure project in America, expected to create <strong>95,000 jobs</strong> and generate <strong>$19.6 billion</strong> in economic activity.
         </p>
       </div>
 
       <div class="context-section">
         <p>
-          This project is visible proof that America can still build massive, inspiring public works.
+          Gateway is visible proof that America can still build massive, inspiring public works.
           These tunnels will serve <strong>hundreds of thousands of passengers</strong> every day for generations to come.
           Five construction sites are currently active. The first tunnel boring machines are about to start drilling through the New Jersey Palisades.
           <strong>This is happening.</strong>
