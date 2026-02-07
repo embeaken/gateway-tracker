@@ -73,7 +73,7 @@ const transformImage = (url: string, width: number) => {
   const params = new URLSearchParams({
     url: url,
     w: width.toString(),
-    fit: 'cover',
+    fit: 'contain',
     format: 'webp'
   })
   return `/.netlify/images?${params.toString()}`
