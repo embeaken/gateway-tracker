@@ -17,7 +17,7 @@
           <h3 class="alert-title">Project Funding Update</h3>
           <div class="alert-body">
             <p>
-              A federal judge has <a href="https://www.nydailynews.com/2026/02/06/ny-judge-tro-trump-administration-resume-funding-hudson-river-tunnel/" target="_blank">ordered</a> the government to temporarily stop withholding payments to the Gateway Development Commission while lawsuits play out in court.
+              A federal judge has <a href="https://www.nydailynews.com/2026/02/06/ny-judge-tro-trump-administration-resume-funding-hudson-river-tunnel/" target="_blank">ordered</a> the government to temporarily stop withholding payments to the Gateway Development Commission pending future arguments in the NY/NJ <a href="https://ag.ny.gov/press-release/2026/attorney-general-james-sues-trump-administration-freezing-gateway-programs" target="_blank">case</a>.
             </p>
             <p>
               <strong>Construction is still paused</strong> as of February 6 and no date has been announced for when work could resume.
