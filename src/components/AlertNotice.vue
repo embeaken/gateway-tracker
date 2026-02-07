@@ -31,13 +31,13 @@ const detailsOpen = ref(false)
                 <div class="details-inner">
                   <p>
                     Gateway's federal funding is structured like an expense account. Gateway must report what they spent over some period of time and the government then disburses that money to Gateway.
-                    Last October the government just stopped doing the disbursing.
+                    Last October the government just stopped doing the disbursing and the amount they owe has been piling up ever since.
                   </p>
                   <p>
                     On February 6, a federal judge <a href="https://www.nydailynews.com/2026/02/06/ny-judge-tro-trump-administration-resume-funding-hudson-river-tunnel/" target="_blank">ordered</a>
                     the government to <strong>temporarily stop not disbursing money</strong> to Gateway while the <a href="https://ag.ny.gov/press-release/2026/attorney-general-james-sues-trump-administration-freezing-gateway-programs" target="_blank">case</a> plays out in court.
-                    Yes that's confusing, and it notably doesn't prescribe any timeline to <em>start</em> disbursing money.
-                    The feds have been annoyingly good at being petty and dragging things out so I wouldn't be surprised if they took advantage here.
+                    Yes that's confusing, and it notably doesn't prescribe any timeline to <em>start</em> disbursing money,
+                    which means the feds could drag out the proceedings or just be petty and non-cooperative to avoid paying up.
                   </p>
                   <p>The judge ordered the parties to meet before February 11 to figure out next steps. You can read the full ruling <a href="https://secondavenuesagas.com/wp-content/uploads/2026/02/show_temp.pdf" target="_blank">here</a>.</p>
                 </div>
