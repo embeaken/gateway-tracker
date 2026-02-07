@@ -4,12 +4,6 @@ export type GalleryImage = {
   date: string
 }
 
-export type Tweet = {
-  text: string
-  date: string
-  link?: string
-}
-
 export type BlueskyPost = {
   text: string
   date: string

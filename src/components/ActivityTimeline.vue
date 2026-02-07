@@ -30,7 +30,6 @@ const formatDate = (date: Date, includeTime = false): string => {
 const timelineItems = computed<TimelineItem[]>(() => {
   const items: TimelineItem[] = []
 
-  // Add photos
   images.forEach(image => {
     items.push({
       type: 'photo',
@@ -42,7 +41,6 @@ const timelineItems = computed<TimelineItem[]>(() => {
     })
   })
 
-  // Add Bluesky posts
   blueskyPosts.forEach(post => {
     items.push({
       type: 'bluesky',
@@ -55,7 +53,6 @@ const timelineItems = computed<TimelineItem[]>(() => {
     })
   })
 
-  // Add press releases
   pressReleases.forEach(press => {
     items.push({
       type: 'press',
@@ -71,15 +68,15 @@ const timelineItems = computed<TimelineItem[]>(() => {
   return items.sort((a, b) => b.date.getTime() - a.date.getTime())
 })
 
-// Transform image URL using weserv.nl CDN
+// Netlify CDN for image transformations
 const transformImage = (url: string, width: number) => {
   const params = new URLSearchParams({
     url: url,
     w: width.toString(),
     fit: 'cover',
-    output: 'webp'
+    format: 'webp'
   })
-  return `https://images.weserv.nl/?${params.toString()}`
+  return `/.netlify/images?${params.toString()}`
 }
 
 const selectedImage = ref<TimelineItem | null>(null)
@@ -110,7 +107,7 @@ const closeImage = () => {
           <!-- Header with type badge and date -->
           <div class="item-header">
             <span class="item-badge" :class="`badge-${item.type}`">
-              {{ item.type === 'photo' ? 'Photo' : item.type === 'bluesky' ? 'Bluesky' : item.type === 'tweet' ? 'X Post' : 'Press Release' }}
+              {{ item.type === 'photo' ? 'Photo' : item.type === 'bluesky' ? 'Bluesky' : 'Press Release' }}
             </span>
             <time class="item-date">{{ item.dateDisplay }}</time>
           </div>
