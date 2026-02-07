@@ -119,7 +119,7 @@ const closeImage = () => {
           <div v-if="item.type === 'photo' && item.imageUrl" class="item-photo" @click="openImage(item)">
             <img :src="transformImage(item.imageUrl, 400)" :alt="item.title" loading="lazy" />
           </div>
-          <a v-else-if="item.type === 'bluesky' && item.imageUrl" :href="item.link" target="_blank" rel="noopener noreferrer" class="item-photo">
+          <a v-else-if="item.type === 'bluesky' && item.imageUrl" :href="item.link" target="_blank" class="item-photo">
             <img :src="item.imageUrl" :alt="item.title" loading="lazy" />
           </a>
 
@@ -133,7 +133,6 @@ const closeImage = () => {
               v-if="item.link"
               :href="item.link"
               target="_blank"
-              rel="noopener noreferrer"
               class="item-link"
             >
               View on Bluesky →
@@ -145,7 +144,6 @@ const closeImage = () => {
               v-if="item.link"
               :href="item.link"
               target="_blank"
-              rel="noopener noreferrer"
               class="item-link"
             >
               View on X →
@@ -158,7 +156,6 @@ const closeImage = () => {
               v-if="item.link"
               :href="item.link"
               target="_blank"
-              rel="noopener noreferrer"
               class="item-link"
             >
               View →
