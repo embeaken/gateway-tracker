@@ -88,7 +88,7 @@ const closeImage = () => {
 
 <template>
   <div class="activity-timeline">
-    <h3 class="timeline-title">Latest updates</h3>
+    <h3 class="timeline-title">Updates from the <span class="tooltip" title="Gateway Development Commission">GDC</span></h3>
 
     <div class="timeline">
       <article
@@ -168,6 +168,10 @@ const closeImage = () => {
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
   margin: 0 0 16px 0;
+
+  .tooltip {
+    text-decoration: underline dotted;
+  }
 }
 
 .timeline {
