@@ -16,7 +16,7 @@ const detailsOpen = ref(false)
           </svg>
         </div>
         <div class="alert-text">
-          <h3 class="alert-title">Project Funding Update<small>Last updated: February 9 at 5:00pm</small></h3>
+          <h3 class="alert-title">Project Funding Update<small>Last updated: February 9 at 6:00pm</small></h3>
           <div class="alert-body">
             <p>
               <strong>The vibes are mixed.</strong>
@@ -28,6 +28,11 @@ const detailsOpen = ref(false)
               <strong>Construction is paused as of February 6 and the federal funds are still not flowing.</strong>
               Some workers have already been laid off as the project enters a "wind-down" phase that itself costs millions of dollars and will take a year to complete.
             </p>
+            <p>
+              So far this seems to be playing out predictably for a "retribution against blue states" case in Trump's second term.
+              The feds are weaponizing the legal process itself to cause the damage being argued in court, no matter how inane the legal reasoning or how many times they lose.
+            </p>
+            <p>The best case outcome here for Gateway would be a political solution. Otherwise this is likely to be a prolonged legal battle. So it goes.</p>
             <div class="alert-details">
               <button class="details-toggle" @click="detailsOpen = !detailsOpen">
                 <span class="details-arrow" :class="{ open: detailsOpen }">▸</span> Click for more wonky details
@@ -41,10 +46,11 @@ const detailsOpen = ref(false)
                   <p>
                     On February 6, a federal judge <a href="https://www.nydailynews.com/2026/02/06/ny-judge-tro-trump-administration-resume-funding-hudson-river-tunnel/" target="_blank">ordered</a>
                     the government to stop withholding disbursements while the <a href="https://ag.ny.gov/press-release/2026/attorney-general-james-sues-trump-administration-freezing-gateway-programs" target="_blank">case</a> plays out in court.
-                    The Trump administration appealed the order to the 2nd Circuit Court of Appeals. That court has until February 12th at 5pm to consider the appeal before the order goes back into effect and the feds are again forced to unfreeze funds.
+                    The Trump administration appealed this decision to the 2nd Circuit Court of Appeals, and also asked them to extend the stay in the original order.
+                    The 2nd Circuit has until February 12th at 5pm to consider the appeal.
                   </p>
                   <p>
-                    <em>Disclaimer: I am not a lawyer so don't take my legal interpretation as fact. I just aggregate sources I trust and try to summarize them as best I can, with occasional help from AI (fact-checked by me!) to unpack the legalese.</em>
+                    <em>Disclaimer: I am not a lawyer so don't take my legal interpretation as fact. I just aggregate sources I trust and try to summarize them as best I can, with occasional help from AI (fact-checked by me) to unpack the legalese.</em>
                   </p>
                 </div>
               </div>
