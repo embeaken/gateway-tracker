@@ -16,17 +16,17 @@ const detailsOpen = ref(false)
           </svg>
         </div>
         <div class="alert-text">
-          <h3 class="alert-title">Project Funding Update<small>Last updated: February 9 at 11:30am</small></h3>
+          <h3 class="alert-title">Project Funding Update<small>Last updated: February 9 at 5:00pm</small></h3>
           <div class="alert-body">
             <p>
               <strong>The vibes are mixed.</strong>
               The states of NY and NJ <a href="https://www.nydailynews.com/2026/02/06/ny-judge-tro-trump-administration-resume-funding-hudson-river-tunnel" target="_blank">won</a> a claim for emergency relief to turn the funds back on.
-              But the Trump administration <a href="https://www.nydailynews.com/2026/02/09/trump-federal-order-restoring-funding-for-hudson-river-gateway-tunnel-project" target="_blank">appealed</a> the emergency order.
-              A response from the court is expected today, February 9.
+              Then the Trump administration <a href="https://www.nydailynews.com/2026/02/09/trump-federal-order-restoring-funding-for-hudson-river-gateway-tunnel-project" target="_blank">appealed</a>.
+              The appeals court has until February 12th to consider the appeal.
             </p>
             <p>
-              <strong>Construction is paused as of February 6 and no date has been announced for when work could resume.</strong>
-              Responding to the judge's emergency order, GDC <a href="https://www.gatewayprogram.org/wp-content/uploads/2026/02/GDC-2026.02.06-GDC-Statement-on-NY-NJ-Lawsuit.pdf" target="_blank">says</a> they are "hopeful this means funding disbursements will resume soon, and we can restart site operations and get our workers back on the job."
+              <strong>Construction is paused as of February 6 and the federal funds are still not flowing.</strong>
+              Some workers have already been laid off as the project enters a "wind-down" phase that itself costs millions of dollars and will take a year to complete.
             </p>
             <div class="alert-details">
               <button class="details-toggle" @click="detailsOpen = !detailsOpen">
@@ -40,12 +40,12 @@ const detailsOpen = ref(false)
                   </p>
                   <p>
                     On February 6, a federal judge <a href="https://www.nydailynews.com/2026/02/06/ny-judge-tro-trump-administration-resume-funding-hudson-river-tunnel/" target="_blank">ordered</a>
-                    the government to <strong>temporarily stop not disbursing money</strong> to Gateway while the <a href="https://ag.ny.gov/press-release/2026/attorney-general-james-sues-trump-administration-freezing-gateway-programs" target="_blank">case</a> plays out in court.
-                    Yes that's confusing, and it notably doesn't prescribe any timeline to <em>start</em> disbursing money.
-                    Meanwhile, the Trump administration has appealed the order, claiming that they would have to disburse $200 million immediately
-                    without "any obvious mechanism for recovering that money later if the government prevails on appeal."
+                    the government to stop withholding disbursements while the <a href="https://ag.ny.gov/press-release/2026/attorney-general-james-sues-trump-administration-freezing-gateway-programs" target="_blank">case</a> plays out in court.
+                    The Trump administration appealed the order to the 2nd Circuit Court of Appeals. That court has until February 12th at 5pm to consider the appeal before the order goes back into effect and the feds are again forced to unfreeze funds.
                   </p>
-                  <p>An update on the emergency order appeal is expected on February 9th. The parties are also expected to meet on February 10 so there will likely be an update then on the status of the case (not just the emergency order).</p>
+                  <p>
+                    <em>Disclaimer: I am not a lawyer so don't take my legal interpretation as fact. I just aggregate sources I trust and try to summarize them as best I can, with occasional help from AI (fact-checked by me!) to unpack the legalese.</em>
+                  </p>
                 </div>
               </div>
             </div>

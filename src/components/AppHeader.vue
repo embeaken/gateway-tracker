@@ -8,7 +8,7 @@
       <div class="header-content">
         <h1>hudson.tube 🚇</h1>
         <p class="tagline">
-          We're tracking <em>the most urgent infrastructure project in America</em>: a pair of new passenger rail tunnels under the Hudson River.
+          Tracking <em>the most urgent infrastructure project in America</em>: a pair of new passenger rail tunnels under the Hudson River.
         </p>
       </div>
     </div>
