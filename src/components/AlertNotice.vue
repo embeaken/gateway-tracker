@@ -16,12 +16,13 @@ const detailsOpen = ref(false)
           </svg>
         </div>
         <div class="alert-text">
-          <h3 class="alert-title">Project Funding Update<small>Last updated: February 8 at 10:30pm</small></h3>
+          <h3 class="alert-title">Project Funding Update<small>Last updated: February 9 at 11:30am</small></h3>
           <div class="alert-body">
             <p>
               <strong>The vibes are mixed.</strong>
               The states of NY and NJ <a href="https://www.nydailynews.com/2026/02/06/ny-judge-tro-trump-administration-resume-funding-hudson-river-tunnel" target="_blank">won</a> a claim for emergency relief to turn the funds back on.
-              But the Trump administration <a href="https://www.bloomberg.com/news/articles/2026-02-09/trump-administration-to-appeal-court-order-on-ny-nj-tunnel-funds" target="_blank">will appeal</a>, so expect legal drama ahead.
+              But the Trump administration <a href="https://www.nydailynews.com/2026/02/09/trump-federal-order-restoring-funding-for-hudson-river-gateway-tunnel-project" target="_blank">appealed</a> the emergency order.
+              A response from the court is expected today, February 9.
             </p>
             <p>
               <strong>Construction is paused as of February 6 and no date has been announced for when work could resume.</strong>
@@ -41,9 +42,10 @@ const detailsOpen = ref(false)
                     On February 6, a federal judge <a href="https://www.nydailynews.com/2026/02/06/ny-judge-tro-trump-administration-resume-funding-hudson-river-tunnel/" target="_blank">ordered</a>
                     the government to <strong>temporarily stop not disbursing money</strong> to Gateway while the <a href="https://ag.ny.gov/press-release/2026/attorney-general-james-sues-trump-administration-freezing-gateway-programs" target="_blank">case</a> plays out in court.
                     Yes that's confusing, and it notably doesn't prescribe any timeline to <em>start</em> disbursing money.
-                    Meanwhile, the Trump administration filed a notice to appeal the order.
+                    Meanwhile, the Trump administration has appealed the order, claiming that they would have to disburse $200 million immediately
+                    without "any obvious mechanism for recovering that money later if the government prevails on appeal."
                   </p>
-                  <p>The parties will meet on February 10 so there will likely be an update then.</p>
+                  <p>An update on the emergency order appeal is expected on February 9th. The parties are also expected to meet on February 10 so there will likely be an update then on the status of the case (not just the emergency order).</p>
                 </div>
               </div>
             </div>
