@@ -16,12 +16,16 @@ const detailsOpen = ref(false)
           </svg>
         </div>
         <div class="alert-text">
-          <h3 class="alert-title">Project Funding Update</h3>
+          <h3 class="alert-title">Project Funding Update<small>Last updated: February 8 at 10:30pm</small></h3>
           <div class="alert-body">
-            <p><strong>The news is good!</strong> The states of NY and NJ won a claim for emergency relief to turn the funds back on. But there could still be legal drama ahead.</p>
             <p>
-              <strong>Construction is still paused as of February 6 and no date has been announced for when work could resume.</strong>
-              GDC <a href="https://www.gatewayprogram.org/wp-content/uploads/2026/02/GDC-2026.02.06-GDC-Statement-on-NY-NJ-Lawsuit.pdf" target="_blank">says</a> they are "hopeful this means funding disbursements will resume soon, and we can restart site operations and get our workers back on the job."
+              <strong>The vibes are mixed.</strong>
+              The states of NY and NJ <a href="https://www.nydailynews.com/2026/02/06/ny-judge-tro-trump-administration-resume-funding-hudson-river-tunnel" target="_blank">won</a> a claim for emergency relief to turn the funds back on.
+              But the Trump administration <a href="https://www.bloomberg.com/news/articles/2026-02-09/trump-administration-to-appeal-court-order-on-ny-nj-tunnel-funds" target="_blank">will appeal</a>, so expect legal drama ahead.
+            </p>
+            <p>
+              <strong>Construction is paused as of February 6 and no date has been announced for when work could resume.</strong>
+              Responding to the judge's emergency order, GDC <a href="https://www.gatewayprogram.org/wp-content/uploads/2026/02/GDC-2026.02.06-GDC-Statement-on-NY-NJ-Lawsuit.pdf" target="_blank">says</a> they are "hopeful this means funding disbursements will resume soon, and we can restart site operations and get our workers back on the job."
             </p>
             <div class="alert-details">
               <button class="details-toggle" @click="detailsOpen = !detailsOpen">
@@ -36,10 +40,10 @@ const detailsOpen = ref(false)
                   <p>
                     On February 6, a federal judge <a href="https://www.nydailynews.com/2026/02/06/ny-judge-tro-trump-administration-resume-funding-hudson-river-tunnel/" target="_blank">ordered</a>
                     the government to <strong>temporarily stop not disbursing money</strong> to Gateway while the <a href="https://ag.ny.gov/press-release/2026/attorney-general-james-sues-trump-administration-freezing-gateway-programs" target="_blank">case</a> plays out in court.
-                    Yes that's confusing, and it notably doesn't prescribe any timeline to <em>start</em> disbursing money,
-                    which means the feds could drag out the proceedings or just be petty and non-cooperative to avoid paying up.
+                    Yes that's confusing, and it notably doesn't prescribe any timeline to <em>start</em> disbursing money.
+                    Meanwhile, the Trump administration filed a notice to appeal the order.
                   </p>
-                  <p>The judge ordered the parties to meet before February 11 to figure out next steps. You can read the full ruling <a href="https://secondavenuesagas.com/wp-content/uploads/2026/02/show_temp.pdf" target="_blank">here</a>.</p>
+                  <p>The parties will meet on February 10 so there will likely be an update then.</p>
                 </div>
               </div>
             </div>
@@ -92,6 +96,12 @@ const detailsOpen = ref(false)
   color: #854d0e;
   margin: 0 0 var(--spacing-sm) 0;
   letter-spacing: -0.01em;
+
+  small {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-normal);
+    margin-left: 10px;
+  }
 }
 
 .alert-body {
