@@ -16,18 +16,19 @@
           </svg>
         </div>
         <div class="alert-text">
-          <h3 class="alert-title">Project Funding Update<small>Last updated: February 13 at 2:30pm</small></h3>
+          <h3 class="alert-title">Project Funding Update<small>Last updated: February 13 at 4:30pm</small></h3>
           <div class="alert-body">
             <p>
-              <strong>The vibes are mixed.</strong>
-              The states of NY and NJ <a href="https://www.nydailynews.com/2026/02/06/ny-judge-tro-trump-administration-resume-funding-hudson-river-tunnel" target="_blank">won</a> a claim for emergency relief to turn the funds back on.
-              <strong>The feds are now <a href="https://www.nydailynews.com/2026/02/12/federal-funds-set-to-flow-again-for-hudson-river-tunnel-project-at-least-for-now" target="_blank">required</a> to release $205 million that is owed to Gateway</strong>, but this has not happened yet.
-              The AG of NY filed a <a href="https://storage.courtlistener.com/recap/gov.uscourts.nysd.657274/gov.uscourts.nysd.657274.58.0.pdf" target="_blank">motion</a>
-              on 2/13 for an emergency status conference to press the issue.
+              <strong>The vibes are trending up!</strong>
+              The feds have been <a href="https://www.nydailynews.com/2026/02/12/federal-funds-set-to-flow-again-for-hudson-river-tunnel-project-at-least-for-now" target="_blank">forced</a> to release $205 million that is owed to Gateway,
+              which <a href="https://www.nytimes.com/2026/02/13/nyregion/gateway-tunnel-funding-ny-nj-trump.html" target="_blank">they say</a> will be disbursed next week.
             </p>
             <p>
-              <strong>Construction is paused as of February 6 and the federal funds are still not flowing.</strong>
-              Over a thousand workers have already been laid off as the project enters a "wind-down" phase that itself costs millions of dollars and will take a year to complete.
+              Despite this victory, funding is still frozen beyond the $205 million. A separate lawsuit is ongoing to unfreeze the rest.
+            </p>
+            <p>
+              <strong>Gateway has not yet announced a plan to restart construction, which remains paused as of February 6.</strong>
+              An update is expected once the funds are in the GDC's hands.
             </p>
             <!--<div class="alert-details">
               <button class="details-toggle" @click="detailsOpen = !detailsOpen">
