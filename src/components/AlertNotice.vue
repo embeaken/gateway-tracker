@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+//import { ref } from 'vue'
 
-const detailsOpen = ref(false)
+//const detailsOpen = ref(false)
 </script>
 
 <template>
@@ -16,24 +16,19 @@ const detailsOpen = ref(false)
           </svg>
         </div>
         <div class="alert-text">
-          <h3 class="alert-title">Project Funding Update<small>Last updated: February 9 at 6:00pm</small></h3>
+          <h3 class="alert-title">Project Funding Update<small>Last updated: February 12 at 8:00pm</small></h3>
           <div class="alert-body">
             <p>
               <strong>The vibes are mixed.</strong>
               The states of NY and NJ <a href="https://www.nydailynews.com/2026/02/06/ny-judge-tro-trump-administration-resume-funding-hudson-river-tunnel" target="_blank">won</a> a claim for emergency relief to turn the funds back on.
-              Then the Trump administration <a href="https://www.nydailynews.com/2026/02/09/trump-federal-order-restoring-funding-for-hudson-river-gateway-tunnel-project" target="_blank">appealed</a>.
-              The appeals court has until February 12th to consider the appeal.
+              Then the Trump administration <a href="https://www.bloomberg.com/news/articles/2026-02-09/trump-administration-to-appeal-court-order-on-ny-nj-tunnel-funds" target="_blank">appealed</a>.
+              For now, <strong>the feds are <a href="https://www.nydailynews.com/2026/02/12/federal-funds-set-to-flow-again-for-hudson-river-tunnel-project-at-least-for-now" target="_blank">technically required</a> to release $205 million that is owed to Gateway</strong>, but there is no indication that this has happened yet.
             </p>
             <p>
               <strong>Construction is paused as of February 6 and the federal funds are still not flowing.</strong>
               Some workers have already been laid off as the project enters a "wind-down" phase that itself costs millions of dollars and will take a year to complete.
             </p>
-            <p>
-              So far this seems to be playing out predictably for a "retribution against blue states" case in Trump's second term.
-              The feds are weaponizing the legal process itself to cause the damage being argued in court, no matter how inane the legal reasoning or how many times they lose.
-            </p>
-            <p>The best case outcome here for Gateway would be a political solution. Otherwise this is likely to be a prolonged legal battle. So it goes.</p>
-            <div class="alert-details">
+            <!--<div class="alert-details">
               <button class="details-toggle" @click="detailsOpen = !detailsOpen">
                 <span class="details-arrow" :class="{ open: detailsOpen }">▸</span> Click for more wonky details
               </button>
@@ -54,7 +49,7 @@ const detailsOpen = ref(false)
                   </p>
                 </div>
               </div>
-            </div>
+            </div>-->
           </div>
         </div>
       </div>

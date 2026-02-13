@@ -72,6 +72,30 @@ export const images: GalleryImage[] = [
 
 export const blueskyPosts: BlueskyPost[] = [
   {
+    text: "Hundreds of workers should be on site building the Hudson Tunnel Project this week. Instead, we had to put up these signs at our construction sites because we still cannot access the federal funding for the project. Funding must be restored now so we can get back to work!",
+    date: '2026-02-12T05:43:00Z',
+    link: 'https://bsky.app/profile/gatewayprogram.bsky.social/post/3meoderguic2t',
+    imageUrl: 'https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:skgfj7jggympcb2nxuiadj4i/bafkreic5rlydixaadrwpdcvn2ai4wjgujor4eytzh2ancagqwc5zp2bdky@jpeg',
+  },
+  {
+    text: "Pausing construction of the Hudson Tunnel Project hurts hundreds of workers. More than 200 union workers rallied at GDC’s North Bergen construction site earlier this week to call for federal funding to be restored so they can get back to work.",
+    date: '2026-02-11T11:31:00Z',
+    link: 'https://bsky.app/profile/gatewayprogram.bsky.social/post/3memgf5yn6s2w',
+    imageUrl: 'https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:skgfj7jggympcb2nxuiadj4i/bafkreicfmkxbwatbnfzjhqg7jly5usorwkexdvu5e4lczl2ht5suvjue2i@jpeg',
+  },
+  {
+    text: "When work pauses, paychecks stop. LIUNA General President Brent Booker explains to NJ Spotlight that withholding funding for the Hudson Tunnel Project means lost income, fewer dollars in local economies, and workers struggling to make ends meet.",
+    date: '2026-02-11T06:22:00Z',
+    link: 'https://bsky.app/profile/gatewayprogram.bsky.social/post/3melrt5pcmc2x',
+    imageUrl: 'https://video.bsky.app/watch/did%3Aplc%3Askgfj7jggympcb2nxuiadj4i/bafkreicgvqnn4e6zho2fyqs5727tsmxnpcwuhgtgfaerclmrwqliq5hg7i/thumbnail.jpg',
+  },
+  {
+    text: "'President Donald Trump, free this money up now, so I can get to work and make my neighborhood better.' Ironworker John Mooney spoke for the hundreds of workers building the Hudson Tunnel Project at our Board Meeting.",
+    date: '2026-02-10T12:31:00Z',
+    link: 'https://bsky.app/profile/gatewayprogram.bsky.social/post/3mejzdbqihc2m',
+    imageUrl: 'https://video.bsky.app/watch/did%3Aplc%3Askgfj7jggympcb2nxuiadj4i/bafkreiaeksccdlkmsvjhbvpr6um7xch3u5iwou52hizp73sxokdzeepfqi/thumbnail.jpg',
+  },
+  {
     text: "We've already put more than $1 billion and countless hours into construction of the Hudson Tunnel Project. We have active construction sites across New York and New Jersey, and we're ready to start tunnel boring. Funding must be restored now so we can keep building.",
     date: '2026-02-06T23:30:16Z',
     link: 'https://bsky.app/profile/gatewayprogram.bsky.social/post/3mea2pznas22r',
@@ -115,25 +139,14 @@ export const blueskyPosts: BlueskyPost[] = [
     date: '2026-02-03T13:36:40Z',
     link: 'https://bsky.app/profile/gatewayprogram.bsky.social/post/3mdxi5sole22f'
   },
-  {
-    text: "We're ready to build! The components of the first tunnel boring machine are on site in North Bergen, ready to be assembled in the portal launch box. Federal funding disbursements must resume ASAP so we can start tunneling.",
-    date: '2026-02-02T16:26:28Z',
-    link: 'https://bsky.app/profile/gatewayprogram.bsky.social/post/3mdvb6jqxrk2b',
-    imageUrl: 'https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:skgfj7jggympcb2nxuiadj4i/bafkreigfd7po3kjzokbst3ilsmjf6kui5yuxjd5bmqzlxs6wwu33pdlrpu@jpeg'
-  },
-  {
-    text: "Delays like this will become more frequent and impact more riders the longer we rely on the North River Tunnel. We need to complete the Hudson Tunnel Project as soon as possible to deliver reliable, modern rail infrastructure that riders can count on.",
-    date: '2026-01-30T15:56:32Z',
-    link: 'https://bsky.app/profile/gatewayprogram.bsky.social/post/3mdno47yrn222'
-  },
-  {
-    text: "'President Donald Trump, free this money up now, so I can get to work and make my neighborhood better.' Ironworker John Mooney spoke for the hundreds of workers building the Hudson Tunnel Project at our Board Meeting.",
-    date: '2026-01-29T22:07:10Z',
-    link: 'https://bsky.app/profile/gatewayprogram.bsky.social/post/3mdlse23nuc23'
-  }
 ]
 
 export const pressReleases: PressRelease[] = [
+  {
+    title: 'Gateway Development Commission Statement on Development in New York, New Jersey’s Hudson Tunnel Project Lawsuit',
+    date: '2026-02-12T14:30:00Z',
+    link: 'https://www.gatewayprogram.org/wp-content/uploads/2026/02/GDC-Statement-02.12.2026.pdf',
+  },
   {
     title: 'Gateway Development Commission Statement on New York, New Jersey’s Hudson Tunnel Project Lawsuit Hearing',
     date: '2026-02-07T02:07:00Z',
@@ -159,9 +172,4 @@ export const pressReleases: PressRelease[] = [
     date: '2025-12-15',
     link: 'https://www.gatewayprogram.org/wp-content/uploads/2025/12/GDC-December-Board-Meeting-Press-Release-for-website.pdf',
   },
-  {
-    title: 'Gateway Development Commission, Amtrak, and Related Companies Joint Statement on Incident at HYCC-3 Construction Site',
-    date: '2025-10-23',
-    link: 'https://www.gatewayprogram.org'
-  }
 ]
