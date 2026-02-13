@@ -134,14 +134,14 @@ export const blueskyPosts: BlueskyPost[] = [
     date: '2026-02-05T00:39:23Z',
     link: 'https://bsky.app/profile/gatewayprogram.bsky.social/post/3me35nr2h322k'
   },
-  {
-    text: "'I urge everyone involved: Please find a solution to keep this project moving. We're all depending on you.' Robert Fawcett spoke out for the workers who will lose their jobs if construction of the Hudson Tunnel Project pauses at our Board Meeting.",
-    date: '2026-02-03T13:36:40Z',
-    link: 'https://bsky.app/profile/gatewayprogram.bsky.social/post/3mdxi5sole22f'
-  },
 ]
 
 export const pressReleases: PressRelease[] = [
+  {
+    title: 'Gateway Development Commission Statement on Initial Disbursement of Federal Funds for the Hudson Tunnel Project',
+    date: '2026-02-13T13:20:00Z',
+    link: 'https://www.gatewayprogram.org/wp-content/uploads/2026/02/GDC-Statement-on-Initial-Disbursement-of-Federal-Funds.pdf',
+  },
   {
     title: 'Gateway Development Commission Statement on Development in New York, New Jersey’s Hudson Tunnel Project Lawsuit',
     date: '2026-02-12T14:30:00Z',

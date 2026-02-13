@@ -16,19 +16,21 @@
           </svg>
         </div>
         <div class="alert-text">
-          <h3 class="alert-title">Project Funding Update<small>Last updated: February 13 at 4:30pm</small></h3>
+          <h3 class="alert-title">Project Funding Update<small>Last updated: February 13 at 6:18pm</small></h3>
           <div class="alert-body">
             <p>
-              <strong>The vibes are trending up!</strong>
-              The feds have been <a href="https://www.nydailynews.com/2026/02/12/federal-funds-set-to-flow-again-for-hudson-river-tunnel-project-at-least-for-now" target="_blank">forced</a> to release $205 million that is owed to Gateway,
-              which <a href="https://www.nytimes.com/2026/02/13/nyregion/gateway-tunnel-funding-ny-nj-trump.html" target="_blank">they say</a> will be disbursed next week.
+              <strong>The vibes are good!</strong>
+              The DOT has been <a href="https://www.nydailynews.com/2026/02/12/federal-funds-set-to-flow-again-for-hudson-river-tunnel-project-at-least-for-now" target="_blank">forced</a> to release $205 million to Gateway,
+              which is <a href="https://www.nytimes.com/2026/02/13/nyregion/gateway-tunnel-funding-ny-nj-trump.html" target="_blank">expected</a> to be disbursed fully next week.
+              GDC <a href="https://www.gatewayprogram.org/wp-content/uploads/2026/02/GDC-Statement-on-Initial-Disbursement-of-Federal-Funds.pdf" target="_blank">says</a> they have the first $30 million already.
             </p>
             <p>
-              Despite this victory, funding is still frozen beyond the $205 million. A separate lawsuit is ongoing to unfreeze the rest.
+              Despite this victory, <strong>funding is still frozen</strong> beyond the $205 million already owed.
+              This is being fought in a <a href="https://www.nj.gov/governor/news/2026/approved/20260203a.shtml" target="_blank">separate lawsuit filed by GDC</a>,
+              as well as the ongoing NY/NJ lawsuit that won these initial disbursements.
             </p>
             <p>
               <strong>Gateway has not yet announced a plan to restart construction, which remains paused as of February 6.</strong>
-              An update is expected once the funds are in the GDC's hands.
             </p>
             <!--<div class="alert-details">
               <button class="details-toggle" @click="detailsOpen = !detailsOpen">
