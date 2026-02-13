@@ -16,17 +16,18 @@
           </svg>
         </div>
         <div class="alert-text">
-          <h3 class="alert-title">Project Funding Update<small>Last updated: February 12 at 8:00pm</small></h3>
+          <h3 class="alert-title">Project Funding Update<small>Last updated: February 13 at 2:30pm</small></h3>
           <div class="alert-body">
             <p>
               <strong>The vibes are mixed.</strong>
               The states of NY and NJ <a href="https://www.nydailynews.com/2026/02/06/ny-judge-tro-trump-administration-resume-funding-hudson-river-tunnel" target="_blank">won</a> a claim for emergency relief to turn the funds back on.
-              Then the Trump administration <a href="https://www.bloomberg.com/news/articles/2026-02-09/trump-administration-to-appeal-court-order-on-ny-nj-tunnel-funds" target="_blank">appealed</a>.
-              For now, <strong>the feds are <a href="https://www.nydailynews.com/2026/02/12/federal-funds-set-to-flow-again-for-hudson-river-tunnel-project-at-least-for-now" target="_blank">technically required</a> to release $205 million that is owed to Gateway</strong>, but there is no indication that this has happened yet.
+              <strong>The feds are now <a href="https://www.nydailynews.com/2026/02/12/federal-funds-set-to-flow-again-for-hudson-river-tunnel-project-at-least-for-now" target="_blank">required</a> to release $205 million that is owed to Gateway</strong>, but this has not happened yet.
+              The AG of NY filed a <a href="https://storage.courtlistener.com/recap/gov.uscourts.nysd.657274/gov.uscourts.nysd.657274.58.0.pdf" target="_blank">motion</a>
+              on 2/13 for an emergency status conference to press the issue.
             </p>
             <p>
               <strong>Construction is paused as of February 6 and the federal funds are still not flowing.</strong>
-              Some workers have already been laid off as the project enters a "wind-down" phase that itself costs millions of dollars and will take a year to complete.
+              Over a thousand workers have already been laid off as the project enters a "wind-down" phase that itself costs millions of dollars and will take a year to complete.
             </p>
             <!--<div class="alert-details">
               <button class="details-toggle" @click="detailsOpen = !detailsOpen">
