@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import AppHeader from './components/AppHeader.vue'
 import AlertNotice from './components/AlertNotice.vue'
+import FundingTracker from './components/FundingTracker.vue'
 import AppFooter from './components/AppFooter.vue'
 import MainLayout from './components/MainLayout.vue'
 import ProjectCard from './components/ProjectCard.vue'
@@ -20,6 +21,8 @@ const contextOpen = ref(false)
   <main>
     <MainLayout>
       <template #content>
+        <FundingTracker />
+
         <!-- Mobile-only trigger above project list -->
         <button class="context-trigger context-trigger--mobile" @click="contextOpen = true">
           <div class="trigger-text">
