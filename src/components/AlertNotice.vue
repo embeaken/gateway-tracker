@@ -63,9 +63,9 @@
 
 <style scoped>
 .alert-notice {
-  background: #fffbeb;
-  border-bottom: 3px solid #e5c44a;
-  color: #6b5c10;
+  background: var(--color-alert-bg);
+  border-bottom: 3px solid var(--color-alert-border);
+  color: var(--color-alert-text);
   padding: var(--spacing-xl) 0;
   margin-bottom: var(--spacing-l);
 }
@@ -83,7 +83,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ca8a04;
+  color: var(--color-alert-icon);
 }
 
 .alert-icon svg {
@@ -100,7 +100,7 @@
 .alert-title {
   font-size: var(--font-size-md);
   font-weight: var(--font-weight-bold);
-  color: #854d0e;
+  color: var(--color-alert-title);
   margin: 0 0 var(--spacing-sm) 0;
   letter-spacing: -0.01em;
 
@@ -120,25 +120,25 @@
 .alert-body p {
   font-size: 19px;
   line-height: var(--line-height-relaxed);
-  color: #713f12;
+  color: var(--color-alert-body);
   margin: 0;
   max-width: 70%;
 }
 
 .alert-body strong {
-  color: #422006;
+  color: var(--color-alert-strong);
   font-weight: var(--font-weight-bold);
 }
 
 /* Links in alert */
 .alert-body a {
-  color: #a16207;
+  color: var(--color-alert-link);
   text-decoration: underline;
   border-bottom: none;
 }
 
 .alert-body a:hover {
-  color: #713f12;
+  color: var(--color-alert-link-hover);
 }
 
 .alert-details {
@@ -149,7 +149,7 @@
   cursor: pointer;
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-bold);
-  color: #a16207;
+  color: var(--color-alert-link);
   background: none;
   border: none;
   padding: 0;
@@ -157,7 +157,7 @@
 }
 
 .details-toggle:hover {
-  color: #713f12;
+  color: var(--color-alert-link-hover);
 }
 
 .details-arrow {

@@ -200,7 +200,7 @@ const closeImage = () => {
 
 .timeline-item {
   padding: var(--spacing-md);
-  background: white;
+  background: var(--color-card-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   transition: box-shadow var(--transition-base);
@@ -249,7 +249,7 @@ const closeImage = () => {
 
 .badge-press {
   background: rgba(255, 215, 0, 0.2);
-  color: #b8900a;
+  color: var(--color-badge-press);
 }
 
 .item-date {
@@ -321,7 +321,7 @@ const closeImage = () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.9);
+  background: var(--color-lightbox-overlay);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -334,7 +334,7 @@ const closeImage = () => {
   position: relative;
   max-width: 90vw;
   max-height: 90vh;
-  background: white;
+  background: var(--color-lightbox-bg);
   border-radius: var(--radius-md);
   overflow: hidden;
   cursor: default;
@@ -354,7 +354,7 @@ const closeImage = () => {
   right: var(--spacing-sm);
   width: 40px;
   height: 40px;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--color-lightbox-close-bg);
   color: white;
   border: none;
   border-radius: 50%;
@@ -369,12 +369,12 @@ const closeImage = () => {
 }
 
 .close-button:hover {
-  background: rgba(0, 0, 0, 0.8);
+  background: var(--color-lightbox-close-hover-bg);
 }
 
 .lightbox-caption {
   padding: var(--spacing-md);
-  background: white;
+  background: var(--color-lightbox-bg);
 }
 
 .caption-date {

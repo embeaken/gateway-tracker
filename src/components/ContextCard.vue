@@ -35,7 +35,7 @@
 
 <style scoped>
 .context-card {
-  background: white;
+  background: var(--color-card-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   padding: var(--spacing-lg);

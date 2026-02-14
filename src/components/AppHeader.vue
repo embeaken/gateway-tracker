@@ -1,12 +1,15 @@
 <script setup lang="ts">
-// Gateway Tracker Header
+import ThemeToggle from './ThemeToggle.vue'
 </script>
 
 <template>
   <header class="app-header">
     <div class="container">
       <div class="header-content">
-        <h1>hudson.tube 🚇</h1>
+        <div class="header-top">
+          <h1>hudson.tube 🚇</h1>
+          <ThemeToggle />
+        </div>
         <p class="tagline">
           Tracking <em>the most urgent infrastructure project in America</em>: a pair of new passenger rail tunnels under the Hudson River.
         </p>
@@ -20,6 +23,12 @@
   background: linear-gradient(135deg, #005E71 0%, #004555 100%);
   color: white;
   padding: var(--spacing-lg) 0;
+}
+
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .header-content h1 {
