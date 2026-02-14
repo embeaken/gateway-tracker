@@ -6,7 +6,7 @@
   <footer class="app-footer">
     <div class="container">
       <hr class="divider" />
-      <p>Made with civic pride by <a href="https://ilya.pizza" target="_blank">Ilya Rubnich</a> &hearts;</p>
+      <p>Made with civic pride by <a href="https://ilya.pizza" target="_blank">Ilya Rubnich</a> &hearts; | <a href="https://github.com/embeaken/gateway-tracker" target="_blank">GitHub</a></p>
     </div>
   </footer>
 </template>
