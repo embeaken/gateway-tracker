@@ -16,7 +16,7 @@
           </svg>
         </div>
         <div class="alert-text">
-          <h3 class="alert-title">Project Update<small>Last updated: February 13 at 11:25pm</small></h3>
+          <h3 class="alert-title">Project Update<small>Last updated: February 17 at 3:00pm</small></h3>
           <div class="alert-body">
             <p>
               <strong>The vibes are good!</strong>

@@ -72,6 +72,17 @@ export const images: GalleryImage[] = [
 
 export const blueskyPosts: BlueskyPost[] = [
   {
+    text: "Rudy Duarte is one of the hundreds of union workers impacted by the Hudson Tunnel Project construction pause. His message is clear: fund this urgent project now so workers like him can get back to work building the modern, reliable infrastructure America needs.",
+    date: '2026-02-17T09:40:00Z',
+    link: 'https://bsky.app/profile/gatewayprogram.bsky.social/post/3mf3cyvutts2l',
+    imageUrl: 'https://video.bsky.app/watch/did%3Aplc%3Askgfj7jggympcb2nxuiadj4i/bafkreigkudpa6dubayui3kysgyz6dfiruccu7r2t63mvskehuyuvcaxqd4/thumbnail.jpg',
+  },
+  {
+    text: "The Gateway Development Commission will hold an in-person public Board Meeting on Tuesday, February 24, 2026, at 10:00 am. Registration and public comment information can be found here: https://www.gatewayprogram.org/board-meetings-3.html",
+    date: '2026-02-17T04:52:00Z',
+    link: 'https://bsky.app/profile/gatewayprogram.bsky.social/post/3mf2swtph6s2l',
+  },
+  {
     text: "Hundreds of workers should be on site building the Hudson Tunnel Project this week. Instead, we had to put up these signs at our construction sites because we still cannot access the federal funding for the project. Funding must be restored now so we can get back to work!",
     date: '2026-02-12T05:43:00Z',
     link: 'https://bsky.app/profile/gatewayprogram.bsky.social/post/3meoderguic2t',
@@ -123,16 +134,6 @@ export const blueskyPosts: BlueskyPost[] = [
     text: "'Superstorm Sandy showed us that at any moment, we could be shut down. And if we're shut down, we're screwed.' Steve Valeira discussed the stakes of stopping construction of the Hudson Tunnel Project at our Board Meeting last week.",
     date: '2026-02-05T17:23:44Z',
     link: 'https://bsky.app/profile/gatewayprogram.bsky.social/post/3me4vroymqs2r'
-  },
-  {
-    text: "'If we don't work, we don't get paid, and playing politics does not put food on the table for us.' Davon Lomax shared how stopping construction will impact the thousands of men and women building the Hudson Tunnel Project.",
-    date: '2026-02-05T14:53:44Z',
-    link: 'https://bsky.app/profile/gatewayprogram.bsky.social/post/3me4nfhqgts2r'
-  },
-  {
-    text: "'We're already 10,000 yards plus of concrete into this job. Why waste it?' At our Board Meeting, Teamster Raymond Klein highlighted the progress already made by the hundreds of workers who will lose their jobs if funding for the Hudson Tunnel Project isn't restored.",
-    date: '2026-02-05T00:39:23Z',
-    link: 'https://bsky.app/profile/gatewayprogram.bsky.social/post/3me35nr2h322k'
   },
 ]
 

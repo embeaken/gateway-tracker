@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const TOTAL = 12_000_000_000
-const CONFIRMED = 30_000_000
-const EXPECTED = 175_000_000
+const CONFIRMED = 107_000_000
+const EXPECTED = 98_000_000
 const FROZEN = TOTAL - CONFIRMED - EXPECTED
 const UNLOCKED = CONFIRMED + EXPECTED
 
@@ -38,7 +38,7 @@ function fmt(n: number): string {
     <div class="bar-section">
       <div class="bar-header">
         <span class="bar-label">Full program &mdash; {{ fmt(TOTAL) }}</span>
-        <span class="bar-pct">{{ unlockedPct.toFixed(1) }}% unlocked</span>
+        <span class="bar-pct">{{ unlockedPct.toFixed(1) }}% unfrozen</span>
       </div>
       <div class="bar" aria-hidden="true">
         <div
