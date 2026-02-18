@@ -16,19 +16,17 @@
           </svg>
         </div>
         <div class="alert-text">
-          <h3 class="alert-title">Project Update<small>Last updated: February 17 at 3:00pm</small></h3>
+          <h3 class="alert-title">Project Update<small>Last updated: February 18 at 1:30pm</small></h3>
           <div class="alert-body">
             <p>
               <strong>The vibes are good!</strong>
-              DOT has been <a href="https://www.nydailynews.com/2026/02/12/federal-funds-set-to-flow-again-for-hudson-river-tunnel-project-at-least-for-now" target="_blank">forced</a>
-              by a federal judge to release $205 million to Gateway, and they have started disbursing funds.
+              DOT has <a href="https://newjerseymonitor.com/briefs/work-gateway-project-federal-funds/" target="_blank">disbursed</a> the $205 million that was in limbo since last October.
+              With this money secured, Gateway has stated that construction will restart the week of 2/23.
             </p>
             <p>
-              Despite this legal win, challenges remain: the vast majority of funds are still frozen,
-              there are two lawsuits actively playing out in court, construction remains paused, and
-              over 1,000 workers have already been laid off.
+              Despite this victory, challenges remain: the vast majority of funds are still frozen and
+              there are two lawsuits actively playing out in court to fight this.
             </p>
-            <p>Gateway has not yet announced when construction will restart.</p>
             <!--<div class="alert-details">
               <button class="details-toggle" @click="detailsOpen = !detailsOpen">
                 <span class="details-arrow" :class="{ open: detailsOpen }">▸</span> Click for more wonky details

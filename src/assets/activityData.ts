@@ -139,6 +139,11 @@ export const blueskyPosts: BlueskyPost[] = [
 
 export const pressReleases: PressRelease[] = [
   {
+    title: 'Gateway Development Commission Statement on Disbursement of Federal Funds for the Hudson Tunnel Project',
+    date: '2026-02-18',
+    link: 'https://www.gatewayprogram.org/wp-content/uploads/2026/02/GDC-Statement-on-Disbursement-of-Federal-Funds-2026.02.18.pdf',
+  },
+  {
     title: 'Gateway Development Commission Statement on Initial Disbursement of Federal Funds for the Hudson Tunnel Project',
     date: '2026-02-13T13:20:00Z',
     link: 'https://www.gatewayprogram.org/wp-content/uploads/2026/02/GDC-Statement-on-Initial-Disbursement-of-Federal-Funds.pdf',
@@ -167,10 +172,5 @@ export const pressReleases: PressRelease[] = [
     title: 'Gateway Development Commission Announces Construction of Hudson Tunnel Project Will Pause if Federal Funding Is Not Restored',
     date: '2026-01-27',
     link: 'https://www.gatewayprogram.org/wp-content/uploads/2026/01/01.27.2026-Board-Meeting-Press-Release-for-Website.pdf',
-  },
-  {
-    title: 'Gateway Development Commission Completes Manufacturing of First Pair of Tunnel Boring Machines for Hudson Tunnel Project',
-    date: '2025-12-15',
-    link: 'https://www.gatewayprogram.org/wp-content/uploads/2025/12/GDC-December-Board-Meeting-Press-Release-for-website.pdf',
   },
 ]

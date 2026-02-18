@@ -1,13 +1,9 @@
 <script setup lang="ts">
 const TOTAL = 12_000_000_000
-const CONFIRMED = 107_000_000
-const EXPECTED = 98_000_000
-const FROZEN = TOTAL - CONFIRMED - EXPECTED
-const UNLOCKED = CONFIRMED + EXPECTED
+const CONFIRMED = 205_000_000
+const FROZEN = TOTAL - CONFIRMED
 
-const unlockedPct = (UNLOCKED / TOTAL) * 100
-const confirmedZoomPct = (CONFIRMED / UNLOCKED) * 100
-const expectedZoomPct = (EXPECTED / UNLOCKED) * 100
+const unlockedPct = (CONFIRMED / TOTAL) * 100
 
 function fmt(n: number): string {
   if (n >= 1_000_000_000) return `$${(n / 1_000_000_000).toFixed(n % 1_000_000_000 === 0 ? 0 : 1)}B`
@@ -18,16 +14,12 @@ function fmt(n: number): string {
 
 <template>
   <div class="funding-card">
-    <h3 class="funding-title">Funding Tracker</h3>
+    <h3 class="funding-title">Federal funding tracker</h3>
 
     <div class="stats-row">
       <div class="stat-item stat-item--confirmed">
         <span class="stat-value">{{ fmt(CONFIRMED) }}</span>
-        <span class="stat-name">Confirmed disbursed</span>
-      </div>
-      <div class="stat-item stat-item--expected">
-        <span class="stat-value">{{ fmt(EXPECTED) }}</span>
-        <span class="stat-name">Disbursement imminent</span>
+        <span class="stat-name">Disbursed</span>
       </div>
       <div class="stat-item stat-item--frozen">
         <span class="stat-value">{{ fmt(FROZEN) }}</span>
@@ -37,50 +29,17 @@ function fmt(n: number): string {
 
     <div class="bar-section">
       <div class="bar-header">
-        <span class="bar-label">Full program &mdash; {{ fmt(TOTAL) }}</span>
+        <span class="bar-label">Total &mdash; {{ fmt(TOTAL) }}</span>
         <span class="bar-pct">{{ unlockedPct.toFixed(1) }}% unfrozen</span>
       </div>
       <div class="bar" aria-hidden="true">
         <div
           class="bar-segment bar-segment--confirmed"
-          :style="{ width: Math.max(unlockedPct * (CONFIRMED / UNLOCKED), 0) + '%', minWidth: '4px' }"
+          :style="{ width: Math.max(unlockedPct, 0) + '%', minWidth: '4px' }"
         ></div>
         <div class="bar-notch"></div>
-        <div
-          class="bar-segment bar-segment--expected"
-          :style="{ width: Math.max(unlockedPct * (EXPECTED / UNLOCKED), 0) + '%', minWidth: '4px' }"
-        ></div>
         <div class="bar-notch"></div>
         <div class="bar-segment bar-segment--frozen" style="flex: 1"></div>
-      </div>
-    </div>
-
-    <div class="zoom-connector" aria-hidden="true">
-      <svg class="zoom-svg" viewBox="0 0 1000 40" preserveAspectRatio="none">
-        <polygon :points="`1,0 ${unlockedPct * 10},0 999,40 1,40`" class="zoom-fill" />
-        <line x1="1" y1="0" x2="1" y2="40" class="zoom-line" />
-        <line :x1="unlockedPct * 10" y1="0" x2="999" y2="40" class="zoom-line" />
-      </svg>
-    </div>
-
-    <div class="bar-section">
-      <div class="bar-header">
-        <span class="bar-label">Disbursed + imminent &mdash; {{ fmt(UNLOCKED) }}</span>
-      </div>
-      <div class="bar" aria-hidden="true">
-        <div
-          class="bar-segment bar-segment--confirmed"
-          :style="{ width: confirmedZoomPct + '%' }"
-        >
-          <span class="segment-label">{{ fmt(CONFIRMED) }}</span>
-        </div>
-        <div class="bar-notch"></div>
-        <div
-          class="bar-segment bar-segment--expected"
-          :style="{ width: expectedZoomPct + '%' }"
-        >
-          <span class="segment-label">{{ fmt(EXPECTED) }}</span>
-        </div>
       </div>
     </div>
   </div>
@@ -118,7 +77,6 @@ function fmt(n: number): string {
 }
 
 .stat-item--confirmed { border-color: #16A34A; }
-.stat-item--expected { border-color: var(--color-primary); }
 .stat-item--frozen { border-color: #CBD5E1; }
 
 [data-theme="dark"] .stat-item--confirmed { border-color: #4ADE80; }
@@ -196,7 +154,6 @@ function fmt(n: number): string {
 }
 
 .bar-segment--confirmed { background: #16A34A; }
-.bar-segment--expected { background: var(--color-primary); }
 .bar-segment--frozen {
   background: repeating-linear-gradient(
     -45deg,
@@ -242,33 +199,6 @@ function fmt(n: number): string {
   font-weight: var(--font-weight-bold);
   color: #fff;
   white-space: nowrap;
-}
-
-
-/* --- Zoom connector --- */
-
-.zoom-connector {
-  position: relative;
-  height: 44px;
-}
-
-.zoom-svg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.zoom-fill {
-  fill: var(--color-border);
-  opacity: 0.25;
-}
-
-.zoom-line {
-  stroke: var(--color-border);
-  stroke-width: 1;
-  stroke-dasharray: 4 3;
-  vector-effect: non-scaling-stroke;
 }
 
 /* --- Responsive --- */
