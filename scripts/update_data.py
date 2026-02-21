@@ -41,9 +41,18 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 DATA_FILE = SCRIPT_DIR.parent / "src" / "assets" / "activityData.ts"
 
 MONTH_NAMES = {
-    "january": 1, "february": 2, "march": 3, "april": 4,
-    "may": 5, "june": 6, "july": 7, "august": 8,
-    "september": 9, "october": 10, "november": 11, "december": 12,
+    "january": 1, "jan": 1,
+    "february": 2, "feb": 2,
+    "march": 3, "mar": 3,
+    "april": 4, "apr": 4,
+    "may": 5,
+    "june": 6, "jun": 6,
+    "july": 7, "jul": 7,
+    "august": 8, "aug": 8,
+    "september": 9, "sep": 9, "sept": 9,
+    "october": 10, "oct": 10,
+    "november": 11, "nov": 11,
+    "december": 12, "dec": 12,
 }
 
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".avif"}
@@ -122,17 +131,28 @@ def infer_date_from_filename(filename, fallback_year, fallback_month):
     Returns (date_str, is_fallback). Falls back to the first of the month
     derived from the upload directory path if no date pattern matches.
     """
-    # Pattern 1: YYYYMMDD  (e.g. PKG1A_PH_20260129_...)
+    # Pattern 1: YYYYMMDD (8 consecutive digits, no separator)
+    # e.g. PKG1A_PH_20260129_...
     m = re.search(r"(\d{4})(\d{2})(\d{2})", filename)
     if m:
         y, mo, d = int(m.group(1)), int(m.group(2)), int(m.group(3))
         if 2010 <= y <= 2040 and 1 <= mo <= 12 and 1 <= d <= 31:
             return f"{y:04d}-{mo:02d}-{d:02d}", False
 
-    # Pattern 2: Month_DD_YYYY  (e.g. January_28_2026)
+    # Pattern 2: YYYY[.-]M[.-]D (year first with separators)
+    # e.g. 2026.02.02, 2026.2.19, 2025-01-21
+    m = re.search(r"(\d{4})[.\-](\d{1,2})[.\-](\d{1,2})", filename)
+    if m:
+        y, mo, d = int(m.group(1)), int(m.group(2)), int(m.group(3))
+        if 2010 <= y <= 2040 and 1 <= mo <= 12 and 1 <= d <= 31:
+            return f"{y:04d}-{mo:02d}-{d:02d}", False
+
+    # Pattern 3: Month/Mon name separator DD YYYY (full or abbreviated)
+    # e.g. January_28_2026, Feb-6-2026
     m = re.search(
-        r"(january|february|march|april|may|june|july|august|"
-        r"september|october|november|december)[\s_\-](\d{1,2})[\s_\-](\d{4})",
+        r"(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?"
+        r"|jul(?:y)?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?"
+        r"|nov(?:ember)?|dec(?:ember)?)[\s_\-](\d{1,2})[\s_\-](\d{4})",
         filename, re.IGNORECASE,
     )
     if m:
@@ -141,8 +161,9 @@ def infer_date_from_filename(filename, fallback_year, fallback_month):
         if 1 <= d <= 31:
             return f"{y:04d}-{mo:02d}-{d:02d}", False
 
-    # Pattern 3: M-DD-YYYY  (e.g. 1-29-2025)
-    m = re.search(r"(\d{1,2})-(\d{2})-(\d{4})", filename)
+    # Pattern 4: M[.-]D[.-]YYYY (month first with separators)
+    # e.g. 1-29-2025, 2-9-2026, 01.27.2026, 12.2.2025
+    m = re.search(r"(\d{1,2})[.\-](\d{1,2})[.\-](\d{4})", filename)
     if m:
         mo, d, y = int(m.group(1)), int(m.group(2)), int(m.group(3))
         if 1 <= mo <= 12 and 1 <= d <= 31 and 2010 <= y <= 2040:

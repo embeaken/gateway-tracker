@@ -27,17 +27,17 @@ export const images: GalleryImage[] = [
   {
     url: 'https://www.gatewayprogram.org/wp-content/uploads/2026/02/Gateway_RAE_2-9-2026-7134.jpg',
     caption: 'More than 200 union workers rallied at GDC\'s North Bergen Construction site to call for the project\'s federal funding to be restored.',
-    date: '2026-02-01'
+    date: '2026-02-09'
   },
   {
     url: 'https://www.gatewayprogram.org/wp-content/uploads/2026/02/Gateway_RAE_2-9-2026-57891.jpg',
     caption: 'Hundreds of workers are impacted by the construction pause that went into effect on February 6 due to lack of federal funding.',
-    date: '2026-02-01'
+    date: '2026-02-09'
   },
   {
     url: 'https://www.gatewayprogram.org/wp-content/uploads/2026/02/Gateway_RAE_2-9-2026-56741.jpg',
     caption: 'An extended construction pause will put tens of thousands of jobs at risk.',
-    date: '2026-02-01'
+    date: '2026-02-09'
   },
   {
     url: 'https://www.gatewayprogram.org/wp-content/uploads/2026/01/IMG_3240.jpeg',
@@ -145,7 +145,7 @@ export const pressReleases: PressRelease[] = [
     link: 'https://www.gatewayprogram.org/wp-content/uploads/2026/02/Construction-Pause-Press-Release-Feb-6-2026.pdf'
   },
   {
-    title: 'Gateway Development Commission Files Breach Of Contract Claim Against Federal Government',
+    title: 'Gateway Development Commission Files Breach of Contract Claim Against Federal Government',
     date: '2026-02-02',
     link: 'https://www.gatewayprogram.org/wp-content/uploads/2026/02/GDC-2026.02.02-Press-Release-for-Website.pdf'
   },
@@ -160,12 +160,12 @@ export const pressReleases: PressRelease[] = [
     link: 'https://www.gatewayprogram.org/wp-content/uploads/2026/02/GDC-Statement-02.12.2026.pdf'
   },
   {
-    title: 'Gateway Development Commission Statement on Disbursement of Federal Funds for Hudson Tunnel Project',
+    title: 'Gateway Development Commission Statement On Disbursement Of Federal Funds For Hudson Tunnel Project',
     date: '2026-02-18',
     link: 'https://www.gatewayprogram.org/wp-content/uploads/2026/02/GDC-Statement-on-Disbursement-of-Federal-Funds-2026.02.18.pdf'
   },
   {
-    title: 'Gateway Development Commission Statement On Initial Disbursement Of Federal Funds For Hudson Tunnel Project',
+    title: 'Gateway Development Commission Statement on Initial Disbursement of Federal Funds for Hudson Tunnel Project',
     date: '2026-02-13',
     link: 'https://www.gatewayprogram.org/wp-content/uploads/2026/02/GDC-Statement-on-Initial-Disbursement-of-Federal-Funds.pdf'
   },
@@ -175,7 +175,7 @@ export const pressReleases: PressRelease[] = [
     link: 'https://www.gatewayprogram.org/wp-content/uploads/2026/01/01.27.2026-Board-Meeting-Press-Release-for-Website.pdf'
   },
   {
-    title: 'GDC Completes Manufacturing Of First Pair Of Tunnel Boring Machines For Hudson Tunnel Project',
+    title: 'GDC Completes Manufacturing of First Pair of Tunnel Boring Machines for Hudson Tunnel Project',
     date: '2025-12-15',
     link: 'https://www.gatewayprogram.org/wp-content/uploads/2025/12/GDC-December-Board-Meeting-Press-Release-for-website.pdf'
   },
@@ -198,7 +198,7 @@ export const constructionNotices: ConstructionNotice[] = [
     link: 'https://www.gatewayprogram.org/wp-content/uploads/2026/02/2026.2.19_Gateway-Development-Commission-Construction-Notice-Concrete-Pour.pdf'
   },
   {
-    title: 'Construction Work Pause',
+    title: 'Construction Work Pause - Hudson Tunnel Project',
     date: '2026-02-06',
     link: 'https://www.gatewayprogram.org/wp-content/uploads/2026/02/2026.2.6_Gateway-Development-Commission-Construction-Notice-Pause-NJ.pdf'
   },
@@ -223,7 +223,7 @@ export const constructionNotices: ConstructionNotice[] = [
     link: 'https://www.gatewayprogram.org/wp-content/uploads/2025/12/12.2.2025_Gateway-Development-Commission-Construction-Notice-Crane.pdf'
   },
   {
-    title: '2025 Manhattan Tunnel Project Construction Notice - Jet Grouting',
+    title: 'Manhattan Tunnel Project - Jet Grouting Construction Notice',
     date: '2025-12-08',
     link: 'https://www.gatewayprogram.org/wp-content/uploads/2025/12/12.8.2025_Gateway-Development-Commission-Construction-Notice-Jet-Grouting.pdf'
   },
@@ -233,12 +233,12 @@ export const constructionNotices: ConstructionNotice[] = [
     link: 'https://www.gatewayprogram.org/wp-content/uploads/2025/11/11.12.2025_Gateway-Development-Commission-Construction-Notice-Rock-Chopping-Sundays.pdf'
   },
   {
-    title: 'Updated Construction Notice',
+    title: 'Updated Construction Notice - Long-Term Closure Of 29th Street',
     date: '2025-10-10',
     link: 'https://www.gatewayprogram.org/wp-content/uploads/2025/10/10.10.2025_Gateway-Development-Commission-Construction-Notice-29th-Closure.pdf'
   },
   {
-    title: 'Temporary Fence Reconfiguration And Public Art Removal - Manhattan Tunnel Project',
+    title: 'Temporary Fence Reconfiguration and Public Art Removal - Manhattan Tunnel Project',
     date: '2025-10-27',
     link: 'https://www.gatewayprogram.org/wp-content/uploads/2025/10/10.27.2025_Gateway-Development-Commission-Construction-Notice-HRP-Fence-Art.pdf'
   },
