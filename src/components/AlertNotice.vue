@@ -16,17 +16,10 @@
           </svg>
         </div>
         <div class="alert-text">
-          <h3 class="alert-title">Project Update<small>Last updated: February 18 at 1:30pm</small></h3>
+          <h3 class="alert-title">Project Update<small>Last updated: February 21 at 1:23am</small></h3>
           <div class="alert-body">
-            <p>
-              <strong>The vibes are good!</strong>
-              DOT has <a href="https://newjerseymonitor.com/briefs/work-gateway-project-federal-funds/" target="_blank">disbursed</a> the $205 million that was in limbo since last October.
-              With this money secured, Gateway has stated that construction will restart the week of 2/23.
-            </p>
-            <p>
-              Despite this victory, challenges remain: the vast majority of funds are still frozen and
-              there are two lawsuits actively playing out in court to fight this.
-            </p>
+            <p>Construction is expected to resume the week of 2/23.
+              Most funding remains frozen while lawsuits play out in court.</p>
             <!--<div class="alert-details">
               <button class="details-toggle" @click="detailsOpen = !detailsOpen">
                 <span class="details-arrow" :class="{ open: detailsOpen }">▸</span> Click for more wonky details
