@@ -6,7 +6,7 @@
 #   "anthropic>=0.40",
 # ]
 # ///
-"""update_data.py — Fetch fresh data from all sources and rewrite activityData.ts
+"""update_data.py — Fetch fresh data from all sources and rewrite activityData.json
 
 Usage:
     uv run scripts/update_data.py
@@ -116,7 +116,8 @@ def load_existing_data():
         return {}
     try:
         data = json.loads(DATA_FILE.read_text())
-    except Exception:
+    except Exception as e:
+        print(f"  WARNING: could not parse existing data file: {e}")
         return {}
     existing = {}
     for item in data.get("images", []):
@@ -147,11 +148,12 @@ def infer_date_from_filename(filename, fallback_year, fallback_month):
 
 def year_month_from_url(url):
     """Extract (year, month) from a wp-content/uploads/YYYY/MM/ URL."""
-    m = re.search(r"/(\d{4})/(\d{2})/", url)
-    if m:
-        return int(m.group(1)), int(m.group(2))
-    now = datetime.now()
-    return now.year, now.month
+    try:
+        parts = url.split("/uploads/", 1)[1].split("/")
+        return int(parts[0]), int(parts[1])
+    except (IndexError, ValueError):
+        now = datetime.now()
+        return now.year, now.month
 
 
 # ── Bluesky ───────────────────────────────────────────────────────────────────
@@ -330,9 +332,11 @@ def fetch_wp_directory(year, month):
 
 def pdf_filename_to_title(filename):
     """Derive a human-readable title from a PDF filename."""
-    name = re.sub(r"\.pdf$", "", filename, flags=re.IGNORECASE)
-    name = re.sub(r"[-_]", " ", name)
-    return re.sub(r"\s+", " ", name).strip().title()
+    name = filename
+    if name.lower().endswith(".pdf"):
+        name = name[:-4]
+    name = name.replace("-", " ").replace("_", " ")
+    return " ".join(name.split()).title()
 
 
 # ── PDF enrichment via LLM ────────────────────────────────────────────────────
@@ -493,12 +497,17 @@ def write_data_file(photos, posts, press_releases, notices):
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--force", action="store_true", help="Ignore cache and re-enrich all entries")
+    args = parser.parse_args()
+
     if not DATA_FILE.parent.exists():
         print(f"ERROR: Could not find output directory {DATA_FILE.parent}", file=sys.stderr)
         sys.exit(1)
 
     client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"]) if os.environ.get("ANTHROPIC_API_KEY") else None
-    existing = load_existing_data()
+    existing = {} if args.force else load_existing_data()
 
     posts = fetch_bluesky_posts()
 
@@ -506,22 +515,25 @@ def main():
     dates_needing_review = []
     photos = []
 
-    if client:
+    new_photo_indices = [i for i, p in enumerate(gallery_photos) if p["url"] not in existing]
+
+    if client and new_photo_indices:
         print("Inferring photo dates...")
-        fnames = [p["url"].rsplit("/", 1)[-1] for p in gallery_photos]
+        fnames = [gallery_photos[i]["url"].rsplit("/", 1)[-1] for i in new_photo_indices]
         try:
-            llm_dates = llm_infer_dates_from_filenames(client, fnames)
+            raw_dates = llm_infer_dates_from_filenames(client, fnames)
+            llm_dates = {new_photo_indices[i]: raw_dates[i] for i in range(len(new_photo_indices))}
         except Exception as e:
             print(f"  WARNING: {e}, falling back to filename patterns")
-            llm_dates = None
+            llm_dates = {}
     else:
-        llm_dates = None
+        llm_dates = {}
 
     for i, p in enumerate(gallery_photos):
         fy, fm = year_month_from_url(p["url"])
         if p["url"] in existing:
             date_str, is_fallback = existing[p["url"]]["date"], False
-        elif llm_dates and llm_dates[i][0]:
+        elif i in llm_dates and llm_dates[i][0]:
             date_str, is_fallback = llm_dates[i]
         else:
             date_str, is_fallback = infer_date_from_filename(p["url"].rsplit("/", 1)[-1], fy, fm)
