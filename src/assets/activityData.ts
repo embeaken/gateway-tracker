@@ -160,12 +160,12 @@ export const pressReleases: PressRelease[] = [
     link: 'https://www.gatewayprogram.org/wp-content/uploads/2026/02/GDC-Statement-02.12.2026.pdf'
   },
   {
-    title: 'Gateway Development Commission Statement On Disbursement Of Federal Funds For Hudson Tunnel Project',
+    title: 'Gateway Development Commission Statement on Disbursement of Federal Funds for Hudson Tunnel Project',
     date: '2026-02-18',
     link: 'https://www.gatewayprogram.org/wp-content/uploads/2026/02/GDC-Statement-on-Disbursement-of-Federal-Funds-2026.02.18.pdf'
   },
   {
-    title: 'Gateway Development Commission Statement on Initial Disbursement of Federal Funds for Hudson Tunnel Project',
+    title: 'Gateway Development Commission Statement On Initial Disbursement Of Federal Funds For Hudson Tunnel Project',
     date: '2026-02-13',
     link: 'https://www.gatewayprogram.org/wp-content/uploads/2026/02/GDC-Statement-on-Initial-Disbursement-of-Federal-Funds.pdf'
   },
@@ -185,7 +185,7 @@ export const pressReleases: PressRelease[] = [
     link: 'https://www.gatewayprogram.org/wp-content/uploads/2025/10/2019-02-26-Statement-on-RPA-Report.pdf'
   },
   {
-    title: 'Statement By Gateway Corporation Trustees On Legislative Proposal By Senator Schumer',
+    title: 'Statement by Gateway Corporation Trustees on Legislative Proposal by Senator Schumer',
     date: '2019-03-04',
     link: 'https://www.gatewayprogram.org/wp-content/uploads/2025/10/2019-03-04-GDC-Statement-Schumer-Legislation.pdf'
   },
@@ -223,22 +223,22 @@ export const constructionNotices: ConstructionNotice[] = [
     link: 'https://www.gatewayprogram.org/wp-content/uploads/2025/12/12.2.2025_Gateway-Development-Commission-Construction-Notice-Crane.pdf'
   },
   {
-    title: 'Manhattan Tunnel Project - Jet Grouting Construction Notice',
+    title: 'Construction Notice: Jet Grouting',
     date: '2025-12-08',
     link: 'https://www.gatewayprogram.org/wp-content/uploads/2025/12/12.8.2025_Gateway-Development-Commission-Construction-Notice-Jet-Grouting.pdf'
   },
   {
-    title: 'Hudson Yards Concrete Casing-Section 3 Project Construction Notice',
+    title: 'Hudson Yards Concrete Casing-Section 3 Project Construction Notice - Rock Chopping and Sunday Construction Activities',
     date: '2025-11-12',
     link: 'https://www.gatewayprogram.org/wp-content/uploads/2025/11/11.12.2025_Gateway-Development-Commission-Construction-Notice-Rock-Chopping-Sundays.pdf'
   },
   {
-    title: 'Updated Construction Notice - Long-Term Closure Of 29th Street',
+    title: 'Updated Construction Notice',
     date: '2025-10-10',
     link: 'https://www.gatewayprogram.org/wp-content/uploads/2025/10/10.10.2025_Gateway-Development-Commission-Construction-Notice-29th-Closure.pdf'
   },
   {
-    title: 'Temporary Fence Reconfiguration and Public Art Removal - Manhattan Tunnel Project',
+    title: 'Temporary Fence Reconfiguration And Public Art Removal - Manhattan Tunnel Project',
     date: '2025-10-27',
     link: 'https://www.gatewayprogram.org/wp-content/uploads/2025/10/10.27.2025_Gateway-Development-Commission-Construction-Notice-HRP-Fence-Art.pdf'
   },

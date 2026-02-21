@@ -40,20 +40,6 @@ UPLOAD_BASE = "https://www.gatewayprogram.org/wp-content/uploads"
 SCRIPT_DIR = Path(__file__).resolve().parent
 DATA_FILE = SCRIPT_DIR.parent / "src" / "assets" / "activityData.ts"
 
-MONTH_NAMES = {
-    "january": 1, "jan": 1,
-    "february": 2, "feb": 2,
-    "march": 3, "mar": 3,
-    "april": 4, "apr": 4,
-    "may": 5,
-    "june": 6, "jun": 6,
-    "july": 7, "jul": 7,
-    "august": 8, "aug": 8,
-    "september": 9, "sep": 9, "sept": 9,
-    "october": 10, "oct": 10,
-    "november": 11, "nov": 11,
-    "december": 12, "dec": 12,
-}
 
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".avif"}
 
@@ -126,49 +112,17 @@ def fetch_bytes(url):
 # ── Date inference ────────────────────────────────────────────────────────────
 
 def infer_date_from_filename(filename, fallback_year, fallback_month):
-    """Try to extract a YYYY-MM-DD date from a filename.
+    """Fallback date inference used when no API key is set.
 
-    Returns (date_str, is_fallback). Falls back to the first of the month
-    derived from the upload directory path if no date pattern matches.
+    Only handles the unambiguous YYYYMMDD pattern; everything else falls back
+    to the first of the month from the upload directory path.
+    Returns (date_str, is_fallback).
     """
-    # Pattern 1: YYYYMMDD (8 consecutive digits, no separator)
-    # e.g. PKG1A_PH_20260129_...
     m = re.search(r"(\d{4})(\d{2})(\d{2})", filename)
     if m:
         y, mo, d = int(m.group(1)), int(m.group(2)), int(m.group(3))
         if 2010 <= y <= 2040 and 1 <= mo <= 12 and 1 <= d <= 31:
             return f"{y:04d}-{mo:02d}-{d:02d}", False
-
-    # Pattern 2: YYYY[.-]M[.-]D (year first with separators)
-    # e.g. 2026.02.02, 2026.2.19, 2025-01-21
-    m = re.search(r"(\d{4})[.\-](\d{1,2})[.\-](\d{1,2})", filename)
-    if m:
-        y, mo, d = int(m.group(1)), int(m.group(2)), int(m.group(3))
-        if 2010 <= y <= 2040 and 1 <= mo <= 12 and 1 <= d <= 31:
-            return f"{y:04d}-{mo:02d}-{d:02d}", False
-
-    # Pattern 3: Month/Mon name separator DD YYYY (full or abbreviated)
-    # e.g. January_28_2026, Feb-6-2026
-    m = re.search(
-        r"(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?"
-        r"|jul(?:y)?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?"
-        r"|nov(?:ember)?|dec(?:ember)?)[\s_\-](\d{1,2})[\s_\-](\d{4})",
-        filename, re.IGNORECASE,
-    )
-    if m:
-        mo = MONTH_NAMES[m.group(1).lower()]
-        d, y = int(m.group(2)), int(m.group(3))
-        if 1 <= d <= 31:
-            return f"{y:04d}-{mo:02d}-{d:02d}", False
-
-    # Pattern 4: M[.-]D[.-]YYYY (month first with separators)
-    # e.g. 1-29-2025, 2-9-2026, 01.27.2026, 12.2.2025
-    m = re.search(r"(\d{1,2})[.\-](\d{1,2})[.\-](\d{4})", filename)
-    if m:
-        mo, d, y = int(m.group(1)), int(m.group(2)), int(m.group(3))
-        if 1 <= mo <= 12 and 1 <= d <= 31 and 2010 <= y <= 2040:
-            return f"{y:04d}-{mo:02d}-{d:02d}", False
-
     return f"{fallback_year:04d}-{fallback_month:02d}-01", True
 
 
@@ -397,13 +351,42 @@ Return only the JSON object, no other text. Use null if a value cannot be determ
     return json.loads(m.group())
 
 
-def enrich_pdfs(entries):
+def llm_infer_dates_from_filenames(client, filenames):
+    """Ask Claude to batch-extract dates from a list of filenames.
+
+    Returns a list of (date_str | None, is_fallback) in the same order as input.
+    date_str is None if Claude couldn't determine any date.
+    """
+    numbered = "\n".join(f"{i + 1}. {f}" for i, f in enumerate(filenames))
+    prompt = f"""Extract the date from each filename. Filenames may use various formats (YYYYMMDD, YYYY-MM-DD, YYYY.MM.DD, MM-DD-YYYY, Month-D-YYYY, etc.).
+
+{numbered}
+
+Return a JSON array with one object per filename (in the same order):
+- "date": the date in YYYY-MM-DD format, or null if no date can be determined
+- "exact": true if a full year/month/day was found; false if only year/month (use 01 for the missing day)
+
+Return only the JSON array, no other text."""
+
+    message = client.messages.create(
+        model="claude-haiku-4-5-20251001",
+        max_tokens=512,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    raw = message.content[0].text.strip()
+    match = re.search(r"\[.*\]", raw, re.DOTALL)
+    if not match:
+        raise ValueError(f"no JSON array in LLM response: {raw!r}")
+    results = json.loads(match.group())
+    return [(r.get("date"), not r.get("exact", False)) for r in results]
+
+
+def enrich_pdfs(entries, client):
     """Download each PDF and use an LLM to replace filename-derived title and date."""
-    if not os.environ.get("ANTHROPIC_API_KEY"):
+    if not client:
         print("  (skipping — ANTHROPIC_API_KEY not set)")
         return entries
 
-    client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
     enriched = []
     for entry in entries:
         fname = entry["link"].rsplit("/", 1)[-1]
@@ -449,13 +432,13 @@ def fetch_pdfs(n_press=10, n_notices=10):
                     unclassified.append(furl)
                 continue
 
-            date_str, is_fallback = infer_date_from_filename(fname, year, month)
+            folder_date = f"{year:04d}-{month:02d}-01"
             if "press-release" in fname_lower or "statement" in fname_lower:
                 if len(press) < n_press:
-                    press.append({"title": pdf_filename_to_title(fname), "date": date_str, "link": furl, "_is_fallback": is_fallback})
+                    press.append({"title": pdf_filename_to_title(fname), "date": folder_date, "link": furl, "_is_fallback": True})
             elif "construction-notice" in fname_lower:
                 if len(notices) < n_notices:
-                    notices.append({"title": pdf_filename_to_title(fname), "date": date_str, "link": furl, "_is_fallback": is_fallback})
+                    notices.append({"title": pdf_filename_to_title(fname), "date": folder_date, "link": furl, "_is_fallback": True})
             elif not any(p in fname_lower for p in IGNORED_PDF_PATTERNS):
                 unclassified.append(furl)
 
@@ -568,15 +551,31 @@ def main():
         print(f"ERROR: Could not find {DATA_FILE}", file=sys.stderr)
         sys.exit(1)
 
+    client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"]) if os.environ.get("ANTHROPIC_API_KEY") else None
+
     posts = fetch_bluesky_posts()
 
     gallery_photos = fetch_photos()
     dates_needing_review = []
     photos = []
-    for p in gallery_photos:
-        fname = p["url"].rsplit("/", 1)[-1]
+
+    if client:
+        print("Inferring photo dates...")
+        fnames = [p["url"].rsplit("/", 1)[-1] for p in gallery_photos]
+        try:
+            llm_dates = llm_infer_dates_from_filenames(client, fnames)
+        except Exception as e:
+            print(f"  WARNING: {e}, falling back to filename patterns")
+            llm_dates = None
+    else:
+        llm_dates = None
+
+    for i, p in enumerate(gallery_photos):
         fy, fm = year_month_from_url(p["url"])
-        date_str, is_fallback = infer_date_from_filename(fname, fy, fm)
+        if llm_dates and llm_dates[i][0]:
+            date_str, is_fallback = llm_dates[i]
+        else:
+            date_str, is_fallback = infer_date_from_filename(p["url"].rsplit("/", 1)[-1], fy, fm)
         if is_fallback:
             dates_needing_review.append(("photo", p["url"], date_str))
         photos.append({"url": p["url"], "caption": p.get("caption", ""), "date": date_str})
@@ -584,9 +583,9 @@ def main():
     press_releases, notices, unclassified = fetch_pdfs()
 
     print("Enriching press releases...")
-    press_releases = enrich_pdfs(press_releases)
+    press_releases = enrich_pdfs(press_releases, client)
     print("Enriching construction notices...")
-    notices = enrich_pdfs(notices)
+    notices = enrich_pdfs(notices, client)
 
     # Flag any PDF whose date is still a fallback after enrichment
     for kind, entries in (("press", press_releases), ("notice", notices)):
