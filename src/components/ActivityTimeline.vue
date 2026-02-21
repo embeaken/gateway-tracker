@@ -158,7 +158,7 @@ const isThumb = (item: TimelineItem) => item.type === 'bluesky' && !!item.imageU
 
 const badgeLabel = (type: TimelineItemType): string => ({
   photo: 'Photo', bluesky: 'Bluesky',
-  press: 'Press', construction: 'Notice', video: 'Video',
+  press: 'Press', construction: 'Construction Notice', video: 'Video',
 } satisfies Record<TimelineItemType, string>)[type]
 
 // --- Image handling ---
