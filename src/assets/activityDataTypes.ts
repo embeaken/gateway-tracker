@@ -22,3 +22,10 @@ export type ConstructionNotice = {
   date: string
   link: string
 }
+
+export type YoutubeVideo = {
+  title: string
+  date: string
+  videoId: string
+  description?: string
+}

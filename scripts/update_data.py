@@ -35,6 +35,7 @@ import pypdf
 ACTOR = "gatewayprogram.bsky.social"
 GALLERY_URL = "https://www.gatewayprogram.org/photo-gallery.html"
 UPLOAD_BASE = "https://www.gatewayprogram.org/wp-content/uploads"
+VIDEO_GALLERY_URL = "https://www.gatewayprogram.org/video-gallery.html"
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 DATA_FILE = SCRIPT_DIR.parent / "src" / "assets" / "activityData.json"
@@ -126,6 +127,8 @@ def load_existing_data():
         existing[item["link"]] = item
     for item in data.get("constructionNotices", []):
         existing[item["link"]] = item
+    for item in data.get("youtubeVideos", []):
+        existing[item["videoId"]] = item
     return existing
 
 
@@ -482,14 +485,88 @@ def fetch_pdfs(n_press=10, n_notices=10):
     return press, notices, unclassified
 
 
+# ── Video gallery ─────────────────────────────────────────────────────────────
+
+class VideoGalleryParser(HTMLParser):
+    """Parse WordPress YouTube embed iframes from the GDC video gallery page.
+
+    Targets: <iframe src="https://www.youtube.com/embed/{videoId}..." title="{title}">
+    inside <figure class="wp-block-embed-youtube ...">
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.videos = []
+        self._in_embed = False
+
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        if tag == "figure" and "wp-block-embed-youtube" in attrs.get("class", ""):
+            self._in_embed = True
+        elif tag == "iframe" and self._in_embed:
+            src = attrs.get("src", "")
+            title = normalize(html_module.unescape(attrs.get("title", "").strip()))
+            m = re.search(r"youtube\.com/embed/([a-zA-Z0-9_-]{11})", src)
+            if m and title:
+                self.videos.append({"videoId": m.group(1), "title": title})
+            self._in_embed = False
+
+    def handle_endtag(self, tag):
+        if tag == "figure":
+            self._in_embed = False
+
+
+def fetch_video_upload_date(video_id):
+    """Fetch the upload date for a YouTube video by scraping its watch page.
+
+    Returns a YYYY-MM-DD string, or None on failure.
+    """
+    url = f"https://www.youtube.com/watch?v={video_id}"
+    raw, err = fetch_url(url)
+    if err:
+        return None
+    m = re.search(r'"uploadDate"\s*:\s*"([^"]+)"', raw)
+    if m:
+        return m.group(1)[:10]  # YYYY-MM-DD
+    return None
+
+
+def fetch_videos(existing, limit=10):
+    """Scrape YouTube video IDs and titles from the GDC video gallery page,
+    then fetch upload dates from each video's watch page for new entries.
+    """
+    print("Fetching video gallery...")
+    html_content, err = fetch_url(VIDEO_GALLERY_URL)
+    if err:
+        print(f"  ERROR: {err}")
+        return []
+
+    parser = VideoGalleryParser()
+    parser.feed(html_content)
+    raw_videos = parser.videos[:limit]
+    print(f"  → {len(raw_videos)} videos found")
+
+    videos = []
+    for v in raw_videos:
+        if v["videoId"] in existing:
+            date = existing[v["videoId"]]["date"]
+        else:
+            print(f"  fetching date: {v['videoId']}")
+            date = fetch_video_upload_date(v["videoId"]) or datetime.now().strftime("%Y-%m-%d")
+        videos.append({"videoId": v["videoId"], "title": v["title"], "date": date})
+
+    return videos
+
+
 # ── JSON writer ───────────────────────────────────────────────────────────────
 
-def write_data_file(photos, posts, press_releases, notices):
+def write_data_file(photos, posts, press_releases, notices, videos):
     data = {
         "images": photos,
         "blueskyPosts": posts,
         "pressReleases": press_releases,
         "constructionNotices": notices,
+        "youtubeVideos": videos,
     }
     DATA_FILE.write_text(json.dumps(data, indent=2) + "\n")
 
@@ -510,6 +587,7 @@ def main():
     existing = {} if args.force else load_existing_data()
 
     posts = fetch_bluesky_posts()
+    videos = fetch_videos(existing)
 
     gallery_photos = fetch_photos()
     dates_needing_review = []
@@ -559,7 +637,7 @@ def main():
     notices = [{k: v for k, v in e.items() if not k.startswith("_")} for e in notices]
 
     print(f"\nWriting {DATA_FILE}...")
-    write_data_file(photos, posts, press_releases, notices)
+    write_data_file(photos, posts, press_releases, notices, videos)
     print("  → Done")
 
     print()
@@ -570,6 +648,7 @@ def main():
     print(f"  Photos:                {len(photos)}")
     print(f"  Press releases:        {len(press_releases)}")
     print(f"  Construction notices:  {len(notices)}")
+    print(f"  YouTube videos:        {len(videos)}")
 
     if dates_needing_review:
         print()

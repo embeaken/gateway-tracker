@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { images, blueskyPosts, pressReleases, constructionNotices } from '../assets/activityData'
+import { images, blueskyPosts, pressReleases, constructionNotices, youtubeVideos } from '../assets/activityData'
 
-type TimelineItemType = 'photo' | 'tweet' | 'bluesky' | 'press' | 'construction'
+type TimelineItemType = 'photo' | 'tweet' | 'bluesky' | 'press' | 'construction' | 'video'
 
 type TimelineItem = {
   type: TimelineItemType
@@ -12,6 +12,7 @@ type TimelineItem = {
   content: string
   imageUrl?: string
   link?: string
+  videoId?: string
 }
 
 const parseDate = (dateStr: string): Date => {
@@ -75,6 +76,17 @@ const timelineItems = computed<TimelineItem[]>(() => {
     })
   })
 
+  youtubeVideos.forEach(video => {
+    items.push({
+      type: 'video',
+      date: parseDate(video.date),
+      dateDisplay: formatDate(parseDate(video.date)),
+      title: video.title,
+      content: video.description || '',
+      videoId: video.videoId
+    })
+  })
+
   // Sort by date (most recent first)
   return items.sort((a, b) => b.date.getTime() - a.date.getTime())
 })
@@ -118,7 +130,7 @@ const closeImage = () => {
           <!-- Header with type badge and date -->
           <div class="item-header">
             <span class="item-badge" :class="`badge-${item.type}`">
-              {{ item.type === 'photo' ? 'Photo' : item.type === 'bluesky' ? 'Bluesky' : item.type === 'construction' ? 'Construction Notice' : 'Press Release' }}
+              {{ item.type === 'photo' ? 'Photo' : item.type === 'bluesky' ? 'Bluesky' : item.type === 'construction' ? 'Construction Notice' : item.type === 'video' ? 'Video' : 'Press Release' }}
             </span>
             <time class="item-date">{{ item.dateDisplay }}</time>
           </div>
@@ -130,6 +142,17 @@ const closeImage = () => {
           <a v-else-if="item.type === 'bluesky' && item.imageUrl" :href="item.link" target="_blank" class="item-photo">
             <img :src="item.imageUrl" :alt="item.title" loading="lazy" />
           </a>
+
+          <!-- YouTube embed -->
+          <div v-else-if="item.type === 'video' && item.videoId" class="item-video">
+            <iframe
+              :src="`https://www.youtube.com/embed/${item.videoId}`"
+              :title="item.title"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+              loading="lazy"
+            ></iframe>
+          </div>
 
           <!-- Content based on type -->
           <div v-if="item.type === 'photo'" class="item-body">
@@ -155,6 +178,17 @@ const closeImage = () => {
               class="item-link"
             >
               View on X →
+            </a>
+          </div>
+          <div v-else-if="item.type === 'video'" class="item-body">
+            <h4 class="item-title">{{ item.title }}</h4>
+            <p v-if="item.content" class="item-caption">{{ item.content }}</p>
+            <a
+              :href="`https://www.youtube.com/watch?v=${item.videoId}`"
+              target="_blank"
+              class="item-link"
+            >
+              Watch on YouTube →
             </a>
           </div>
           <div v-else class="item-body">
@@ -268,6 +302,11 @@ const closeImage = () => {
   color: #ea580c;
 }
 
+.badge-video {
+  background: rgba(255, 0, 0, 0.1);
+  color: #cc0000;
+}
+
 .item-date {
   font-size: 12px;
   color: var(--color-text-secondary);
@@ -293,6 +332,25 @@ const closeImage = () => {
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+.item-video {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: #000;
+  margin: var(--spacing-xs) 0;
+}
+
+.item-video iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
 }
 
 .item-body {
