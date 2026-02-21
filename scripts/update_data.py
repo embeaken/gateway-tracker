@@ -108,6 +108,26 @@ def fetch_bytes(url):
         return None, str(e)
 
 
+# ── Existing data cache ───────────────────────────────────────────────────────
+
+def load_existing_data():
+    """Load activityData.json and return a dict keyed by URL/link for cache lookups."""
+    if not DATA_FILE.exists():
+        return {}
+    try:
+        data = json.loads(DATA_FILE.read_text())
+    except Exception:
+        return {}
+    existing = {}
+    for item in data.get("images", []):
+        existing[item["url"]] = item
+    for item in data.get("pressReleases", []):
+        existing[item["link"]] = item
+    for item in data.get("constructionNotices", []):
+        existing[item["link"]] = item
+    return existing
+
+
 # ── Date inference ────────────────────────────────────────────────────────────
 
 def infer_date_from_filename(filename, fallback_year, fallback_month):
@@ -380,8 +400,11 @@ Return only the JSON array, no other text."""
     return [(r.get("date"), not r.get("exact", False)) for r in results]
 
 
-def enrich_pdfs(entries, client):
-    """Download each PDF and use an LLM to replace filename-derived title and date."""
+def enrich_pdfs(entries, client, existing):
+    """Download each PDF and use an LLM to replace filename-derived title and date.
+
+    Skips LLM calls for entries whose link is already in the existing data cache.
+    """
     if not client:
         print("  (skipping — ANTHROPIC_API_KEY not set)")
         return entries
@@ -389,21 +412,27 @@ def enrich_pdfs(entries, client):
     enriched = []
     for entry in entries:
         fname = entry["link"].rsplit("/", 1)[-1]
-        print(f"  enriching: {fname}")
         result = dict(entry)
-        try:
-            pdf_bytes, err = fetch_bytes(entry["link"])
-            if err:
-                raise RuntimeError(f"download failed: {err}")
-            text = extract_pdf_text(pdf_bytes)
-            metadata = llm_extract_pdf_metadata(client, text, fname)
-            if metadata.get("title"):
-                result["title"] = normalize(metadata["title"])
-            if metadata.get("date"):
-                result["date"] = metadata["date"]
-                result["_is_fallback"] = False
-        except Exception as e:
-            print(f"    WARNING: {e}")
+        if entry["link"] in existing:
+            print(f"  cached:    {fname}")
+            result["title"] = existing[entry["link"]]["title"]
+            result["date"] = existing[entry["link"]]["date"]
+            result["_is_fallback"] = False
+        else:
+            print(f"  enriching: {fname}")
+            try:
+                pdf_bytes, err = fetch_bytes(entry["link"])
+                if err:
+                    raise RuntimeError(f"download failed: {err}")
+                text = extract_pdf_text(pdf_bytes)
+                metadata = llm_extract_pdf_metadata(client, text, fname)
+                if metadata.get("title"):
+                    result["title"] = normalize(metadata["title"])
+                if metadata.get("date"):
+                    result["date"] = metadata["date"]
+                    result["_is_fallback"] = False
+            except Exception as e:
+                print(f"    WARNING: {e}")
         enriched.append(result)
 
     return enriched
@@ -469,6 +498,7 @@ def main():
         sys.exit(1)
 
     client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"]) if os.environ.get("ANTHROPIC_API_KEY") else None
+    existing = load_existing_data()
 
     posts = fetch_bluesky_posts()
 
@@ -489,7 +519,9 @@ def main():
 
     for i, p in enumerate(gallery_photos):
         fy, fm = year_month_from_url(p["url"])
-        if llm_dates and llm_dates[i][0]:
+        if p["url"] in existing:
+            date_str, is_fallback = existing[p["url"]]["date"], False
+        elif llm_dates and llm_dates[i][0]:
             date_str, is_fallback = llm_dates[i]
         else:
             date_str, is_fallback = infer_date_from_filename(p["url"].rsplit("/", 1)[-1], fy, fm)
@@ -500,9 +532,9 @@ def main():
     press_releases, notices, unclassified = fetch_pdfs()
 
     print("Enriching press releases...")
-    press_releases = enrich_pdfs(press_releases, client)
+    press_releases = enrich_pdfs(press_releases, client, existing)
     print("Enriching construction notices...")
-    notices = enrich_pdfs(notices, client)
+    notices = enrich_pdfs(notices, client, existing)
 
     # Flag any PDF whose date is still a fallback after enrichment
     for kind, entries in (("press", press_releases), ("notice", notices)):
