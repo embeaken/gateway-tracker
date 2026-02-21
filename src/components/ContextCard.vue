@@ -27,6 +27,16 @@ onUnmounted(() => {
 
         <h3 class="context-title">What's going on?</h3>
 
+        <div class="video-wrapper">
+          <iframe
+            src="https://www.youtube.com/embed/slP5zyoLpk4"
+            title="Gateway Program video"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          ></iframe>
+        </div>
+
         <div class="context-body">
           <div class="context-section">
             <p>
@@ -77,7 +87,7 @@ onUnmounted(() => {
   background: var(--color-card-bg);
   border-radius: var(--radius-md);
   padding: var(--spacing-xl);
-  max-width: 640px;
+  max-width: 720px;
   width: 100%;
   max-height: 85vh;
   overflow-y: auto;
@@ -114,6 +124,24 @@ onUnmounted(() => {
   margin: 0 0 var(--spacing-md) 0;
   padding-bottom: var(--spacing-sm);
   border-bottom: 2px solid var(--color-primary);
+}
+
+.video-wrapper {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%;
+  margin-bottom: var(--spacing-md);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: #000;
+}
+
+.video-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .context-body {
