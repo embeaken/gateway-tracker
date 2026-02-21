@@ -125,4 +125,15 @@ const contextOpen = ref(false)
     display: flex;
   }
 }
+
+@media (max-width: 767px) {
+  .context-trigger--mobile {
+    padding: var(--spacing-sm) var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .context-trigger--mobile .trigger-title {
+    font-size: var(--font-size-sm);
+  }
+}
 </style>

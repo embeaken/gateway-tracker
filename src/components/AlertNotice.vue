@@ -60,5 +60,9 @@
   .alert-icon {
     display: none;
   }
+
+  .alert-body {
+    font-size: var(--font-size-xs);
+  }
 }
 </style>
