@@ -54,15 +54,17 @@ Add `--force` to ignore the cache and re-enrich all entries from scratch.
 **Sources:**
 - **Bluesky** — public AT Protocol API, `@gatewayprogram.bsky.social`, top 10 posts (no reposts/replies)
 - **Photos** — scraped from `gatewayprogram.org/photo-gallery.html` (WordPress block gallery), top 10
+- **Videos** — scraped from `gatewayprogram.org/video-gallery.html` (WordPress YouTube embed iframes), top 10. Upload dates fetched from each video's `youtube.com/watch` page (no API key needed).
 - **Press releases** — PDFs from `gatewayprogram.org/wp-content/uploads/YYYY/MM/` matching `Press-Release` or `Statement`
 - **Construction notices** — same source, matching `Construction-Notice`
 
-**Caching:** On each run the script loads existing `activityData.json` and skips LLM calls for any entry already present (matched by URL/link). Use `--force` to bypass.
+**Caching:** On each run the script loads existing `activityData.json` and skips LLM calls for any entry already present (matched by URL/link for PDFs/photos, `videoId` for videos). Use `--force` to bypass.
 
 **LLM enrichment (requires API key):**
 - Photo dates — batch Haiku call with new (uncached) filenames only
 - PDF title + date — per-PDF: downloads, extracts text via `pypdf`, asks Haiku for `{title, date}`
 - Without API key: YYYYMMDD pattern extracted by regex; everything else falls back to folder date
+- Videos do NOT use LLM — dates come directly from the YouTube watch page HTML (`uploadDate`)
 
 **Data flow:** Python writes JSON → `activityData.ts` imports it and re-exports with types from `activityDataTypes.ts`. To add/change types, edit `activityDataTypes.ts` (static) and update the `activityData.ts` re-exports — neither is generated.
 
