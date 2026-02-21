@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { images, blueskyPosts, pressReleases } from '../assets/activityData'
+import { images, blueskyPosts, pressReleases, constructionNotices } from '../assets/activityData'
 
-type TimelineItemType = 'photo' | 'tweet' | 'bluesky' | 'press'
+type TimelineItemType = 'photo' | 'tweet' | 'bluesky' | 'press' | 'construction'
 
 type TimelineItem = {
   type: TimelineItemType
@@ -64,6 +64,17 @@ const timelineItems = computed<TimelineItem[]>(() => {
     })
   })
 
+  constructionNotices.forEach(notice => {
+    items.push({
+      type: 'construction',
+      date: parseDate(notice.date),
+      dateDisplay: formatDate(parseDate(notice.date)),
+      title: notice.title,
+      content: '',
+      link: notice.link
+    })
+  })
+
   // Sort by date (most recent first)
   return items.sort((a, b) => b.date.getTime() - a.date.getTime())
 })
@@ -107,7 +118,7 @@ const closeImage = () => {
           <!-- Header with type badge and date -->
           <div class="item-header">
             <span class="item-badge" :class="`badge-${item.type}`">
-              {{ item.type === 'photo' ? 'Photo' : item.type === 'bluesky' ? 'Bluesky' : 'Press Release' }}
+              {{ item.type === 'photo' ? 'Photo' : item.type === 'bluesky' ? 'Bluesky' : item.type === 'construction' ? 'Construction Notice' : 'Press Release' }}
             </span>
             <time class="item-date">{{ item.dateDisplay }}</time>
           </div>
@@ -250,6 +261,11 @@ const closeImage = () => {
 .badge-press {
   background: rgba(255, 215, 0, 0.2);
   color: var(--color-badge-press);
+}
+
+.badge-construction {
+  background: rgba(234, 88, 12, 0.1);
+  color: #ea580c;
 }
 
 .item-date {
