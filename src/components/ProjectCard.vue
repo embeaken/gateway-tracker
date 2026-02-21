@@ -31,8 +31,8 @@ defineProps<{
   background: var(--color-card-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  padding: var(--spacing-xl);
-  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
   transition: box-shadow var(--transition-base);
 }
 
@@ -41,23 +41,23 @@ defineProps<{
 }
 
 .project-title {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-base);
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
-  margin: 0 0 var(--spacing-sm) 0;
+  margin: 0 0 6px 0;
 }
 
 .project-description {
-  font-size: var(--font-size-base);
-  line-height: var(--line-height-relaxed);
+  font-size: 15px;
+  line-height: var(--line-height-normal);
   color: var(--color-text-primary);
-  margin: 0 0 var(--spacing-md) 0;
+  margin: 0 0 10px 0;
   max-width: 85%;
 }
 
 .earthcam-container {
   width: 100%;
-  margin-top: var(--spacing-md);
+  margin-top: 10px;
 }
 
 .earthcam-iframe {
@@ -76,16 +76,16 @@ defineProps<{
 
 @media (max-width: 768px) {
   .project-card {
-    padding: var(--spacing-md);
-    margin-bottom: var(--spacing-md);
+    padding: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
   }
 
   .project-title {
-    font-size: var(--font-size-md);
+    font-size: var(--font-size-sm);
   }
 
   .project-description {
-    font-size: var(--font-size-sm);
+    font-size: 14px;
     max-width: 100%;
   }
 

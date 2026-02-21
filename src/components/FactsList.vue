@@ -18,10 +18,10 @@ defineProps<{
 <style scoped>
 .facts-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: var(--spacing-sm);
-  margin: var(--spacing-md) 0;
-  padding: var(--spacing-md) 0;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--spacing-xs);
+  margin: 10px 0;
+  padding: 10px 0;
   border-top: 1px solid var(--color-border);
   border-bottom: 1px solid var(--color-border);
 }
@@ -29,11 +29,11 @@ defineProps<{
 .fact-item {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
 }
 
 .fact-label {
-  font-size: var(--font-size-xs);
+  font-size: 11px;
   font-weight: var(--font-weight-bold);
   color: var(--color-primary);
   text-transform: uppercase;
@@ -41,7 +41,7 @@ defineProps<{
 }
 
 .fact-value {
-  font-size: var(--font-size-base);
+  font-size: 15px;
   color: var(--color-text-primary);
   font-weight: var(--font-weight-medium);
 }
@@ -49,11 +49,11 @@ defineProps<{
 @media (max-width: 768px) {
   .facts-list {
     grid-template-columns: 1fr;
-    gap: var(--spacing-sm);
+    gap: var(--spacing-xs);
   }
 
   .fact-value {
-    font-size: var(--font-size-sm);
+    font-size: 14px;
   }
 }
 </style>

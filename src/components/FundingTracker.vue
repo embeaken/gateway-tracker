@@ -50,15 +50,15 @@ function fmt(n: number): string {
   background: var(--color-card-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  padding: var(--spacing-xl);
-  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
 }
 
 .funding-title {
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-sm);
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
-  margin: 0 0 var(--spacing-md) 0;
+  margin: 0 0 10px 0;
   letter-spacing: -0.01em;
 }
 
@@ -68,8 +68,8 @@ function fmt(n: number): string {
   display: grid;
   grid-template-columns: repeat(2, auto);
   justify-content: start;
-  gap: var(--spacing-lg);
-  margin-bottom: var(--spacing-lg);
+  gap: var(--spacing-md);
+  margin-bottom: 12px;
 }
 
 .stat-item {
@@ -93,7 +93,7 @@ function fmt(n: number): string {
 
 .stat-value {
   display: block;
-  font-size: var(--font-size-lg);
+  font-size: 22px;
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
   line-height: 1.1;
@@ -103,7 +103,7 @@ function fmt(n: number): string {
 
 .stat-name {
   display: block;
-  font-size: var(--font-size-xs);
+  font-size: 12px;
   color: var(--color-text-secondary);
   margin-top: 2px;
   line-height: 1.2;
@@ -136,7 +136,7 @@ function fmt(n: number): string {
 .bar {
   display: flex;
   align-items: stretch;
-  height: 48px;
+  height: 32px;
   border-radius: var(--radius-sm);
   overflow: hidden;
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
@@ -210,15 +210,15 @@ function fmt(n: number): string {
 
 @media (max-width: 768px) {
   .funding-card {
-    padding: var(--spacing-md);
+    padding: var(--spacing-sm);
   }
 
   .stat-value {
-    font-size: 20px;
+    font-size: 18px;
   }
 
   .bar {
-    height: 36px;
+    height: 28px;
   }
 
   .segment-label {
