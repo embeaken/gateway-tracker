@@ -64,14 +64,10 @@
 
   /* Alert Colors */
   --color-alert-bg: #fffbeb;
-  --color-alert-border: #e5c44a;
-  --color-alert-text: #6b5c10;
-  --color-alert-icon: #ca8a04;
-  --color-alert-title: #854d0e;
-  --color-alert-body: #713f12;
-  --color-alert-strong: #422006;
-  --color-alert-link: #a16207;
-  --color-alert-link-hover: #713f12;
+  --color-alert-border: #f59e0b;
+  --color-alert-icon: #d97706;
+  --color-alert-title: #92400e;
+  --color-alert-body: #78350f;
 
   /* Badge Colors */
   --color-badge-press: #b8900a;
@@ -120,15 +116,11 @@
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
 
-  --color-alert-bg: #1C1A0E;
-  --color-alert-border: #854d0e;
-  --color-alert-text: #FDE68A;
-  --color-alert-icon: #FACC15;
-  --color-alert-title: #FDE68A;
-  --color-alert-body: #FCD34D;
-  --color-alert-strong: #FEF3C7;
-  --color-alert-link: #FACC15;
-  --color-alert-link-hover: #FDE68A;
+  --color-alert-bg: #1c1507;
+  --color-alert-border: #b45309;
+  --color-alert-icon: #fbbf24;
+  --color-alert-title: #fde68a;
+  --color-alert-body: #fde68a;
 
   --color-badge-press: #EAB308;
 
@@ -159,15 +151,11 @@
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
     --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
 
-    --color-alert-bg: #1C1A0E;
-    --color-alert-border: #854d0e;
-    --color-alert-text: #FDE68A;
-    --color-alert-icon: #FACC15;
-    --color-alert-title: #FDE68A;
-    --color-alert-body: #FCD34D;
-    --color-alert-strong: #FEF3C7;
-    --color-alert-link: #FACC15;
-    --color-alert-link-hover: #FDE68A;
+    --color-alert-bg: #1c1507;
+    --color-alert-border: #b45309;
+    --color-alert-icon: #fbbf24;
+    --color-alert-title: #fde68a;
+    --color-alert-body: #fde68a;
 
     --color-card-bg: #1E293B;
 
