@@ -47,6 +47,8 @@ All styling uses CSS custom properties defined in `src/assets/main.css`. No Tail
 ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY uv run scripts/update_data.py
 ```
 
+Add `--force` to ignore the cache and re-enrich all entries from scratch.
+
 [`uv`](https://docs.astral.sh/uv/) manages deps automatically via inline script metadata — no virtualenv setup needed. `ANTHROPIC_API_KEY` is required for date/title extraction; without it all dates fall back to `YYYY-MM-01`.
 
 **Sources:**
@@ -55,9 +57,12 @@ ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY uv run scripts/update_data.py
 - **Press releases** — PDFs from `gatewayprogram.org/wp-content/uploads/YYYY/MM/` matching `Press-Release` or `Statement`
 - **Construction notices** — same source, matching `Construction-Notice`
 
+**Caching:** On each run the script loads existing `activityData.json` and skips LLM calls for any entry already present (matched by URL/link). Use `--force` to bypass.
+
 **LLM enrichment (requires API key):**
-- Photo dates — batch Haiku call with all filenames, one request
+- Photo dates — batch Haiku call with new (uncached) filenames only
 - PDF title + date — per-PDF: downloads, extracts text via `pypdf`, asks Haiku for `{title, date}`
+- Without API key: YYYYMMDD pattern extracted by regex; everything else falls back to folder date
 
 **Data flow:** Python writes JSON → `activityData.ts` imports it and re-exports with types from `activityDataTypes.ts`. To add/change types, edit `activityDataTypes.ts` (static) and update the `activityData.ts` re-exports — neither is generated.
 
