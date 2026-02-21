@@ -24,7 +24,6 @@ import sys
 from datetime import datetime
 from html.parser import HTMLParser
 from pathlib import Path
-from string import Template
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
@@ -38,7 +37,7 @@ GALLERY_URL = "https://www.gatewayprogram.org/photo-gallery.html"
 UPLOAD_BASE = "https://www.gatewayprogram.org/wp-content/uploads"
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-DATA_FILE = SCRIPT_DIR.parent / "src" / "assets" / "activityData.ts"
+DATA_FILE = SCRIPT_DIR.parent / "src" / "assets" / "activityData.json"
 
 
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".avif"}
@@ -450,82 +449,23 @@ def fetch_pdfs(n_press=10, n_notices=10):
     return press, notices, unclassified
 
 
-# ── TypeScript writer ─────────────────────────────────────────────────────────
-
-_TEMPLATE = Template("""\
-import type { GalleryImage, BlueskyPost, PressRelease, ConstructionNotice } from './activityDataTypes'
-
-export const images: GalleryImage[] = [
-${images}
-]
-
-export const blueskyPosts: BlueskyPost[] = [
-${bluesky_posts}
-]
-
-export const pressReleases: PressRelease[] = [
-${press_releases}
-]
-
-export const constructionNotices: ConstructionNotice[] = [
-${construction_notices}
-]
-""")
-
-
-def ts_str(s):
-    """Escape a value for use in a TypeScript single-quoted string literal."""
-    return s.replace("\\", "\\\\").replace("'", "\\'").replace("\n", "\\n").replace("\r", "")
-
-
-def _render_image(p):
-    return "\n".join([
-        "  {",
-        f"    url: '{ts_str(p['url'])}',",
-        f"    caption: '{ts_str(p.get('caption', ''))}',",
-        f"    date: '{ts_str(p['date'])}'",
-        "  },",
-    ])
-
-
-def _render_post(post):
-    lines = [
-        "  {",
-        f"    text: '{ts_str(post['text'])}',",
-        f"    date: '{ts_str(post['date'])}',",
-        f"    link: '{ts_str(post['link'])}',",
-    ]
-    if "imageUrl" in post:
-        lines.append(f"    imageUrl: '{ts_str(post['imageUrl'])}',")
-    lines.append("  },")
-    return "\n".join(lines)
-
-
-def _render_doc(doc):
-    return "\n".join([
-        "  {",
-        f"    title: '{ts_str(doc['title'])}',",
-        f"    date: '{ts_str(doc['date'])}',",
-        f"    link: '{ts_str(doc['link'])}'",
-        "  },",
-    ])
-
+# ── JSON writer ───────────────────────────────────────────────────────────────
 
 def write_data_file(photos, posts, press_releases, notices):
-    content = _TEMPLATE.substitute(
-        images="\n".join(_render_image(p) for p in photos),
-        bluesky_posts="\n".join(_render_post(p) for p in posts),
-        press_releases="\n".join(_render_doc(pr) for pr in press_releases),
-        construction_notices="\n".join(_render_doc(n) for n in notices),
-    )
-    DATA_FILE.write_text(content)
+    data = {
+        "images": photos,
+        "blueskyPosts": posts,
+        "pressReleases": press_releases,
+        "constructionNotices": notices,
+    }
+    DATA_FILE.write_text(json.dumps(data, indent=2) + "\n")
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main():
-    if not DATA_FILE.exists():
-        print(f"ERROR: Could not find {DATA_FILE}", file=sys.stderr)
+    if not DATA_FILE.parent.exists():
+        print(f"ERROR: Could not find output directory {DATA_FILE.parent}", file=sys.stderr)
         sys.exit(1)
 
     client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"]) if os.environ.get("ANTHROPIC_API_KEY") else None
