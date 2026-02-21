@@ -13,7 +13,7 @@
         <p class="alert-body">
           Construction is expected to resume the week of Feb 23.
           Most federal funds remain frozen while lawsuits play out in court.
-          <span class="alert-meta">— Feb 21</span>
+          <!--<span class="alert-meta">— Feb 21</span>-->
         </p>
       </div>
     </div>

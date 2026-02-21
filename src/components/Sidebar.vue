@@ -11,16 +11,37 @@
 <style scoped>
 .sidebar {
   background-color: var(--color-background-alt);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  padding: var(--spacing-md);
-  height: fit-content;
+  padding: var(--spacing-sm);
 }
 
-@media (max-width: 1023px) {
+@media (min-width: 1024px) {
   .sidebar {
-    margin-top: var(--spacing-lg);
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding-right: 6px;
+  }
+
+  .sidebar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .sidebar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .sidebar::-webkit-scrollbar-thumb {
+    background: var(--color-primary);
+    border-radius: 3px;
+  }
+
+  .sidebar::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary-dark);
   }
 }
+
 
 @media (max-width: 768px) {
   .sidebar {

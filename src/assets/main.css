@@ -7,17 +7,19 @@
   --color-primary: #005E71;
   --color-primary-dark: #004555;
   --color-primary-light: #007A93;
-  --color-accent: #FFD700;
+  --color-accent: #D4980A;
+  --color-primary-muted: rgba(0, 94, 113, 0.08);
 
-  --color-background: #FFFFFF;
-  --color-background-alt: #F5F7FA;
+  --color-background: #F8F7F4;
+  --color-background-alt: #EDEFF5;
   --color-text-primary: #1A1A1A;
   --color-text-secondary: #4A5568;
   --color-border: #E2E8F0;
 
   /* Typography */
-  --font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+  --font-family-base: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
                        "Helvetica Neue", Arial, sans-serif;
+  --font-weight-semibold: 600;
   --font-size-xl: 48px;
   --font-size-lg: 36px;
   --font-size-md: 28px;
@@ -105,6 +107,7 @@
   --color-primary-dark: #38BDF8;
   --color-primary-light: #22D3EE;
   --color-accent: #FACC15;
+  --color-primary-muted: rgba(14, 165, 199, 0.08);
 
   --color-background: #0F172A;
   --color-background-alt: #1E293B;
@@ -140,6 +143,7 @@
     --color-primary-dark: #38BDF8;
     --color-primary-light: #22D3EE;
     --color-accent: #FACC15;
+    --color-primary-muted: rgba(14, 165, 199, 0.08);
 
     --color-background: #0F172A;
     --color-background-alt: #1E293B;

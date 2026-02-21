@@ -29,7 +29,7 @@ All styling uses CSS custom properties defined in `src/assets/main.css`. No Tail
 }
 ```
 
-**Card pattern:** `background: var(--color-background)`, `border: 1px solid var(--color-border)`, `border-radius: var(--radius-md)`, `padding: var(--spacing-xl)`, `margin-bottom: var(--spacing-lg)`.
+**Card pattern:** `background: var(--color-card-bg)`, `border: 1px solid var(--color-border)`, `border-radius: var(--radius-md)`, `padding: var(--spacing-xl)`. Use `--color-card-bg` (not `--color-background`) — the page background is warm off-white (`#F8F7F4`), cards stay white.
 
 **Breakpoints:** 768px (mobile), 1024px (sidebar collapse).
 

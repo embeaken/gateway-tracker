@@ -44,26 +44,8 @@
     top: 20px;
     align-self: start;
     max-height: calc(100vh - 40px);
-    overflow-y: auto;
-    padding-right: 8px;
-  }
-
-  /* Custom scrollbar for sidebar */
-  .sidebar-area::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  .sidebar-area::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .sidebar-area::-webkit-scrollbar-thumb {
-    background: var(--color-primary);
-    border-radius: 4px;
-  }
-
-  .sidebar-area::-webkit-scrollbar-thumb:hover {
-    background: var(--color-primary-dark);
+    display: flex;
+    flex-direction: column;
   }
 }
 
@@ -77,7 +59,7 @@
 /* Mobile: Single column with reduced spacing */
 @media (max-width: 767px) {
   .main-layout {
-    gap: var(--spacing-lg);
+    gap: var(--spacing-md);
     padding-top: var(--spacing-md);
     padding-bottom: var(--spacing-md);
   }

@@ -23,6 +23,7 @@ import ThemeToggle from './ThemeToggle.vue'
   background: linear-gradient(135deg, #005E71 0%, #004555 100%);
   color: white;
   padding: var(--spacing-lg) 0;
+  border-bottom: 4px solid #D4980A;
 }
 
 .header-top {
@@ -36,18 +37,20 @@ import ThemeToggle from './ThemeToggle.vue'
   font-weight: var(--font-weight-bold);
   margin: 0 0 var(--spacing-xs) 0;
   color: white;
+  letter-spacing: -0.03em;
 }
 
 .tagline {
   font-size: var(--font-size-base);
   line-height: var(--line-height-normal);
   margin: 0;
-  color: rgba(255, 255, 255, 0.95);
+  color: rgba(255, 255, 255, 1);
+  font-weight: var(--font-weight-medium);
 }
 
 .tagline em {
   font-style: italic;
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-semibold);
 }
 
 @media (max-width: 768px) {

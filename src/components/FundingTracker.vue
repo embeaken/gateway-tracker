@@ -47,7 +47,7 @@ function fmt(n: number): string {
 
 <style scoped>
 .funding-card {
-  background: var(--color-background);
+  background: var(--color-card-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   padding: var(--spacing-xl);
@@ -66,8 +66,9 @@ function fmt(n: number): string {
 
 .stats-row {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--spacing-sm);
+  grid-template-columns: repeat(2, auto);
+  justify-content: start;
+  gap: var(--spacing-lg);
   margin-bottom: var(--spacing-lg);
 }
 
@@ -77,23 +78,27 @@ function fmt(n: number): string {
 }
 
 .stat-item--confirmed { border-color: #16A34A; }
+.stat-item--confirmed .stat-value { color: #16A34A; }
 .stat-item--frozen { border-color: #CBD5E1; }
 
 [data-theme="dark"] .stat-item--confirmed { border-color: #4ADE80; }
+[data-theme="dark"] .stat-item--confirmed .stat-value { color: #4ADE80; }
 [data-theme="dark"] .stat-item--frozen { border-color: #475569; }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .stat-item--confirmed { border-color: #4ADE80; }
+  :root:not([data-theme="light"]) .stat-item--confirmed .stat-value { color: #4ADE80; }
   :root:not([data-theme="light"]) .stat-item--frozen { border-color: #475569; }
 }
 
 .stat-value {
   display: block;
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-lg);
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
   line-height: 1.1;
   letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
 }
 
 .stat-name {
@@ -131,7 +136,7 @@ function fmt(n: number): string {
 .bar {
   display: flex;
   align-items: stretch;
-  height: 40px;
+  height: 48px;
   border-radius: var(--radius-sm);
   overflow: hidden;
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
@@ -190,7 +195,7 @@ function fmt(n: number): string {
 
 .bar-notch {
   width: 2px;
-  background: var(--color-background);
+  background: var(--color-card-bg);
   flex-shrink: 0;
 }
 
@@ -213,7 +218,7 @@ function fmt(n: number): string {
   }
 
   .bar {
-    height: 32px;
+    height: 36px;
   }
 
   .segment-label {

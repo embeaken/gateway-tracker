@@ -28,7 +28,7 @@ defineProps<{
 
 <style scoped>
 .project-card {
-  background: var(--color-background);
+  background: var(--color-card-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   padding: var(--spacing-xl);
