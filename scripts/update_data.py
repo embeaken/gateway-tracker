@@ -468,7 +468,7 @@ def fetch_pdfs(n_press=10, n_notices=10):
                 continue
 
             folder_date = f"{year:04d}-{month:02d}-01"
-            if "press-release" in fname_lower or "statement" in fname_lower:
+            if "release" in fname_lower or "statement" in fname_lower:
                 if len(press) < n_press:
                     press.append({"title": pdf_filename_to_title(fname), "date": folder_date, "link": furl, "_is_fallback": True})
             elif "construction-notice" in fname_lower:
