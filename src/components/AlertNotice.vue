@@ -11,8 +11,7 @@
           <line x1="12" y1="17" x2="12.01" y2="17"/>
         </svg>
         <p class="alert-body">
-          Construction is expected to resume the week of Feb 23.
-          Most federal funds remain frozen while lawsuits play out in court.
+          Construction has resumed. Most federal funds remain frozen while lawsuits play out in court.
           <!--<span class="alert-meta">— Feb 21</span>-->
         </p>
       </div>
