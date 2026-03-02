@@ -159,6 +159,36 @@ def year_month_from_url(url):
         return now.year, now.month
 
 
+def filter_date_mismatches(entries, kind):
+    """Drop entries whose LLM-extracted date year doesn't match the upload folder year.
+
+    Only applied when _is_fallback is False (i.e. LLM actually extracted a date).
+    Folder-date fallbacks are left alone since the date IS the folder date.
+    """
+    kept, skipped = [], []
+    for e in entries:
+        if e.get("_is_fallback", True):
+            kept.append(e)
+            continue
+        folder_year, _ = year_month_from_url(e["link"])
+        try:
+            item_year = int(e["date"][:4])
+        except (ValueError, IndexError):
+            kept.append(e)
+            continue
+        if item_year != folder_year:
+            skipped.append((e, folder_year))
+        else:
+            kept.append(e)
+    if skipped:
+        print(f"  Skipped {len(skipped)} {kind} (year mismatch with upload folder):")
+        for e, folder_year in skipped:
+            fname = e["link"].rsplit("/", 1)[-1]
+            print(f"    {fname}")
+            print(f"      extracted date: {e['date']} — folder year: {folder_year}")
+    return kept
+
+
 # ── Bluesky ───────────────────────────────────────────────────────────────────
 
 def extract_image_url(embed):
@@ -623,8 +653,10 @@ def main():
 
     print("Enriching press releases...")
     press_releases = enrich_pdfs(press_releases, client, existing)
+    press_releases = filter_date_mismatches(press_releases, "press releases")
     print("Enriching construction notices...")
     notices = enrich_pdfs(notices, client, existing)
+    notices = filter_date_mismatches(notices, "construction notices")
 
     # Flag any PDF whose date is still a fallback after enrichment
     for kind, entries in (("press", press_releases), ("notice", notices)):
