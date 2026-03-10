@@ -53,6 +53,12 @@
   ],
   "blueskyPosts": [
     {
+      "text": "Workers are back on the job, the construction activities that were suspended in February have resumed, and we're already hitting construction milestones again. \n\nClick the link to learn more and see the latest pictures of our construction sites: www.gatewayprogram.org/wp-content/u...",
+      "date": "2026-03-10T15:11:38.414Z",
+      "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3mgpnrtuxq22m",
+      "imageUrl": "https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:skgfj7jggympcb2nxuiadj4i/bafkreigal4wpubhsfwp2dihgvvidu3lzflcfbjbwfqxh3mn2yhhnqyucn4@jpeg"
+    },
+    {
       "text": "The Hudson Tunnel Project is a massive, complex project. To get it done, GDC has split construction into 10 distinct projects. Many of these could be called megaprojects on their own!\n\nWatch this video to learn how 10 projects come together to make one new tunnel: www.youtube.com/watch?v=slP5...",
       "date": "2026-03-06T15:49:00.342Z",
       "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3mgfnyy3urk2q"
@@ -102,15 +108,14 @@
       "text": "The Gateway Development Commission will hold an in-person public Board Meeting on Tuesday, February 24, 2026, at 10:00 am. Registration and public comment information can be found here: www.gatewayprogram.org/board-meetin...",
       "date": "2026-02-17T14:52:48.592Z",
       "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3mf2swtph6s2l"
-    },
-    {
-      "text": "\"I had to let all my guys go. There's no checks coming in for them.\"\n\nGuido Rivieccio, one of the shop stewards working on the Manhattan Tunnel Project, describes the real-world impact that pausing funding for the Hudson Tunnel Project had on the workers on his team this week.",
-      "date": "2026-02-13T17:41:34.222Z",
-      "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3mer2iwg5qc2t",
-      "imageUrl": "https://video.bsky.app/watch/did%3Aplc%3Askgfj7jggympcb2nxuiadj4i/bafkreid6hwpgt7mglth4aooxy3hywjc3kab6l4mw22wenojmrxpv6ozqci/thumbnail.jpg"
     }
   ],
   "pressReleases": [
+    {
+      "title": "Hudson Tunnel Project Construction Update",
+      "date": "2026-03-10",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/GDC-Press-Release-March-2026-Construction-Update-for-website.pdf"
+    },
     {
       "title": "Hudson Tunnel Project Construction To Be Suspended Due To Lack Of Federal Funding",
       "date": "2026-02-06",
@@ -150,11 +155,6 @@
       "title": "Gateway Development Commission Announces Construction of Hudson Tunnel Project Will Pause If Federal Funding Is Not Restored",
       "date": "2026-01-27",
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/01/01.27.2026-Board-Meeting-Press-Release-for-Website.pdf"
-    },
-    {
-      "title": "GDC Completes Manufacturing of First Pair of Tunnel Boring Machines for Hudson Tunnel Project",
-      "date": "2025-12-15",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/12/GDC-December-Board-Meeting-Press-Release-for-website.pdf"
     }
   ],
   "constructionNotices": [
