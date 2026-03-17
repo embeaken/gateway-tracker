@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const TOTAL = 12_000_000_000
-const CONFIRMED = 235_000_000
+const CONFIRMED = 254_000_000
 const FROZEN = TOTAL - CONFIRMED
 
 const unlockedPct = (CONFIRMED / TOTAL) * 100
