@@ -1,6 +1,31 @@
 {
   "images": [
     {
+      "url": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/PKGEA1_PH_20260302_NJ_GatewayHRGSPhoto_PANYNJ_GDC_DJI_MM-3-2.jpg",
+      "caption": "The HRGS, Manhattan Tunnel Project, and HYCC-3 construction sites show the route the new tunnel will take as it comes up from under the river and connects to Penn Station",
+      "date": "2026-03-02"
+    },
+    {
+      "url": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/PKG0_PH_20260219_NY_GatewayHYCC3Photo_PANYNJ_GDC_MM-4-2.jpg",
+      "caption": "Workers on the HYCC-3 Project are installing rebar and pouring concrete to form the final section of the concrete casing under Hudson Yards",
+      "date": "2026-02-19"
+    },
+    {
+      "url": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/PKG1A_PH_20260309_NJ_GatewayPalisadesTonnelle_PANYNJ_GDC_DJI_MM-112.jpg",
+      "caption": "The Tonnelle Avenue bridge enables workers and equipment to move between staging areas on both sides of Tonnelle Avenue without disrupting traffic",
+      "date": "2026-03-09"
+    },
+    {
+      "url": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/PKG1B_PH_20260302_NY_GatewayManhattanTunnels_Photo_PANYNJ_GDC_MM-33-1.jpg",
+      "caption": "Installing an overwater platform to enable ground freezing around the Manhattan bulkhead",
+      "date": "2026-03-02"
+    },
+    {
+      "url": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/PKG1A_PH_20260217_NJ_GatewayPalisadesHoboken_PANYNJ_GDC_DJI_MM-36.jpg",
+      "caption": "Installation of a slurry wall panel for the Hudson County Access Shaft. The slurry wall was completed in early March, creating a watertight perimeter for the shaft below ground.",
+      "date": "2026-02-17"
+    },
+    {
       "url": "https://www.gatewayprogram.org/wp-content/uploads/2026/02/PKG1A_PH_20260217_NJ_GatewayPalisadesTonnelle_PANYNJ_GDC_DJI_MM-28.jpg",
       "caption": "Excavation of the tunnel boring machine launch box in North Bergen, NJ resumed the week of February 23",
       "date": "2026-02-17"
@@ -24,34 +49,15 @@
       "url": "https://www.gatewayprogram.org/wp-content/uploads/2026/02/PKG0_PH_20260219_NY_GatewayHYCC3Photo_PANYNJ_GDC_MM-1.jpg",
       "caption": "Pouring concrete for the Hudson Yards Concrete Casing - Section 3 Project",
       "date": "2026-02-19"
-    },
-    {
-      "url": "https://www.gatewayprogram.org/wp-content/uploads/2026/02/Gateway_RAE_2-9-2026-7134.jpg",
-      "caption": "More than 200 union workers rallied at GDC's North Bergen Construction site to call for the project's federal funding to be restored.",
-      "date": "2026-02-09"
-    },
-    {
-      "url": "https://www.gatewayprogram.org/wp-content/uploads/2026/02/Gateway_RAE_2-9-2026-57891.jpg",
-      "caption": "Hundreds of workers are impacted by the construction pause that went into effect on February 6 due to lack of federal funding.",
-      "date": "2026-02-09"
-    },
-    {
-      "url": "https://www.gatewayprogram.org/wp-content/uploads/2026/02/Gateway_RAE_2-9-2026-56741.jpg",
-      "caption": "An extended construction pause will put tens of thousands of jobs at risk.",
-      "date": "2026-02-09"
-    },
-    {
-      "url": "https://www.gatewayprogram.org/wp-content/uploads/2026/01/IMG_3240.jpeg",
-      "caption": "Openings for both tunnel tubes connecting the section of the Hudson Yards Concrete Casing currently under construction to the part of the concrete casing that is already finished.",
-      "date": "2026-01-01"
-    },
-    {
-      "url": "https://www.gatewayprogram.org/wp-content/uploads/2026/01/PKG1A_PH_20260129_NJ_GatewayPalisadesTonnelle_PANYNJ_GDC_DJI_MM-18.jpg",
-      "caption": "Components of the first tunnel boring machine staged for assembly next to the portal launch box.",
-      "date": "2026-01-29"
     }
   ],
   "blueskyPosts": [
+    {
+      "text": "GDC is partnering with the communities where Hudson Tunnel Project construction is happening to make sure everyone who will benefit from the new tunnel understands the project and the work we're doing now.\n\nLearn more about our community outreach here: www.gatewayprogram.org/community-en...",
+      "date": "2026-03-17T20:33:46.966Z",
+      "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3mhbt2dajys2b",
+      "imageUrl": "https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:skgfj7jggympcb2nxuiadj4i/bafkreigzivni3opq6c5qgbqopvw7h5qiz5dief6oopqairchfobkzx3kga"
+    },
     {
       "text": "The Gateway Development Commission will hold an in-person public Board Meeting on Monday, March 23, 2026, at 10:30 am. Registration and public comment information can be found here: www.gatewayprogram.org/board-meetin....",
       "date": "2026-03-16T14:29:30.758Z",
@@ -102,12 +108,6 @@
       "date": "2026-02-24T19:49:55.435Z",
       "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3mfmwskwuic2g",
       "imageUrl": "https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:skgfj7jggympcb2nxuiadj4i/bafkreia4ve6zpvkgs26y2tll52jqbtjkbmrufdojw4g5gipue6e2h5nc3i"
-    },
-    {
-      "text": "Rudy Duarte is one of the hundreds of union workers impacted by the Hudson Tunnel Project construction pause. His message is clear: fund this urgent project now so workers like him can get back to work building the modern, reliable infrastructure America needs.",
-      "date": "2026-02-17T19:40:17.843Z",
-      "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3mf3cyvutts2l",
-      "imageUrl": "https://video.bsky.app/watch/did%3Aplc%3Askgfj7jggympcb2nxuiadj4i/bafkreigkudpa6dubayui3kysgyz6dfiruccu7r2t63mvskehuyuvcaxqd4/thumbnail.jpg"
     }
   ],
   "pressReleases": [
