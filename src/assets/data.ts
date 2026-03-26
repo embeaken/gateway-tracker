@@ -24,7 +24,7 @@ export const projects: Project[] = [
     desc: 'The ground beneath the Hudson River is being reinforced with grout to create a foundation that the TBMs can drill through.',
     earthcam: 'https://share.earthcam.net/tJ90CoLmq7TzrY396Yd88FEc2KIPXPpEyk01ZY6DV6k.tJ90CoLmq7TzrY396Yd88MxvGIEVbP8q434ixctMxNg',
     facts: [
-      { label: 'Construction status', value: '50% complete' },
+      { label: 'Construction status', value: '70% complete' },
       { label: 'Location', value: 'Hudson River' },
     ]
   },
