@@ -1,6 +1,26 @@
 {
   "images": [
     {
+      "url": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/S-1432-MD-2.jpg",
+      "caption": "The main drive unit for the second tunnel boring machine arrives at the Palisades Portal construction site",
+      "date": "2026-03-01"
+    },
+    {
+      "url": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/PKG1A_PH_20260317_NJ_GatewayPalisadesTonnelle_PANYNJ_GDC_MM-161.jpg",
+      "caption": "The cutterhead for tunnel boring machine S-1431 at the Palisades Portal site",
+      "date": "2026-03-17"
+    },
+    {
+      "url": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/PKG0_PH_20260317_NY_GatewayHYCC3Photo_PANYNJ_GDC_MM-11.jpg",
+      "caption": "Construction of the walls of the HYCC-3 tunnel box in Manhattan",
+      "date": "2026-03-17"
+    },
+    {
+      "url": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/PKG1A_PH_20260324_NJ_GatewayPalisadesTonnelle_PANYNJ_GDC_DJI_MM-64.jpg",
+      "caption": "Traffic on the new Tonnelle Avenue bridge",
+      "date": "2026-03-24"
+    },
+    {
       "url": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/PKGEA1_PH_20260302_NJ_GatewayHRGSPhoto_PANYNJ_GDC_DJI_MM-3-2.jpg",
       "caption": "The HRGS, Manhattan Tunnel Project, and HYCC-3 construction sites show the route the new tunnel will take as it comes up from under the river and connects to Penn Station",
       "date": "2026-03-02"
@@ -29,26 +49,6 @@
       "url": "https://www.gatewayprogram.org/wp-content/uploads/2026/02/PKG1A_PH_20260217_NJ_GatewayPalisadesTonnelle_PANYNJ_GDC_DJI_MM-28.jpg",
       "caption": "Excavation of the tunnel boring machine launch box in North Bergen, NJ resumed the week of February 23",
       "date": "2026-02-17"
-    },
-    {
-      "url": "https://www.gatewayprogram.org/wp-content/uploads/2026/02/PKG1B_PH_20260219_NY_GatewayManhattanTunnels_Photo_PANYNJ_GDC_MM-7.jpg",
-      "caption": "Work on the Manhattan Tunnel Project, including construction of the 12th Avenue Access Shaft and a marine platform in the Hudson River, resumed the week of February 23",
-      "date": "2026-02-19"
-    },
-    {
-      "url": "https://www.gatewayprogram.org/wp-content/uploads/2026/02/PKG1A_PH_20260217_NJ_GatewayPalisadesHoboken_PANYNJ_GDC_DJI_MM-10.jpg",
-      "caption": "Workers resumed building the Hudson County Access Shaft in Weehawken, NJ, the week of February 23",
-      "date": "2026-02-17"
-    },
-    {
-      "url": "https://www.gatewayprogram.org/wp-content/uploads/2026/02/PKGEA1_PH_20260219_NY_GatewayHRGSPhoto_PANYNJ_GDC_MM-6-1.jpg",
-      "caption": "Deep soil mixing to stabilize the riverbed within the cofferdam in the Hudson River resumed the week of February 23",
-      "date": "2026-02-19"
-    },
-    {
-      "url": "https://www.gatewayprogram.org/wp-content/uploads/2026/02/PKG0_PH_20260219_NY_GatewayHYCC3Photo_PANYNJ_GDC_MM-1.jpg",
-      "caption": "Pouring concrete for the Hudson Yards Concrete Casing - Section 3 Project",
-      "date": "2026-02-19"
     }
   ],
   "blueskyPosts": [
@@ -157,6 +157,11 @@
   ],
   "constructionNotices": [
     {
+      "title": "2026 Manhattan Tunnel Project Temporary Overnight Construction Activities Notice",
+      "date": "2026-03-27",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/3.27.2026_Gateway-Development-Commission-Construction-Notice-Overnight-HRP.pdf"
+    },
+    {
       "title": "Construction Notice North Bergen Portal Upcoming Activity Notice",
       "date": "2026-03-01",
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/Construction-Notice-North-Bergen-Portal-Upcoming-Activity-Notice.pdf"
@@ -200,11 +205,6 @@
       "title": "Updated Construction Notice",
       "date": "2025-10-10",
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/10.10.2025_Gateway-Development-Commission-Construction-Notice-29th-Closure.pdf"
-    },
-    {
-      "title": "Temporary Fence Reconfiguration and Public Art Removal - Hudson River Park",
-      "date": "2025-10-27",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/10.27.2025_Gateway-Development-Commission-Construction-Notice-HRP-Fence-Art.pdf"
     }
   ],
   "youtubeVideos": [
