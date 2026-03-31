@@ -53,6 +53,12 @@
   ],
   "blueskyPosts": [
     {
+      "text": "\ud83c\udd95\ud83d\udcf0 Out now: the Spring 2026 edition of the GDC Gazette! Catch up on the construction progress we've made so far this year, meet some of the workers building the Hudson Tunnel Project, check out our new community engagement web page, and more. \n \nRead it here: mailchi.mp/gatewayprogr...",
+      "date": "2026-03-31T14:43:02.058Z",
+      "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3miefxzpjws2b",
+      "imageUrl": "https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:skgfj7jggympcb2nxuiadj4i/bafkreiegfz2vtnqbq6ti3sjgh5ivnx3on4luf5gujzumloy7qxwvs7ifry"
+    },
+    {
       "text": "We're continuing to make progress toward the start of tunnel boring! The main drive unit for our second tunnel boring machine arrived at the Palisades Portal construction site last night. All the components of this machine will be on site soon.",
       "date": "2026-03-26T15:50:02.731Z",
       "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3mhxxfasvic2i",
@@ -100,12 +106,6 @@
       "text": "Reliable passenger rail unlocks jobs and drives economic growth. Leaders of NAIOP's NJ and NYC chapters explain why building the Hudson Tunnel Project now is so important for riders, workers, and businesses in this op-ed for @njspotlightnews.org: www.njspotlightnews.org/2026/03/op-e...",
       "date": "2026-03-03T20:20:46.431Z",
       "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3mg6ls6fxss27"
-    },
-    {
-      "text": "We're pouring concrete for the third and final section of the Hudson Yards Concrete Casing! The tunnel floor is finished, and we're making progress on the walls. When it's complete, the concrete casing will connect the new tunnel to New York Penn Station.",
-      "date": "2026-03-02T23:26:52.608Z",
-      "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3mg4fpztzh224",
-      "imageUrl": "https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:skgfj7jggympcb2nxuiadj4i/bafkreigvdlv6c7iyiqc3dhcsu3pkhetxqws2rnin2iyuc3becbnwkpmupi"
     }
   ],
   "pressReleases": [
@@ -157,6 +157,11 @@
   ],
   "constructionNotices": [
     {
+      "title": "Construction Notice: Temporary Bikeway/Walkway Shift",
+      "date": "2026-03-01",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/2026.3.30_Gateway-Development-Commission-Construction-Notice-HRP-Bike-Ped-vf.pdf"
+    },
+    {
       "title": "2026 Manhattan Tunnel Project Temporary Overnight Construction Activities Notice",
       "date": "2026-03-27",
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/3.27.2026_Gateway-Development-Commission-Construction-Notice-Overnight-HRP.pdf"
@@ -200,14 +205,14 @@
       "title": "Hudson Yards Concrete Casing-Section 3 Project Construction Notice",
       "date": "2025-11-12",
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/11/11.12.2025_Gateway-Development-Commission-Construction-Notice-Rock-Chopping-Sundays.pdf"
-    },
-    {
-      "title": "Updated Construction Notice",
-      "date": "2025-10-10",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/10.10.2025_Gateway-Development-Commission-Construction-Notice-29th-Closure.pdf"
     }
   ],
   "youtubeVideos": [
+    {
+      "videoId": "7TwTJmYkZVI",
+      "title": "Meet the Crew: IUOE Local 825",
+      "date": "2026-03-31"
+    },
     {
       "videoId": "yJXIdcp14r4",
       "title": "January 27, 2026 Board Meeting Public Comment",
@@ -252,11 +257,6 @@
       "videoId": "KdAakywDafg",
       "title": "Tonnelle Avenue Bridge and Utility Relocation Project Animation",
       "date": "2024-01-08"
-    },
-    {
-      "videoId": "FHpoHobAGn0",
-      "title": "2023 in Review at the Gateway Development Commission",
-      "date": "2023-12-18"
     }
   ]
 }
