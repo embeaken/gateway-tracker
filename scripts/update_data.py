@@ -601,6 +601,51 @@ def write_data_file(photos, posts, press_releases, notices, videos):
     DATA_FILE.write_text(json.dumps(data, indent=2) + "\n")
 
 
+def diff_data(old_json, new_data):
+    """Compare old JSON (dict from file) with new data dict.
+
+    Returns a list of human-readable change lines, or [] if nothing changed.
+    """
+    if not old_json:
+        return ["  (no previous data — treating everything as new)"]
+
+    sections = [
+        ("images",              "url",     "Photos"),
+        ("blueskyPosts",        "link",    "Bluesky posts"),
+        ("pressReleases",       "link",    "Press releases"),
+        ("constructionNotices", "link",    "Construction notices"),
+        ("youtubeVideos",       "videoId", "YouTube videos"),
+    ]
+    lines = []
+
+    for section_key, id_field, label in sections:
+        old_items = {item[id_field]: item for item in old_json.get(section_key, [])}
+        new_items = {item[id_field]: item for item in new_data.get(section_key, [])}
+
+        added   = [k for k in new_items if k not in old_items]
+        removed = [k for k in old_items if k not in new_items]
+        changed = [
+            k for k in new_items
+            if k in old_items and new_items[k] != old_items[k]
+        ]
+
+        if added or removed or changed:
+            lines.append(f"  {label}:")
+            for k in added:
+                name = k.rsplit("/", 1)[-1]
+                lines.append(f"    + {name}")
+            for k in removed:
+                name = k.rsplit("/", 1)[-1]
+                lines.append(f"    - {name}")
+            for k in changed:
+                name = k.rsplit("/", 1)[-1]
+                old, new = old_items[k], new_items[k]
+                diff_fields = [f for f in set(old) | set(new) if old.get(f) != new.get(f)]
+                lines.append(f"    ~ {name}  ({', '.join(diff_fields)})")
+
+    return lines
+
+
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main():
@@ -668,9 +713,21 @@ def main():
     press_releases = [{k: v for k, v in e.items() if not k.startswith("_")} for e in press_releases]
     notices = [{k: v for k, v in e.items() if not k.startswith("_")} for e in notices]
 
+    # Load old data for diff before overwriting
+    old_json = json.loads(DATA_FILE.read_text()) if DATA_FILE.exists() else None
+
     print(f"\nWriting {DATA_FILE}...")
+    new_data = {
+        "images": photos,
+        "blueskyPosts": posts,
+        "pressReleases": press_releases,
+        "constructionNotices": notices,
+        "youtubeVideos": videos,
+    }
     write_data_file(photos, posts, press_releases, notices, videos)
     print("  → Done")
+
+    change_lines = diff_data(old_json, new_data)
 
     print()
     print("=" * 60)
@@ -681,6 +738,13 @@ def main():
     print(f"  Press releases:        {len(press_releases)}")
     print(f"  Construction notices:  {len(notices)}")
     print(f"  YouTube videos:        {len(videos)}")
+
+    print()
+    if change_lines:
+        print(f"CHANGES  ({sum(1 for l in change_lines if l.lstrip().startswith(('+', '-', '~')))} item(s))")
+        print("\n".join(change_lines))
+    else:
+        print("No changes — data is up to date.")
 
     if dates_needing_review:
         print()
