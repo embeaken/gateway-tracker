@@ -12,7 +12,7 @@ Usage:
     uv run scripts/update_data.py
 
 uv automatically creates an isolated environment with the required packages.
-Set ANTHROPIC_API_KEY for LLM-powered title/date extraction from PDFs.
+Set HUDSON_TUBE_ANTHROPIC_API_KEY for LLM-powered title/date extraction from PDFs.
 """
 
 import html as html_module
@@ -443,7 +443,7 @@ def enrich_pdfs(entries, client, existing):
     Skips LLM calls for entries whose link is already in the existing data cache.
     """
     if not client:
-        print("  (skipping — ANTHROPIC_API_KEY not set)")
+        print("  (skipping — HUDSON_TUBE_ANTHROPIC_API_KEY not set)")
         return entries
 
     enriched = []
@@ -658,7 +658,7 @@ def main():
         print(f"ERROR: Could not find output directory {DATA_FILE.parent}", file=sys.stderr)
         sys.exit(1)
 
-    client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"]) if os.environ.get("ANTHROPIC_API_KEY") else None
+    client = anthropic.Anthropic(api_key=os.environ["HUDSON_TUBE_ANTHROPIC_API_KEY"]) if os.environ.get("HUDSON_TUBE_ANTHROPIC_API_KEY") else None
     existing = {} if args.force else load_existing_data()
 
     posts = fetch_bluesky_posts()
