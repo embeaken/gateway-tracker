@@ -14,7 +14,6 @@ defineProps<{
         <p class="project-kicker">Live construction camera</p>
         <h2 class="project-title">{{ project.name }}</h2>
       </div>
-      <span class="status-pill">{{ project.facts[0]?.value }}</span>
     </div>
 
     <p class="project-description">{{ project.desc }}</p>
@@ -76,20 +75,6 @@ defineProps<{
   color: var(--color-text-primary);
   margin: 0;
   letter-spacing: 0;
-}
-
-.status-pill {
-  flex-shrink: 0;
-  max-width: 180px;
-  padding: 5px 8px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  background: var(--color-background-alt);
-  color: var(--color-text-primary);
-  font-size: 12px;
-  font-weight: var(--font-weight-bold);
-  line-height: 1.2;
-  text-align: right;
 }
 
 .project-description {
@@ -176,11 +161,6 @@ defineProps<{
   .project-header {
     flex-direction: column;
     gap: 8px;
-  }
-
-  .status-pill {
-    max-width: none;
-    text-align: left;
   }
 
   .project-description {
