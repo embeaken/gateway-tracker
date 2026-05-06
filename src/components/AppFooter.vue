@@ -5,7 +5,6 @@
 <template>
   <footer class="app-footer">
     <div class="container">
-      <hr class="divider" />
       <p>Made with civic pride by <a href="https://ilya.pizza" target="_blank">Ilya Rubnich</a> &hearts; | <a href="https://bsky.app/profile/ilya.pizza" target="_blank">Bluesky</a> | <a href="https://github.com/embeaken/gateway-tracker" target="_blank">GitHub</a></p>
     </div>
   </footer>
@@ -13,15 +12,9 @@
 
 <style scoped>
 .app-footer {
-  margin-top: var(--spacing-xl);
-  padding: var(--spacing-xl) 0;
+  margin-top: var(--spacing-sm);
+  padding: var(--spacing-md) 0;
   background-color: var(--color-background);
-}
-
-.divider {
-  border: none;
-  border-top: 1px solid var(--color-border);
-  margin: 0 0 var(--spacing-md) 0;
 }
 
 .app-footer p {
@@ -41,7 +34,7 @@
 
 @media (max-width: 768px) {
   .app-footer {
-    margin-top: var(--spacing-2xl);
+    margin-top: var(--spacing-sm);
     padding: var(--spacing-md) 0;
   }
 }

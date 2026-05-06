@@ -43,10 +43,6 @@ test.describe('design refresh smoke', () => {
   })
 
   test('supports core interactions', async ({ page }, testInfo) => {
-    await page.getByRole('link', { name: 'Browse latest updates' }).click()
-    const visibleTimelineHeading = visibleActivity(page).getByRole('heading', { name: /Updates from the GDC/i })
-    await expect(visibleTimelineHeading).toBeInViewport()
-
     await page.getByRole('tab', { name: 'Photos' }).click()
     await expect(page.getByRole('tab', { name: 'Photos' })).toHaveAttribute('aria-selected', 'true')
 

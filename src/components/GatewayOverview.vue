@@ -4,9 +4,7 @@ import { images } from "../assets/activityData";
 
 const emit = defineEmits<{ openContext: [] }>();
 const activePhotoIndex = ref(0);
-const activityHref = ref("#activity");
 let carouselTimer: number | undefined;
-let activityMediaQuery: MediaQueryList | undefined;
 
 const parseDate = (date: string) => new Date(date);
 
@@ -28,15 +26,7 @@ const heroPhotos = computed(() =>
 
 const activePhoto = computed(() => heroPhotos.value[activePhotoIndex.value]);
 
-const updateActivityHref = () => {
-  activityHref.value = activityMediaQuery?.matches ? "#desktop-activity" : "#activity";
-};
-
 onMounted(() => {
-  activityMediaQuery = window.matchMedia("(min-width: 1200px)");
-  updateActivityHref();
-  activityMediaQuery.addEventListener("change", updateActivityHref);
-
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   if (prefersReducedMotion || heroPhotos.value.length <= 1) return;
@@ -48,7 +38,6 @@ onMounted(() => {
 
 onUnmounted(() => {
   if (carouselTimer) window.clearInterval(carouselTimer);
-  activityMediaQuery?.removeEventListener("change", updateActivityHref);
 });
 </script>
 
@@ -64,8 +53,10 @@ onUnmounted(() => {
         </p>
 
         <div class="overview-actions" aria-label="Primary page sections">
-          <button class="primary-link" @click="emit('openContext')">What's going on?</button>
-          <a :href="activityHref" class="secondary-link">Browse latest updates</a>
+          <button type="button" class="primary-link" @click="emit('openContext')">
+            <span class="primary-link-label">What's going on?</span>
+            <span class="primary-link-arrow" aria-hidden="true">→</span>
+          </button>
         </div>
 
         <div class="metric-grid" aria-label="Project summary">
@@ -128,7 +119,6 @@ onUnmounted(() => {
 .overview {
   background:
     linear-gradient(180deg, rgba(0, 94, 113, 0.08), rgba(0, 94, 113, 0)), var(--color-background);
-  border-bottom: 1px solid var(--color-border);
 }
 
 .overview-grid {
@@ -137,7 +127,7 @@ onUnmounted(() => {
   grid-template-columns: minmax(0, 0.95fr) minmax(440px, 1.05fr);
   gap: clamp(var(--spacing-lg), 4vw, var(--spacing-2xl));
   padding-top: var(--spacing-xl);
-  padding-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-sm);
 }
 
 .overview-copy {
@@ -151,7 +141,7 @@ onUnmounted(() => {
   max-width: 740px;
   margin: 0;
   color: var(--color-text-primary);
-  font-size: 58px;
+  font-size: 54px;
   line-height: 1;
   letter-spacing: 0;
 }
@@ -171,38 +161,58 @@ onUnmounted(() => {
   margin-top: var(--spacing-md);
 }
 
-.primary-link,
-.secondary-link {
+.primary-link {
   display: inline-flex;
   align-items: center;
-  min-height: 42px;
-  padding: 0 14px;
-  border: 1px solid var(--color-primary);
+  min-height: 46px;
+  width: fit-content;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 16px;
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
-  font-size: 14px;
+  font-size: 15px;
   font-weight: var(--font-weight-bold);
   font-family: inherit;
-}
-
-.primary-link {
-  background: var(--color-primary);
-  color: white;
+  line-height: 1;
   cursor: pointer;
 }
 
+.primary-link {
+  background: var(--color-card-bg);
+  color: var(--color-text-primary);
+  box-shadow: var(--shadow-sm);
+}
+
 .primary-link:visited {
-  color: white;
+  color: var(--color-text-primary);
 }
 
 .primary-link:hover {
-  background: var(--color-primary-dark);
-  border-color: var(--color-primary-dark);
-  color: white;
+  background: var(--color-background-alt);
+  border-color: rgba(0, 94, 113, 0.28);
+  color: var(--color-text-primary);
+  box-shadow: var(--shadow-md);
 }
 
-.secondary-link {
-  background: var(--color-card-bg);
+.primary-link-label {
+  white-space: nowrap;
+}
+
+.primary-link-arrow {
+  font-size: 18px;
   color: var(--color-primary);
+}
+
+[data-theme="dark"] .primary-link {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(148, 163, 184, 0.35);
+  color: var(--color-text-primary);
+}
+
+[data-theme="dark"] .primary-link:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(56, 189, 248, 0.38);
 }
 
 .metric-grid {
@@ -220,6 +230,9 @@ onUnmounted(() => {
   min-width: 0;
   padding: 14px;
   background: var(--color-card-bg);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .metric-value,
@@ -337,7 +350,7 @@ onUnmounted(() => {
   }
 
   .overview h2 {
-    font-size: 48px;
+    font-size: 44px;
   }
 }
 
@@ -348,7 +361,7 @@ onUnmounted(() => {
   }
 
   .overview h2 {
-    font-size: 40px;
+    font-size: 38px;
     line-height: 1;
   }
 
@@ -363,16 +376,14 @@ onUnmounted(() => {
 
 @media (max-width: 560px) {
   .overview h2 {
-    font-size: 34px;
+    font-size: 32px;
   }
 
   .overview-actions {
     flex-direction: column;
   }
 
-  .primary-link,
-  .secondary-link {
-    justify-content: center;
+  .primary-link {
     width: 100%;
   }
 

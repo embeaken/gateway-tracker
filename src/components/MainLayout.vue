@@ -18,8 +18,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xl);
-  padding-top: var(--spacing-xl);
-  padding-bottom: var(--spacing-xl);
+  padding-top: var(--spacing-sm);
+  padding-bottom: var(--spacing-sm);
 }
 
 .content-area {
@@ -66,8 +66,8 @@
 @media (max-width: 767px) {
   .main-layout {
     gap: var(--spacing-md);
-    padding-top: var(--spacing-md);
-    padding-bottom: var(--spacing-md);
+    padding-top: 4px;
+    padding-bottom: 4px;
   }
 }
 </style>

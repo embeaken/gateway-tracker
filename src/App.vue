@@ -8,6 +8,7 @@ import ProjectCard from './components/ProjectCard.vue'
 import Sidebar from './components/Sidebar.vue'
 import ContextCard from './components/ContextCard.vue'
 import ActivityTimeline from './components/ActivityTimeline.vue'
+import CommitmentTracker from './components/CommitmentTracker.vue'
 import { projects } from './assets/data'
 
 const contextOpen = ref(false)
@@ -26,6 +27,8 @@ if (import.meta.env.VITE_PLAYWRIGHT) {
       <template #content>
         <div id="construction-cameras" class="camera-anchor"></div>
 
+        <CommitmentTracker class="mobile-only-tracker" />
+
         <section id="activity" class="mobile-activity" data-testid="mobile-activity">
           <Sidebar>
             <ActivityTimeline />
@@ -41,6 +44,7 @@ if (import.meta.env.VITE_PLAYWRIGHT) {
 
       <template #sidebar>
         <div id="desktop-activity" class="activity-anchor"></div>
+        <CommitmentTracker class="desktop-only-tracker" />
         <Sidebar data-testid="desktop-activity">
           <ActivityTimeline />
         </Sidebar>
@@ -68,6 +72,19 @@ if (import.meta.env.VITE_PLAYWRIGHT) {
   .mobile-activity {
     display: block;
     margin-bottom: var(--spacing-md);
+  }
+}
+
+.desktop-only-tracker {
+  display: none;
+}
+
+@media (min-width: 1200px) {
+  .desktop-only-tracker {
+    display: block;
+  }
+  .mobile-only-tracker {
+    display: none;
   }
 }
 </style>
