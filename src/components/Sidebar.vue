@@ -1,5 +1,8 @@
 <script setup lang="ts">
 // Sidebar container for widgets (Twitter feed, etc.)
+defineOptions({
+  name: 'AppSidebar',
+})
 </script>
 
 <template>
@@ -10,10 +13,11 @@
 
 <style scoped>
 .sidebar {
-  background-color: var(--color-background-alt);
+  background-color: var(--color-card-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   padding: var(--spacing-sm);
+  box-shadow: var(--shadow-sm);
 }
 
 @media (min-width: 1024px) {

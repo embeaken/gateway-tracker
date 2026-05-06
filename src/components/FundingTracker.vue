@@ -14,7 +14,13 @@ function fmt(n: number): string {
 
 <template>
   <div class="funding-card">
-    <h3 class="funding-title">Federal funding tracker</h3>
+    <div class="funding-heading">
+      <div>
+        <p class="funding-kicker">Funding status</p>
+        <h3 class="funding-title">Federal grant drawdown</h3>
+      </div>
+      <span class="funding-state">Active construction</span>
+    </div>
 
     <div class="stats-row">
       <div class="stat-item stat-item--confirmed">
@@ -50,45 +56,89 @@ function fmt(n: number): string {
   background: var(--color-card-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  padding: var(--spacing-md);
+  padding: var(--spacing-sm);
   margin-bottom: var(--spacing-sm);
+}
+
+.funding-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  margin-bottom: 12px;
+}
+
+.funding-kicker {
+  margin: 0 0 4px;
+  color: var(--color-primary);
+  font-size: 11px;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.07em;
+  line-height: 1;
+  text-transform: uppercase;
 }
 
 .funding-title {
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
-  margin: 0 0 10px 0;
-  letter-spacing: -0.01em;
+  margin: 0;
+  letter-spacing: 0;
+}
+
+.funding-state {
+  padding: 5px 8px;
+  border: 1px solid rgba(22, 163, 74, 0.28);
+  border-radius: var(--radius-sm);
+  background: rgba(22, 163, 74, 0.1);
+  color: #166534;
+  font-size: 12px;
+  font-weight: var(--font-weight-bold);
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
 /* --- Stats --- */
 
 .stats-row {
   display: grid;
-  grid-template-columns: repeat(2, auto);
-  justify-content: start;
-  gap: var(--spacing-md);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
   margin-bottom: 12px;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-border);
 }
 
 .stat-item {
-  border-left: 3px solid;
-  padding-left: 10px;
+  border-left: 0;
+  padding: 10px;
+  background: var(--color-card-bg);
 }
 
-.stat-item--confirmed { border-color: #16A34A; }
+.stat-item--confirmed { border-top: 3px solid #16A34A; }
 .stat-item--confirmed .stat-value { color: #16A34A; }
-.stat-item--frozen { border-color: #CBD5E1; }
+.stat-item--frozen { border-top: 3px solid #CBD5E1; }
 
-[data-theme="dark"] .stat-item--confirmed { border-color: #4ADE80; }
+[data-theme="dark"] .funding-state {
+  border-color: rgba(74, 222, 128, 0.32);
+  background: rgba(74, 222, 128, 0.1);
+  color: #86EFAC;
+}
+[data-theme="dark"] .stat-item--confirmed { border-top-color: #4ADE80; }
 [data-theme="dark"] .stat-item--confirmed .stat-value { color: #4ADE80; }
-[data-theme="dark"] .stat-item--frozen { border-color: #475569; }
+[data-theme="dark"] .stat-item--frozen { border-top-color: #475569; }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .stat-item--confirmed { border-color: #4ADE80; }
+  :root:not([data-theme="light"]) .funding-state {
+    border-color: rgba(74, 222, 128, 0.32);
+    background: rgba(74, 222, 128, 0.1);
+    color: #86EFAC;
+  }
+  :root:not([data-theme="light"]) .stat-item--confirmed { border-top-color: #4ADE80; }
   :root:not([data-theme="light"]) .stat-item--confirmed .stat-value { color: #4ADE80; }
-  :root:not([data-theme="light"]) .stat-item--frozen { border-color: #475569; }
+  :root:not([data-theme="light"]) .stat-item--frozen { border-top-color: #475569; }
 }
 
 .stat-value {
@@ -97,7 +147,7 @@ function fmt(n: number): string {
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
   line-height: 1.1;
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
   font-variant-numeric: tabular-nums;
 }
 
@@ -215,6 +265,11 @@ function fmt(n: number): string {
 
   .stat-value {
     font-size: 18px;
+  }
+
+  .funding-heading {
+    flex-direction: column;
+    gap: 8px;
   }
 
   .bar {

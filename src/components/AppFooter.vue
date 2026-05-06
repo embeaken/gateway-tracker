@@ -13,7 +13,7 @@
 
 <style scoped>
 .app-footer {
-  margin-top: var(--spacing-1xl);
+  margin-top: var(--spacing-xl);
   padding: var(--spacing-xl) 0;
   background-color: var(--color-background);
 }

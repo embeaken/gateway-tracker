@@ -45,7 +45,27 @@ IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".avif"}
 
 MAX_MONTHS_LOOKBACK = 24
 
-# PDF filename substrings that are silently ignored (not reported as unclassified)
+# PDF filename substrings matched against lowercase filename.
+# Order matters in fetch_pdfs: press releases checked first, then construction
+# notices, then ignore list. Anything unmatched lands in "unclassified".
+PRESS_RELEASE_PATTERNS = (
+    "release",        # GDC press releases
+    "statement",      # GDC statements
+    "gazette",        # GDC Gazette quarterly newsletter
+    "complaint",      # federal court filings (e.g. COFC complaint)
+)
+
+CONSTRUCTION_NOTICE_PATTERNS = (
+    "construction-notice",
+    "parking-restriction",   # parking closures around construction sites
+    "upcoming-activity",     # site activity advisories
+    "safety-alert",          # boater/pedestrian safety alerts tied to construction
+    "faq",                   # project-impact FAQs (Bike-Ped, Manhattan, etc.)
+    "one-pager",             # community-facing explainers for active work
+    "trenching",             # activity-named notices (e.g. Utility-Trenching)
+)
+
+# Silently ignored (not reported as unclassified): governance docs and HR listings
 IGNORED_PDF_PATTERNS = (
     "board",          # board meetings, agendas, presentations, minutes
     "agenda",
@@ -55,6 +75,10 @@ IGNORED_PDF_PATTERNS = (
     "public-mins",
     "public-session",
     "resolution",
+    "-jd.pdf",        # "-JD.pdf" suffix on job descriptions
+    "job-posting",
+    "job-id",
+    "irma-letter",    # SEC Municipal Advisor Rule compliance letter
 )
 
 # ── Text normalization ────────────────────────────────────────────────────────
@@ -160,32 +184,36 @@ def year_month_from_url(url):
 
 
 def filter_date_mismatches(entries, kind):
-    """Drop entries whose LLM-extracted date year doesn't match the upload folder year.
+    """Drop entries whose LLM-extracted date is after the upload folder month.
 
-    Only applied when _is_fallback is False (i.e. LLM actually extracted a date).
-    Folder-date fallbacks are left alone since the date IS the folder date.
+    Uploads happen after document creation, so an extracted date earlier than
+    the folder is legitimate (republished older docs). But a date later than
+    the folder means the LLM misread; a document can't be issued after it
+    was uploaded. Folder-date fallbacks are left alone since the date IS the
+    folder date.
     """
     kept, skipped = [], []
     for e in entries:
         if e.get("_is_fallback", True):
             kept.append(e)
             continue
-        folder_year, _ = year_month_from_url(e["link"])
+        folder_year, folder_month = year_month_from_url(e["link"])
         try:
             item_year = int(e["date"][:4])
+            item_month = int(e["date"][5:7])
         except (ValueError, IndexError):
             kept.append(e)
             continue
-        if item_year != folder_year:
-            skipped.append((e, folder_year))
+        if (item_year, item_month) > (folder_year, folder_month):
+            skipped.append((e, (folder_year, folder_month)))
         else:
             kept.append(e)
     if skipped:
-        print(f"  Skipped {len(skipped)} {kind} (year mismatch with upload folder):")
-        for e, folder_year in skipped:
+        print(f"  Skipped {len(skipped)} {kind} (extracted date after upload folder):")
+        for e, (fy, fm) in skipped:
             fname = e["link"].rsplit("/", 1)[-1]
             print(f"    {fname}")
-            print(f"      extracted date: {e['date']} — folder year: {folder_year}")
+            print(f"      extracted date: {e['date']} - folder: {fy:04d}-{fm:02d}")
     return kept
 
 
@@ -390,7 +418,17 @@ Document text:
 {text[:3000]}
 
 Return a JSON object with exactly two fields:
-- "title": the document's official title or subject heading (not the filename). Use title case regardless of how it appears in the document. Should be concise and human-readable.
+- "title": a concise, human-readable title that identifies the document well enough
+  to stand alone in a list. Use title case. Prefer the document's own subject
+  heading over the filename. AVOID bare generic labels like "Complaint",
+  "Statement", "Press Release", or "Notice" - expand them so the reader can
+  tell what the document is about.
+    * If the document IS itself a court filing (complaint, motion, brief, or
+      other pleading filed with a court - not a press release discussing one),
+      format as: "{{filing type}}: {{plaintiff}} v. {{defendant}} ({{court}})".
+      Example: "Complaint: Gateway Development Commission v. United States (U.S. Court of Federal Claims)".
+    * For press releases and statements (including those about lawsuits),
+      use the headline if present; otherwise summarize the subject.
 - "date": the date the document was issued, in YYYY-MM-DD format.
 
 Return only the JSON object, no other text. Use null if a value cannot be determined."""
@@ -437,6 +475,31 @@ Return only the JSON array, no other text."""
     return [(r.get("date"), not r.get("exact", False)) for r in results]
 
 
+def fill_dates_from_filenames(entries, client):
+    """For entries still using folder-date fallback, try extracting a better
+    date from the filename. Many PDFs encode the issue date in the filename
+    (e.g. `3.24.2026_...`, `2026.3.30_...`, `3_9_26-PPR.pdf`) even when the
+    PDF body lacks an explicit issue date. Mutates entries in-place.
+    """
+    if not client:
+        return entries
+    needs_date = [(i, e) for i, e in enumerate(entries) if e.get("_is_fallback")]
+    if not needs_date:
+        return entries
+    fnames = [e["link"].rsplit("/", 1)[-1] for _, e in needs_date]
+    print(f"  Inferring dates from filenames for {len(needs_date)} item(s)...")
+    try:
+        results = llm_infer_dates_from_filenames(client, fnames)
+    except Exception as ex:
+        print(f"  WARNING: filename date inference failed: {ex}")
+        return entries
+    for (i, _), (date, is_fallback) in zip(needs_date, results):
+        if date and re.match(r"^\d{4}-\d{2}-\d{2}$", date):
+            entries[i]["date"] = date
+            entries[i]["_is_fallback"] = is_fallback
+    return entries
+
+
 def enrich_pdfs(entries, client, existing):
     """Download each PDF and use an LLM to replace filename-derived title and date.
 
@@ -465,7 +528,7 @@ def enrich_pdfs(entries, client, existing):
                 metadata = llm_extract_pdf_metadata(client, text, fname)
                 if metadata.get("title"):
                     result["title"] = normalize(metadata["title"])
-                if metadata.get("date"):
+                if metadata.get("date") and re.match(r"^\d{4}-\d{2}-\d{2}$", metadata["date"]):
                     result["date"] = metadata["date"]
                     result["_is_fallback"] = False
             except Exception as e:
@@ -475,7 +538,7 @@ def enrich_pdfs(entries, client, existing):
     return enriched
 
 
-def fetch_pdfs(n_press=10, n_notices=10):
+def fetch_pdfs(n_press=15, n_notices=15):
     """Walk backward through months to collect press releases and construction notices."""
     print("Fetching press releases and construction notices...")
     press, notices, unclassified = [], [], []
@@ -491,20 +554,27 @@ def fetch_pdfs(n_press=10, n_notices=10):
             fname = furl.rsplit("/", 1)[-1]
             fname_lower = fname.lower()
 
+            # Once both caps are filled, stop collecting unclassified items.
+            # The list exists to help surface new categorizations in recent
+            # months; once the script walks deep enough to fill caps, the
+            # remaining files are mostly historical archive dumps (board
+            # minutes, old RFQs, etc.) and not useful categorization signal.
+            caps_full = len(press) >= n_press and len(notices) >= n_notices
+
             if not fname_lower.endswith(".pdf"):
                 ext = "." + fname.rsplit(".", 1)[-1].lower() if "." in fname else ""
-                if ext not in IMAGE_EXTENSIONS and fname:
+                if ext not in IMAGE_EXTENSIONS and fname and not caps_full:
                     unclassified.append(furl)
                 continue
 
             folder_date = f"{year:04d}-{month:02d}-01"
-            if "release" in fname_lower or "statement" in fname_lower:
+            if any(p in fname_lower for p in PRESS_RELEASE_PATTERNS):
                 if len(press) < n_press:
                     press.append({"title": pdf_filename_to_title(fname), "date": folder_date, "link": furl, "_is_fallback": True})
-            elif "construction-notice" in fname_lower:
+            elif any(p in fname_lower for p in CONSTRUCTION_NOTICE_PATTERNS):
                 if len(notices) < n_notices:
                     notices.append({"title": pdf_filename_to_title(fname), "date": folder_date, "link": furl, "_is_fallback": True})
-            elif not any(p in fname_lower for p in IGNORED_PDF_PATTERNS):
+            elif not caps_full and not any(p in fname_lower for p in IGNORED_PDF_PATTERNS):
                 unclassified.append(furl)
 
         month -= 1
@@ -698,9 +768,11 @@ def main():
 
     print("Enriching press releases...")
     press_releases = enrich_pdfs(press_releases, client, existing)
+    press_releases = fill_dates_from_filenames(press_releases, client)
     press_releases = filter_date_mismatches(press_releases, "press releases")
     print("Enriching construction notices...")
     notices = enrich_pdfs(notices, client, existing)
+    notices = fill_dates_from_filenames(notices, client)
     notices = filter_date_mismatches(notices, "construction notices")
 
     # Flag any PDF whose date is still a fallback after enrichment

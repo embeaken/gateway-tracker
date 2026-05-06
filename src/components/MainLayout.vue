@@ -31,8 +31,14 @@
   width: 100%;
 }
 
+@media (max-width: 1199px) {
+  .sidebar-area {
+    display: none;
+  }
+}
+
 /* Desktop: Two-column grid layout */
-@media (min-width: 1024px) {
+@media (min-width: 1200px) {
   .main-layout {
     display: grid;
     grid-template-columns: 1fr var(--sidebar-width);
@@ -50,7 +56,7 @@
 }
 
 /* Tablet: Keep single column but with more spacing */
-@media (min-width: 768px) and (max-width: 1023px) {
+@media (min-width: 768px) and (max-width: 1199px) {
   .main-layout {
     gap: var(--spacing-2xl);
   }

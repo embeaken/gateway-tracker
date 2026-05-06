@@ -164,6 +164,10 @@ const badgeLabel = (type: TimelineItemType): string => ({
 // --- Image handling ---
 
 const transformImage = (url: string, width: number) => {
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    return url
+  }
+
   const params = new URLSearchParams({ url, w: width.toString(), fit: 'contain', format: 'webp' })
   return `/.netlify/images?${params.toString()}`
 }
@@ -182,9 +186,13 @@ const closeImage = () => { selectedImage.value = null }
 
     <!-- Header: title + live count -->
     <div class="timeline-header">
-      <h3 class="timeline-title">
-        Updates from the <span class="tooltip" title="Gateway Development Commission">GDC</span>
-      </h3>
+      <div>
+        <p class="timeline-kicker">Latest evidence</p>
+        <h3 class="timeline-title">
+          Updates from the <span class="tooltip" title="Gateway Development Commission">GDC</span>
+        </h3>
+      </div>
+      <span class="timeline-count">{{ timelineItems.length }} items</span>
     </div>
 
     <!-- Filter tabs -->
@@ -312,9 +320,20 @@ const closeImage = () => { selectedImage.value = null }
 
 .timeline-header {
   display: flex;
-  align-items: baseline;
-  gap: 7px;
-  margin-bottom: 10px;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  margin-bottom: 12px;
+}
+
+.timeline-kicker {
+  margin: 0 0 4px;
+  color: var(--color-primary);
+  font-size: 10px;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
 }
 
 .timeline-title {
@@ -322,6 +341,17 @@ const closeImage = () => { selectedImage.value = null }
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
   margin: 0;
+}
+
+.timeline-count {
+  flex-shrink: 0;
+  padding: 4px 7px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+  font-size: 11px;
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
 }
 
 .timeline-title .tooltip {
@@ -335,7 +365,7 @@ const closeImage = () => { selectedImage.value = null }
 
 .filter-tabs {
   display: flex;
-  gap: 5px;
+  gap: 4px;
   flex-wrap: wrap;
   margin-bottom: 14px;
 }
@@ -345,7 +375,7 @@ const closeImage = () => { selectedImage.value = null }
   font-size: 11px;
   font-weight: var(--font-weight-semibold);
   text-transform: uppercase;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.04em;
   padding: 3px 8px;
   line-height: 1.6;
   border-radius: var(--radius-sm);
