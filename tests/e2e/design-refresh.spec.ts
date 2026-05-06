@@ -32,7 +32,8 @@ test.describe('design refresh smoke', () => {
   test('renders the civic overview and dashboard frame', async ({ page }, testInfo) => {
     await expect(page.getByRole('link', { name: 'hudson.tube home' })).toBeVisible()
     await expect(page.getByRole('heading', { name: /America is building a big new infrastructure project/i })).toBeVisible()
-    await expect(page.getByText('6 / 10')).toBeVisible()
+    await expect(page.getByText('active construction sites')).toBeVisible()
+    await expect(page.getByText('new rail tubes')).toBeVisible()
     await expect(page.locator('.feature-photo')).toBeVisible()
     await expect(page.getByText('Live construction camera').first()).toBeVisible()
     await expect(visibleActivity(page).getByRole('heading', { name: /Updates from the GDC/i })).toBeVisible()

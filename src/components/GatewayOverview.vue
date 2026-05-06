@@ -4,7 +4,9 @@ import { images } from "../assets/activityData";
 
 const emit = defineEmits<{ openContext: [] }>();
 const activePhotoIndex = ref(0);
+const activityHref = ref("#activity");
 let carouselTimer: number | undefined;
+let activityMediaQuery: MediaQueryList | undefined;
 
 const parseDate = (date: string) => new Date(date);
 
@@ -26,12 +28,15 @@ const heroPhotos = computed(() =>
 
 const activePhoto = computed(() => heroPhotos.value[activePhotoIndex.value]);
 
-const activityHref = computed(() => {
-  if (typeof window === "undefined") return "#activity";
-  return window.matchMedia("(min-width: 1200px)").matches ? "#desktop-activity" : "#activity";
-});
+const updateActivityHref = () => {
+  activityHref.value = activityMediaQuery?.matches ? "#desktop-activity" : "#activity";
+};
 
 onMounted(() => {
+  activityMediaQuery = window.matchMedia("(min-width: 1200px)");
+  updateActivityHref();
+  activityMediaQuery.addEventListener("change", updateActivityHref);
+
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   if (prefersReducedMotion || heroPhotos.value.length <= 1) return;
@@ -43,6 +48,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   if (carouselTimer) window.clearInterval(carouselTimer);
+  activityMediaQuery?.removeEventListener("change", updateActivityHref);
 });
 </script>
 
@@ -94,7 +100,8 @@ onUnmounted(() => {
             v-for="(photo, index) in heroPhotos"
             :key="photo.url"
             :src="transformImage(photo.url, 980)"
-            :alt="photo.caption"
+            :alt="index === activePhotoIndex ? photo.caption : ''"
+            :aria-hidden="index !== activePhotoIndex"
             :loading="index === 0 ? 'eager' : 'lazy'"
             class="carousel-photo"
             :class="{ 'carousel-photo--active': index === activePhotoIndex }"
