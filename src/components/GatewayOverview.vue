@@ -64,20 +64,20 @@ onUnmounted(() => {
 
         <div class="metric-grid" aria-label="Project summary">
           <div class="metric">
-            <span class="metric-value">6 / 10</span>
-            <span class="metric-label">packages underway or complete</span>
-          </div>
-          <div class="metric">
             <span class="metric-value">5</span>
-            <span class="metric-label">active construction cameras</span>
+            <span class="metric-label">active construction sites</span>
           </div>
           <div class="metric">
             <span class="metric-value">95k</span>
-            <span class="metric-label">construction jobs supported</span>
+            <span class="metric-label">construction jobs</span>
           </div>
           <div class="metric">
             <span class="metric-value">$19.6B</span>
-            <span class="metric-label">economic activity expected</span>
+            <span class="metric-label">economic activity</span>
+          </div>
+          <div class="metric">
+            <span class="metric-value">2</span>
+            <span class="metric-label">new rail tubes</span>
           </div>
         </div>
       </div>
@@ -99,7 +99,6 @@ onUnmounted(() => {
             class="carousel-photo"
             :class="{ 'carousel-photo--active': index === activePhotoIndex }"
           />
-          <span class="photo-chip">Recent construction photos</span>
           <span class="photo-caption">
             <strong>{{ formatDate(activePhoto.date) }}</strong>
             {{ activePhoto.caption }}
@@ -274,25 +273,10 @@ onUnmounted(() => {
   background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.76));
 }
 
-.photo-chip,
 .photo-caption,
 .photo-dots {
   position: absolute;
   z-index: 1;
-}
-
-.photo-chip {
-  top: 12px;
-  left: 12px;
-  padding: 5px 8px;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  border-radius: var(--radius-sm);
-  background: rgba(0, 0, 0, 0.42);
-  color: white;
-  font-size: 11px;
-  font-weight: var(--font-weight-bold);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 
 .photo-caption {

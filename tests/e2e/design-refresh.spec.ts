@@ -33,7 +33,7 @@ test.describe('design refresh smoke', () => {
     await expect(page.getByRole('link', { name: 'hudson.tube home' })).toBeVisible()
     await expect(page.getByRole('heading', { name: /America is building a big new infrastructure project/i })).toBeVisible()
     await expect(page.getByText('6 / 10')).toBeVisible()
-    await expect(page.getByText('Recent construction photos')).toBeVisible()
+    await expect(page.locator('.feature-photo')).toBeVisible()
     await expect(page.getByText('Live construction camera').first()).toBeVisible()
     await expect(visibleActivity(page).getByRole('heading', { name: /Updates from the GDC/i })).toBeVisible()
 
