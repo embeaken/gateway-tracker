@@ -1,17 +1,14 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import AppHeader from './components/AppHeader.vue'
 import GatewayOverview from './components/GatewayOverview.vue'
+import OverviewExplainer from './components/OverviewExplainer.vue'
 import AppFooter from './components/AppFooter.vue'
 import MainLayout from './components/MainLayout.vue'
 import ProjectCard from './components/ProjectCard.vue'
 import Sidebar from './components/Sidebar.vue'
-import ContextCard from './components/ContextCard.vue'
 import ActivityTimeline from './components/ActivityTimeline.vue'
 import CommitmentTracker from './components/CommitmentTracker.vue'
 import { projects } from './assets/data'
-
-const contextOpen = ref(false)
 
 if (import.meta.env.VITE_PLAYWRIGHT) {
   document.documentElement.dataset.visualTest = 'true'
@@ -20,7 +17,8 @@ if (import.meta.env.VITE_PLAYWRIGHT) {
 
 <template>
   <AppHeader />
-  <GatewayOverview @open-context="contextOpen = true" />
+  <GatewayOverview />
+  <OverviewExplainer />
 
   <main>
     <MainLayout>
@@ -53,8 +51,6 @@ if (import.meta.env.VITE_PLAYWRIGHT) {
   </main>
 
   <AppFooter />
-
-  <ContextCard :open="contextOpen" @close="contextOpen = false" />
 </template>
 
 <style scoped>

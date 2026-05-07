@@ -46,11 +46,9 @@ test.describe('design refresh smoke', () => {
     await page.getByRole('tab', { name: 'Photos' }).click()
     await expect(page.getByRole('tab', { name: 'Photos' })).toHaveAttribute('aria-selected', 'true')
 
-    const contextButton = page.getByRole('button', { name: /What's going on/i }).first()
-    await contextButton.click()
+    await page.getByRole('link', { name: /Watch overview/i }).click()
     await expect(page.getByRole('heading', { name: "What's going on?" })).toBeVisible()
-    await page.keyboard.press('Escape')
-    await expect(page.getByRole('heading', { name: "What's going on?" })).toBeHidden()
+    await expect(page.getByRole('heading', { name: "What's going on?" })).toBeInViewport()
 
     await page.getByRole('button', { name: /Switch to dark mode/i }).click()
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')

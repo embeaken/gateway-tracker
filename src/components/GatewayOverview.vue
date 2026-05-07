@@ -2,7 +2,6 @@
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import { images } from "../assets/activityData";
 
-const emit = defineEmits<{ openContext: [] }>();
 const activePhotoIndex = ref(0);
 let carouselTimer: number | undefined;
 
@@ -51,13 +50,6 @@ onUnmounted(() => {
           work will strengthen the busiest rail corridor in the US, create thousands of jobs, and
           maybe prove that not everything is terrible.
         </p>
-
-        <div class="overview-actions" aria-label="Primary page sections">
-          <button type="button" class="primary-link" @click="emit('openContext')">
-            <span class="primary-link-label">What's going on?</span>
-            <span class="primary-link-arrow" aria-hidden="true">→</span>
-          </button>
-        </div>
 
         <div class="metric-grid" aria-label="Project summary">
           <div class="metric">
@@ -154,67 +146,6 @@ onUnmounted(() => {
   line-height: 1.55;
 }
 
-.overview-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: var(--spacing-md);
-}
-
-.primary-link {
-  display: inline-flex;
-  align-items: center;
-  min-height: 46px;
-  width: fit-content;
-  justify-content: center;
-  gap: 8px;
-  padding: 0 16px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  font-size: 15px;
-  font-weight: var(--font-weight-bold);
-  font-family: inherit;
-  line-height: 1;
-  cursor: pointer;
-}
-
-.primary-link {
-  background: var(--color-card-bg);
-  color: var(--color-text-primary);
-  box-shadow: var(--shadow-sm);
-}
-
-.primary-link:visited {
-  color: var(--color-text-primary);
-}
-
-.primary-link:hover {
-  background: var(--color-background-alt);
-  border-color: rgba(0, 94, 113, 0.28);
-  color: var(--color-text-primary);
-  box-shadow: var(--shadow-md);
-}
-
-.primary-link-label {
-  white-space: nowrap;
-}
-
-.primary-link-arrow {
-  font-size: 18px;
-  color: var(--color-primary);
-}
-
-[data-theme="dark"] .primary-link {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(148, 163, 184, 0.35);
-  color: var(--color-text-primary);
-}
-
-[data-theme="dark"] .primary-link:hover {
-  background: rgba(255, 255, 255, 0.07);
-  border-color: rgba(56, 189, 248, 0.38);
-}
-
 .metric-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -262,7 +193,7 @@ onUnmounted(() => {
 .feature-photo {
   position: relative;
   display: block;
-  height: clamp(390px, 29vw, 460px);
+  height: clamp(330px, 24vw, 400px);
   overflow: hidden;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
