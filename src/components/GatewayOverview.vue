@@ -10,12 +10,18 @@ const parseDate = (date: string) => new Date(date);
 const formatDate = (date: string) =>
   parseDate(date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
-const transformImage = (url: string, width: number) => {
+const transformImage = (url: string, width: number, height: number) => {
   if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
     return url;
   }
 
-  const params = new URLSearchParams({ url, w: width.toString(), fit: "cover", format: "webp" });
+  const params = new URLSearchParams({
+    url,
+    w: width.toString(),
+    h: height.toString(),
+    fit: "cover",
+    fm: "webp",
+  });
   return `/.netlify/images?${params.toString()}`;
 };
 
@@ -82,7 +88,7 @@ onUnmounted(() => {
           <img
             v-for="(photo, index) in heroPhotos"
             :key="photo.url"
-            :src="transformImage(photo.url, 980)"
+            :src="transformImage(photo.url, 1200, 400)"
             :alt="index === activePhotoIndex ? photo.caption : ''"
             :aria-hidden="index !== activePhotoIndex"
             :loading="index === 0 ? 'eager' : 'lazy'"

@@ -163,12 +163,18 @@ const badgeLabel = (type: TimelineItemType): string => ({
 
 // --- Image handling ---
 
-const transformImage = (url: string, width: number) => {
+const transformImage = (url: string, width: number, height: number) => {
   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
     return url
   }
 
-  const params = new URLSearchParams({ url, w: width.toString(), fit: 'contain', format: 'webp' })
+  const params = new URLSearchParams({
+    url,
+    w: width.toString(),
+    h: height.toString(),
+    fit: 'cover',
+    fm: 'webp',
+  })
   return `/.netlify/images?${params.toString()}`
 }
 
@@ -243,7 +249,7 @@ const closeImage = () => { selectedImage.value = null }
             <!-- Mode B: full-width gallery photo -->
             <template v-else-if="isPhotoFull(item)">
               <div class="photo-full" @click="openImage(item)">
-                <img :src="transformImage(item.imageUrl!, 800)" :alt="item.title" loading="lazy" />
+                <img :src="transformImage(item.imageUrl!, 800, 450)" :alt="item.title" loading="lazy" />
               </div>
               <p v-if="item.content" class="photo-caption">{{ item.content }}</p>
             </template>
