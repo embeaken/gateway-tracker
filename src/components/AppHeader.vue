@@ -9,7 +9,7 @@ const emit = defineEmits<{ (e: 'toggle-explainer'): void }>()
       <div class="header-content">
         <div class="brand-row">
           <a href="#" class="brand-lockup" aria-label="hudson.tube home">
-            <span class="brand-mark" aria-hidden="true">H</span>
+            <span class="brand-mark" aria-hidden="true">🚇️</span>
             <span>
               <span class="brand-name">hudson.tube</span>
               <span class="brand-subtitle">Gateway construction tracker</span>
@@ -126,7 +126,7 @@ const emit = defineEmits<{ (e: 'toggle-explainer'): void }>()
 
 .brand-row {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: var(--spacing-md);
 }
@@ -152,12 +152,11 @@ const emit = defineEmits<{ (e: 'toggle-explainer'): void }>()
   justify-content: center;
   width: 34px;
   height: 34px;
-  border: 2px solid rgba(255, 255, 255, 0.82);
-  border-radius: var(--radius-sm);
   color: white;
-  font-size: 18px;
+  font-size: 34px;
   font-weight: var(--font-weight-bold);
   line-height: 1;
+  transform: translateY(-4px);
 }
 
 .brand-name,
@@ -190,7 +189,7 @@ const emit = defineEmits<{ (e: 'toggle-explainer'): void }>()
   .brand-mark {
     width: 30px;
     height: 30px;
-    font-size: 16px;
+    font-size: 30px;
   }
 
   .brand-name {
