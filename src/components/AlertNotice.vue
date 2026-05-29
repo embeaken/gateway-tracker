@@ -11,7 +11,7 @@
           <line x1="12" y1="17" x2="12.01" y2="17"/>
         </svg>
         <p class="alert-body">
-          Construction has resumed. Most federal funds remain frozen while lawsuits play out in court.
+          Construction is active. Some federal funding remains tied up while litigation continues.
           <!--<span class="alert-meta">— Feb 21</span>-->
         </p>
       </div>
@@ -21,9 +21,9 @@
 
 <style scoped>
 .alert-notice {
-  background: var(--color-alert-bg);
-  border-bottom: 2px solid var(--color-alert-border);
-  padding: 10px 0;
+  background: var(--color-card-bg);
+  border-bottom: 1px solid var(--color-border);
+  padding: 7px 0;
 }
 
 .alert-content {
@@ -34,13 +34,13 @@
 
 .alert-icon {
   flex-shrink: 0;
-  color: var(--color-alert-icon);
+  color: var(--color-accent);
 }
 
 .alert-body {
-  font-size: var(--font-size-sm);
+  font-size: 13px;
   line-height: var(--line-height-normal);
-  color: var(--color-alert-body);
+  color: var(--color-text-secondary);
   margin: 0;
 }
 

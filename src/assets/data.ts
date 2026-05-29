@@ -1,49 +1,57 @@
-import type { Project } from '../types'
+import type { Project } from "../types";
 
 export const projects: Project[] = [
   {
-    name: 'Tonnelle Avenue Bridge',
-    desc: 'This project is clearing the tunnel\'s western approach by turning a portion of Tonnelle Avenue into a bridge that trains can pass under. The first Tunnel Boring Machines (TBMs) are being assembled here ahead of drilling through the Palisades.',
-    earthcam: 'https://share.earthcam.net/tJ90CoLmq7TzrY396Yd88KKPTYvGpuC9sn7UZHiL1L4.tJ90CoLmq7TzrY396Yd88KndwTghhAJ91QbmhhD8hKQ',
+    name: "Palisades Tunnel Project",
+    desc: "This project will drill the first section of tunnel through the NJ Palisades from North Bergen to Hudson County.",
+    earthcam:
+      "https://share.earthcam.net/tJ90CoLmq7TzrY396Yd88KKPTYvGpuC9sn7UZHiL1L4.tJ90CoLmq7TzrY396Yd88KndwTghhAJ91QbmhhD8hKQ",
     facts: [
-      { label: 'Construction status', value: 'Substantially complete' },
-      { label: 'Location', value: 'North Bergen, NJ' },
-    ]
+      { label: "Construction status", value: "TBMs being assembled" },
+      { label: "Location", value: "North Bergen, NJ" },
+    ],
   },
   {
-    name: 'Hudson County Access Shaft',
-    desc: 'TBMs will drill through the Palisades from the west portal to this access shaft in Hudson county. Here they will be replaced by new TBMs that will drill the rest of the way to Manhattan.',
-    earthcam: 'https://share.earthcam.net/tJ90CoLmq7TzrY396Yd88KKPTYvGpuC9sn7UZHiL1L4.tJ90CoLmq7TzrY396Yd88KH9bh2NhJbWVpd0qGjtFqY',
+    name: "Hudson County Access Shaft",
+    desc: "The first TBMs will drill up to this access shaft in Hudson County. Here they will be replaced by new TBMs that will drill under the Hudson River. Once the tunnel is excavated, this will be the location of a ventilation tower and emergency exit.",
+    earthcam:
+      "https://share.earthcam.net/tJ90CoLmq7TzrY396Yd88KKPTYvGpuC9sn7UZHiL1L4.tJ90CoLmq7TzrY396Yd88KH9bh2NhJbWVpd0qGjtFqY",
     facts: [
-      { label: 'Construction status', value: 'In progress' },
-      { label: 'Location', value: 'Hudson County, NJ' },
-    ]
+      {
+        label: "Construction status",
+        value: "Slurry wall installed, rock mass grouting in progress",
+      },
+      { label: "Location", value: "Hudson County, NJ" },
+    ],
   },
   {
-    name: 'Hudson River Ground Stabilization',
-    desc: 'The ground beneath the Hudson River is being reinforced with grout to create a foundation that the TBMs can drill through.',
-    earthcam: 'https://share.earthcam.net/tJ90CoLmq7TzrY396Yd88FEc2KIPXPpEyk01ZY6DV6k.tJ90CoLmq7TzrY396Yd88MxvGIEVbP8q434ixctMxNg',
+    name: "Hudson River Ground Stabilization",
+    desc: "The soil beneath the Hudson River is being reinforced to create a stable foundation that the TBMs can drill through.",
+    earthcam:
+      "https://share.earthcam.net/tJ90CoLmq7TzrY396Yd88FEc2KIPXPpEyk01ZY6DV6k.tJ90CoLmq7TzrY396Yd88MxvGIEVbP8q434ixctMxNg",
     facts: [
-      { label: 'Construction status', value: '70% complete' },
-      { label: 'Location', value: 'Hudson River' },
-    ]
+      { label: "Construction status", value: "75% complete" },
+      { label: "Location", value: "Hudson River" },
+    ],
   },
   {
-    name: 'Manhattan Access Shaft',
-    desc: 'The TBMs will emerge here once they\'re done drilling under the Hudson River.',
-    earthcam: 'https://share.earthcam.net/tJ90CoLmq7TzrY396Yd88AalamigCKiwQn4WPzxftJM.tJ90CoLmq7TzrY396Yd88OFHG2cZ-RCafkbJvvWEIZs',
+    name: "Manhattan Access Shaft",
+    desc: "The Hudson River TBMs will emerge here once they're done drilling. Another ventilation structure will be built here.",
+    earthcam:
+      "https://share.earthcam.net/tJ90CoLmq7TzrY396Yd88AalamigCKiwQn4WPzxftJM.tJ90CoLmq7TzrY396Yd88OFHG2cZ-RCafkbJvvWEIZs",
     facts: [
-      { label: 'Construction status', value: 'In progress' },
-      { label: 'Location', value: '12th Avenue & 30th Street' },
-    ]
+      { label: "Construction status", value: "Slurry wall nearing completion" },
+      { label: "Location", value: "12th Avenue & 30th Street" },
+    ],
   },
   {
-    name: 'Hudson Yards Concrete Casing - Section 3',
-    desc: 'This is the connection between Penn Station and the Manhattan Access Shaft.',
-    earthcam: 'https://share.earthcam.net/tJ90CoLmq7TzrY396Yd88P0bHGwxARMYJSW9OX-yWIs!.tJ90CoLmq7TzrY396Yd88Ghihgs7KQYXaVZwYJQ3kKA!',
+    name: "Hudson Yards Concrete Casing - Section 3",
+    desc: "This project is building out the connection from the new tunnel to Penn Station.",
+    earthcam:
+      "https://share.earthcam.net/tJ90CoLmq7TzrY396Yd88P0bHGwxARMYJSW9OX-yWIs!.tJ90CoLmq7TzrY396Yd88Ghihgs7KQYXaVZwYJQ3kKA!",
     facts: [
-      { label: 'Construction status', value: '75% complete' },
-      { label: 'Location', value: 'Hudson Yards' },
-    ]
+      { label: "Construction status", value: "80% complete" },
+      { label: "Location", value: "Hudson Yards" },
+    ],
   },
-]
+];

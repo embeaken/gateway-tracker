@@ -109,9 +109,19 @@
   ],
   "pressReleases": [
     {
-      "title": "GDC Awards Contract For Hudson Tunnel Project Construction Package 1C: The Hudson River Tunnel Section",
+      "title": "The GDC Gazette: Spring 2026 Hudson Tunnel Project Update",
+      "date": "2026-03-01",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/04/GDC-Gazette-Spring-2026.pdf"
+    },
+    {
+      "title": "GDC Awards Contract for Hudson Tunnel Project Construction Package 1C: The Hudson River Tunnel Section",
       "date": "2026-04-27",
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/04/P1C-Contract-Award-Press-Release.pdf"
+    },
+    {
+      "title": "The GDC Gazette: Hudson Tunnel Project Update - December 2025",
+      "date": "2025-12-01",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/GDC-Gazette-12.2025.pdf"
     },
     {
       "title": "Hudson Tunnel Project Construction Update",
@@ -119,7 +129,17 @@
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/GDC-Press-Release-March-2026-Construction-Update-for-website.pdf"
     },
     {
-      "title": "Hudson Tunnel Project Construction To Be Suspended Due To Lack Of Federal Funding",
+      "title": "Gateway Development Commission Seeks Bids for Tonnelle Avenue Bridge Construction on Hudson Tunnel Project",
+      "date": "2023-02-16",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/GDC-preleasetonnelleprocurement-0223Final-2.pdf"
+    },
+    {
+      "title": "Complaint: Gateway Development Commission v. The United States (U.S. Court of Federal Claims)",
+      "date": "2026-02-02",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/02/20260202-GDC-COFC-Complaint.pdf"
+    },
+    {
+      "title": "Hudson Tunnel Project Construction Suspended Due to Lack of Federal Funding",
       "date": "2026-02-06",
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/02/Construction-Pause-Press-Release-Feb-6-2026.pdf"
     },
@@ -129,7 +149,7 @@
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/02/GDC-2026.02.02-Press-Release-for-Website.pdf"
     },
     {
-      "title": "Gateway Development Commission Statement On New York, New Jersey's Hudson Tunnel Project Lawsuit Hearing",
+      "title": "Gateway Development Commission Statement on New York, New Jersey's Hudson Tunnel Project Lawsuit Hearing",
       "date": "2026-02-06",
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/02/GDC-2026.02.06-GDC-Statement-on-NY-NJ-Lawsuit.pdf"
     },
@@ -139,7 +159,7 @@
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/02/GDC-Release-Feb-24-2026-Construction-Update-for-Website.pdf"
     },
     {
-      "title": "Gateway Development Commission Statement on Development in New York, New Jersey's Hudson Tunnel Project Lawsuit",
+      "title": "Gateway Development Commission Statement on Hudson Tunnel Project Lawsuit",
       "date": "2026-02-12",
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/02/GDC-Statement-02.12.2026.pdf"
     },
@@ -152,50 +172,95 @@
       "title": "Gateway Development Commission Statement on Initial Disbursement of Federal Funds for Hudson Tunnel Project",
       "date": "2026-02-13",
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/02/GDC-Statement-on-Initial-Disbursement-of-Federal-Funds.pdf"
+    },
+    {
+      "title": "Gateway Development Commission Announces Hudson Tunnel Project Construction Pause If Federal Funding Not Restored",
+      "date": "2026-01-27",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/01/01.27.2026-Board-Meeting-Press-Release-for-Website.pdf"
+    },
+    {
+      "title": "GDC Completes Manufacturing of First Pair of Tunnel Boring Machines for Hudson Tunnel Project",
+      "date": "2025-12-15",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/12/GDC-December-Board-Meeting-Press-Release-for-website.pdf"
     }
   ],
   "constructionNotices": [
     {
-      "title": "Construction Notice - Secant Pile Wall Installation",
+      "title": "Boater Safety Alert: Hudson Tunnel Project Safety Zone and Seasonal Buoys",
+      "date": "2026-05-01",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/05/2026.5.1_Gateway-Development-Commission-Boater-Safety-Alert_vf.pdf"
+    },
+    {
+      "title": "Construction Notice: Secant Pile Wall Installation at Palisades Tunnel Project",
       "date": "2026-04-14",
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/04/Construction-Notice_Secant-Pile-Wall-Installation_2026-04-14_final._eng_span.pdf"
     },
     {
-      "title": "Construction Notice: Temporary Bikeway/Walkway Shift",
-      "date": "2026-03-01",
+      "title": "Hudson Tunnel Project Hudson River Park Area Impacts-Frequently Asked Questions",
+      "date": "2026-03-30",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/2026.3.30_Bike-Ped-Park-FAQ-vf.pdf"
+    },
+    {
+      "title": "Construction Notice: Temporary Bikeway and Walkway Shift for Manhattan Tunnel Project",
+      "date": "2026-03-30",
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/2026.3.30_Gateway-Development-Commission-Construction-Notice-HRP-Bike-Ped-vf.pdf"
     },
     {
-      "title": "2026 Manhattan Tunnel Project Temporary Overnight Construction Activities Notice",
+      "title": "Hudson Tunnel Project Frequently Asked Questions: Manhattan Tunneling Safety",
+      "date": "2026-03-24",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/3.24.2026_Gateway-Development-Commission-Manhattan-Tunneling-Safety-One-Pager.pdf"
+    },
+    {
+      "title": "Gateway Development Commission Construction Notice: Overnight Construction Activities in Hudson River Park",
       "date": "2026-03-27",
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/3.27.2026_Gateway-Development-Commission-Construction-Notice-Overnight-HRP.pdf"
     },
     {
-      "title": "Construction Notice North Bergen Portal Upcoming Activity Notice",
+      "title": "Construction Notice: North Bergen Portal Upcoming Activity - Palisades Tunnel Project",
       "date": "2026-03-01",
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/Construction-Notice-North-Bergen-Portal-Upcoming-Activity-Notice.pdf"
     },
     {
+<<<<<<< HEAD
       "title": "Tonnelle Avenue Bridge And Utility Relocation Project Construction Notice",
+=======
+      "title": "Palisades Tunnel Project: Upcoming Construction Activity at the Hudson County Shaft Site (Spring 2026)",
+      "date": "2026-03-21",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/HC-Shaft-Site-Upcoming-Activity_spring-2026_final.pdf"
+    },
+    {
+      "title": "Temporary Parking Restriction Notice: Paterson Plank Road, North Bergen (Palisades Tunnel Project)",
+      "date": "2026-03-09",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/Parking-Restrictions-3_9_26-PPR.pdf"
+    },
+    {
+      "title": "Gateway Development Commission FAQ: Hudson River Park Impacts on Cyclists and Pedestrians",
+      "date": "2026-03-01",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/Sp-3.30.3036_Gateway-Development-Commission-FAQ-HRP-Bike-Ped.pdf"
+    },
+    {
+      "title": "Tonnelle Avenue Bridge and Utility Relocation Project Construction Notice - Lane Closures",
+>>>>>>> ilya/revamp-may
       "date": "2026-03-13",
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/Tonnelle-Construction-Notice_2026-03-13_lane-closures.pdf"
     },
     {
-      "title": "Hudson Yards Concrete Casing-Section 3 Project Construction Notice: Concrete Pour",
+      "title": "Hudson Yards Concrete Casing-Section 3 Project Concrete Pour Construction Notice",
       "date": "2026-02-19",
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/02/2026.2.19_Gateway-Development-Commission-Construction-Notice-Concrete-Pour.pdf"
     },
     {
-      "title": "Hudson Yards Concrete Casing - Section 3 Construction Notice",
+      "title": "Hudson Yards Concrete Casing Section 3 Construction Notice",
       "date": "2026-01-21",
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/01/1.21.2026_Gateway-Development-Commission-Construction-Notice.pdf"
     },
     {
-      "title": "Hudson Yards Concrete Casing - Section 3 Construction Notice",
-      "date": "2025-12-02",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/12/12.2.2025_Gateway-Development-Commission-Construction-Notice-Crane.pdf"
+      "title": "Boater Safety Alert: Seasonal Buoy Removal in Hudson River Near Pier 66",
+      "date": "2026-01-23",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/01/2026.1.23_Gateway-Development-Commission-Boater-Safety-Alert-1.pdf"
     },
     {
+<<<<<<< HEAD
       "title": "Manhattan Tunnel Project Construction Notice - Jet Grouting",
       "date": "2025-12-08",
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/12/12.8.2025_Gateway-Development-Commission-Construction-Notice-Jet-Grouting.pdf"
@@ -204,6 +269,11 @@
       "title": "Hudson Yards Concrete Casing-Section 3 Project Construction Notice",
       "date": "2025-11-12",
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/11/11.12.2025_Gateway-Development-Commission-Construction-Notice-Rock-Chopping-Sundays.pdf"
+=======
+      "title": "Hudson Yards Concrete Casing Section 3 Construction Notice - Crane and Sidewalk Closure",
+      "date": "2025-12-02",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/12/12.2.2025_Gateway-Development-Commission-Construction-Notice-Crane.pdf"
+>>>>>>> ilya/revamp-may
     }
   ],
   "youtubeVideos": [

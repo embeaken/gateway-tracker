@@ -54,11 +54,14 @@ onMounted(() => {
 
 <style scoped>
 .theme-toggle {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
   background: rgba(255, 255, 255, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.25);
   color: white;
   border-radius: var(--radius-md);
-  padding: 6px;
+  padding: 0;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -73,5 +76,13 @@ onMounted(() => {
 .theme-toggle:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+  .theme-toggle {
+    width: 30px;
+    height: 30px;
+    flex-basis: 30px;
+  }
 }
 </style>

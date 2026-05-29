@@ -1,69 +1,208 @@
 <script setup lang="ts">
 import ThemeToggle from './ThemeToggle.vue'
+
+defineProps<{ explainerOpen: boolean }>()
+const emit = defineEmits<{ (e: 'toggle-explainer'): void }>()
 </script>
 
 <template>
   <header class="app-header">
     <div class="container">
       <div class="header-content">
-        <div class="header-top">
-          <h1>hudson.tube 🚇</h1>
+        <div class="brand-row">
+          <a href="#" class="brand-lockup" aria-label="hudson.tube home">
+            <span class="brand-mark" aria-hidden="true">H</span>
+            <span>
+              <span class="brand-name">hudson.tube</span>
+              <span class="brand-subtitle">Gateway construction tracker</span>
+            </span>
+          </a>
           <ThemeToggle />
         </div>
-        <p class="tagline">
-          Tracking <em>the most urgent infrastructure project in America</em>: a pair of new passenger rail tunnels under the Hudson River.
-        </p>
       </div>
+
+      <button
+        type="button"
+        class="explainer-tab"
+        :class="{ 'explainer-tab--open': explainerOpen }"
+        :aria-expanded="explainerOpen"
+        aria-controls="overview-explainer"
+        @click="emit('toggle-explainer')"
+      >
+        <span class="explainer-tab-label">{{ explainerOpen ? 'Close' : "What's going on?" }}</span>
+        <svg class="explainer-tab-chevron" viewBox="0 0 10 6" aria-hidden="true">
+          <path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </button>
     </div>
   </header>
 </template>
 
 <style scoped>
 .app-header {
-  background: linear-gradient(135deg, #005E71 0%, #004555 100%);
+  position: relative;
+  background: var(--color-primary-dark);
   color: white;
-  padding: var(--spacing-lg) 0;
-  border-bottom: 4px solid #D4980A;
+  padding: 12px 0;
+  border-bottom: 3px solid var(--color-accent);
 }
 
-.header-top {
-  display: flex;
+/* Handle hanging off the header's bottom edge — pulls the explainer out. */
+.explainer-tab {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  z-index: 2;
+  transform: translate(-50%, 100%);
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-}
-
-.header-content h1 {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-bold);
-  margin: 0 0 var(--spacing-xs) 0;
-  color: white;
-  letter-spacing: -0.03em;
-}
-
-.tagline {
-  font-size: var(--font-size-base);
-  line-height: var(--line-height-normal);
-  margin: 0;
-  color: rgba(255, 255, 255, 1);
-  font-weight: var(--font-weight-medium);
-}
-
-.tagline em {
-  font-style: italic;
+  gap: 7px;
+  padding: 5px 16px 7px;
+  border: 0;
+  /* Continue the header's accent stripe across the tab so the yellow line
+     isn't broken by the tab's dark background. */
+  border-top: 3px solid var(--color-accent);
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  background: var(--color-primary-dark);
+  color: rgba(255, 255, 255, 0.9);
+  font-family: inherit;
+  font-size: 12px;
   font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition:
+    background var(--transition-base),
+    color var(--transition-base),
+    transform var(--transition-base);
+}
+
+/* Subtle lighten of the tab's own colour — never the bright accent teal, which
+   clashed with the gold header stripe. Stays flush to the header (no gap). */
+.explainer-tab:hover {
+  color: #fff;
+  background: color-mix(in srgb, #004555, white 12%);
+  box-shadow: var(--shadow-md);
+}
+
+.explainer-tab-chevron {
+  width: 10px;
+  height: 6px;
+  transition: transform var(--transition-base);
+}
+
+/* Chevron leans in the toggle direction on hover — down to pull out, up to tuck back. */
+.explainer-tab:hover .explainer-tab-chevron {
+  transform: translateY(2px);
+}
+
+.explainer-tab--open .explainer-tab-chevron {
+  transform: rotate(180deg);
+}
+
+.explainer-tab--open:hover .explainer-tab-chevron {
+  transform: rotate(180deg) translateY(2px);
+}
+
+[data-theme="dark"] .app-header,
+[data-theme="dark"] .explainer-tab {
+  background: #083344;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .app-header,
+  :root:not([data-theme="light"]) .explainer-tab {
+    background: #083344;
+  }
+}
+
+[data-theme="dark"] .explainer-tab:hover {
+  background: color-mix(in srgb, #083344, white 12%);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .explainer-tab:hover {
+    background: color-mix(in srgb, #083344, white 12%);
+  }
+}
+
+.brand-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+}
+
+.brand-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  color: white;
+  border-bottom: 0;
+}
+
+.brand-lockup:hover,
+.brand-lockup:visited {
+  color: white;
+  border-bottom: 0;
+}
+
+.brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 2px solid rgba(255, 255, 255, 0.82);
+  border-radius: var(--radius-sm);
+  color: white;
+  font-size: 18px;
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+}
+
+.brand-name,
+.brand-subtitle {
+  display: block;
+}
+
+.brand-name {
+  color: white;
+  font-size: 20px;
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.brand-subtitle {
+  margin-top: 3px;
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 @media (max-width: 768px) {
   .app-header {
-    padding: var(--spacing-md) 0;
+    padding: 10px 0;
   }
 
-  .header-content h1 {
-    font-size: var(--font-size-md);
+  .brand-mark {
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
   }
 
-  .tagline {
-    font-size: var(--font-size-sm);
+  .brand-name {
+    font-size: 18px;
   }
+
+  .brand-subtitle {
+    font-size: 10px;
+  }
+
 }
 </style>

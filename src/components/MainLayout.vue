@@ -4,12 +4,12 @@
 
 <template>
   <div class="main-layout container">
-    <div class="content-area">
-      <slot name="content"></slot>
-    </div>
     <aside class="sidebar-area">
       <slot name="sidebar"></slot>
     </aside>
+    <div class="content-area">
+      <slot name="content"></slot>
+    </div>
   </div>
 </template>
 
@@ -18,8 +18,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xl);
-  padding-top: var(--spacing-xl);
-  padding-bottom: var(--spacing-xl);
+  padding-top: var(--spacing-sm);
+  padding-bottom: var(--spacing-sm);
 }
 
 .content-area {
@@ -32,14 +32,21 @@
 }
 
 /* Desktop: Two-column grid layout */
-@media (min-width: 1024px) {
+@media (min-width: 1200px) {
   .main-layout {
     display: grid;
     grid-template-columns: 1fr var(--sidebar-width);
     gap: var(--content-gap);
   }
 
+  .content-area {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
   .sidebar-area {
+    grid-column: 2;
+    grid-row: 1;
     position: sticky;
     top: 20px;
     align-self: start;
@@ -50,7 +57,7 @@
 }
 
 /* Tablet: Keep single column but with more spacing */
-@media (min-width: 768px) and (max-width: 1023px) {
+@media (min-width: 768px) and (max-width: 1199px) {
   .main-layout {
     gap: var(--spacing-2xl);
   }
@@ -60,8 +67,8 @@
 @media (max-width: 767px) {
   .main-layout {
     gap: var(--spacing-md);
-    padding-top: var(--spacing-md);
-    padding-bottom: var(--spacing-md);
+    padding-top: 4px;
+    padding-bottom: 4px;
   }
 }
 </style>
