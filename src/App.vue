@@ -39,12 +39,6 @@ function toggleExplainer() {
       <template #content>
         <div id="construction-cameras" class="camera-anchor"></div>
 
-        <section id="activity" class="mobile-activity" data-testid="mobile-activity">
-          <Sidebar>
-            <ActivityTimeline />
-          </Sidebar>
-        </section>
-
         <ProjectCard
           v-for="project in projects"
           :key="project.name"
@@ -53,8 +47,8 @@ function toggleExplainer() {
       </template>
 
       <template #sidebar>
-        <div id="desktop-activity" class="activity-anchor"></div>
-        <Sidebar data-testid="desktop-activity">
+        <div id="activity" class="activity-anchor"></div>
+        <Sidebar data-testid="activity">
           <ActivityTimeline />
         </Sidebar>
       </template>
@@ -69,7 +63,7 @@ function toggleExplainer() {
    reliably). Layout shift is instant — height is not animated. */
 .explainer-enter-active,
 .explainer-leave-active {
-  transition: transform 280ms ease, opacity 280ms ease;
+  transition: transform 190ms ease, opacity 190ms ease;
 }
 
 .explainer-enter-from,
@@ -88,17 +82,5 @@ function toggleExplainer() {
 .camera-anchor,
 .activity-anchor {
   scroll-margin-top: var(--spacing-lg);
-}
-
-.mobile-activity {
-  display: none;
-  scroll-margin-top: var(--spacing-lg);
-}
-
-@media (max-width: 1199px) {
-  .mobile-activity {
-    display: block;
-    margin-bottom: var(--spacing-md);
-  }
 }
 </style>

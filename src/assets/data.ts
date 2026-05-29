@@ -17,7 +17,10 @@ export const projects: Project[] = [
     earthcam:
       "https://share.earthcam.net/tJ90CoLmq7TzrY396Yd88KKPTYvGpuC9sn7UZHiL1L4.tJ90CoLmq7TzrY396Yd88KH9bh2NhJbWVpd0qGjtFqY",
     facts: [
-      { label: "Construction status", value: "Slurry wall installed, shaft excavation imminent" },
+      {
+        label: "Construction status",
+        value: "Slurry wall installed, rock mass grouting in progress",
+      },
       { label: "Location", value: "Hudson County, NJ" },
     ],
   },

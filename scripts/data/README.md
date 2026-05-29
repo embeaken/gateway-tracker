@@ -1,8 +1,7 @@
-# GDC board materials — extracted text corpus
+# GDC board materials - extracted text corpus
 
 Snapshot of text extracted from GDC board meeting PDFs (pypdf). Useful as
-input for future widget ideas that mine board materials for stats not
-already surfaced in `src/assets/boardCommitments.json`.
+input for future widget ideas that mine board materials for stats.
 
 Sources are listed at https://www.gatewayprogram.org/board-meetings-3.html
 
@@ -12,8 +11,7 @@ Text extracted from every Minutes/Resolutions PDF for board meetings from
 May 2023 → April 2026 (25 files). These are text-rich: each contains the
 full text of every resolution adopted at that meeting, including dollar
 caps, contract IDs (`GDC-YY-NNN-XX` or older `GDCYY-NNN`), counterparties,
-and procedural context. This is the corpus `extract_board_commitments.py`
-parses to produce `src/assets/boardCommitments.json`.
+and procedural context.
 
 ## `board-decks/`
 
@@ -36,14 +34,5 @@ occasional text-rich slide.
   "federal funds disbursed" widget if similar tables surface in future
   meetings.
 
-## Refresh
-
-```sh
-uv run scripts/extract_board_commitments.py
-```
-
-This downloads every minutes PDF listed in the script's `MEETINGS`
-constant into `/tmp/gdc_minutes/`, re-extracts text, and rewrites
-`src/assets/boardCommitments.json`. The text files in this directory
-are not refreshed automatically — they're a one-time snapshot to keep
-context available without re-downloading 28MB of PDFs.
+These text files are not refreshed automatically. They are a one-time
+snapshot to keep context available without re-downloading 28MB of PDFs.

@@ -500,6 +500,15 @@ def fill_dates_from_filenames(entries, client):
     return entries
 
 
+def is_folder_date_fallback(entry):
+    """Return True when a cached PDF date is just its upload folder month."""
+    try:
+        folder_year, folder_month = year_month_from_url(entry["link"])
+    except KeyError:
+        return False
+    return entry.get("date") == f"{folder_year:04d}-{folder_month:02d}-01"
+
+
 def enrich_pdfs(entries, client, existing):
     """Download each PDF and use an LLM to replace filename-derived title and date.
 
@@ -517,7 +526,7 @@ def enrich_pdfs(entries, client, existing):
             print(f"  cached:    {fname}")
             result["title"] = existing[entry["link"]]["title"]
             result["date"] = existing[entry["link"]]["date"]
-            result["_is_fallback"] = False
+            result["_is_fallback"] = is_folder_date_fallback(result)
         else:
             print(f"  enriching: {fname}")
             try:

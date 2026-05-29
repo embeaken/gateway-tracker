@@ -118,7 +118,7 @@ onUnmounted(() => {
   align-items: end;
   grid-template-columns: minmax(0, 0.95fr) minmax(440px, 1.05fr);
   gap: clamp(var(--spacing-lg), 4vw, var(--spacing-2xl));
-  padding-top: var(--spacing-xl);
+  padding-top: calc(var(--spacing-xl) + 18px);
   padding-bottom: var(--spacing-sm);
 }
 
@@ -288,7 +288,7 @@ onUnmounted(() => {
 @media (max-width: 820px) {
   .overview-grid {
     gap: var(--spacing-md);
-    padding-top: var(--spacing-lg);
+    padding-top: calc(var(--spacing-lg) + 16px);
   }
 
   .overview h2 {

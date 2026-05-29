@@ -4,12 +4,12 @@
 
 <template>
   <div class="main-layout container">
-    <div class="content-area">
-      <slot name="content"></slot>
-    </div>
     <aside class="sidebar-area">
       <slot name="sidebar"></slot>
     </aside>
+    <div class="content-area">
+      <slot name="content"></slot>
+    </div>
   </div>
 </template>
 
@@ -31,12 +31,6 @@
   width: 100%;
 }
 
-@media (max-width: 1199px) {
-  .sidebar-area {
-    display: none;
-  }
-}
-
 /* Desktop: Two-column grid layout */
 @media (min-width: 1200px) {
   .main-layout {
@@ -45,7 +39,14 @@
     gap: var(--content-gap);
   }
 
+  .content-area {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
   .sidebar-area {
+    grid-column: 2;
+    grid-row: 1;
     position: sticky;
     top: 20px;
     align-self: start;

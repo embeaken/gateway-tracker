@@ -55,7 +55,7 @@ const VIDEO_URL = "https://www.youtube.com/embed/slP5zyoLpk4";
 
 <style scoped>
 .overview-explainer {
-  padding: var(--spacing-lg) 0 var(--spacing-xl);
+  padding: calc(var(--spacing-lg) + 14px) 0 var(--spacing-xl);
   background:
     linear-gradient(180deg, rgba(0, 94, 113, 0.03), rgba(0, 94, 113, 0)), var(--color-background);
   scroll-margin-top: var(--spacing-lg);
@@ -124,7 +124,7 @@ const VIDEO_URL = "https://www.youtube.com/embed/slP5zyoLpk4";
 
 @media (max-width: 900px) {
   .overview-explainer {
-    padding: var(--spacing-md) 0 var(--spacing-lg);
+    padding: calc(var(--spacing-md) + 14px) 0 var(--spacing-lg);
   }
 
   .overview-explainer-grid {

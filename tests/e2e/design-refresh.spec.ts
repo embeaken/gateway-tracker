@@ -10,7 +10,7 @@ async function expectNoHorizontalOverflow(page: import('@playwright/test').Page)
 }
 
 function visibleActivity(page: import('@playwright/test').Page) {
-  return page.getByTestId('mobile-activity').or(page.getByTestId('desktop-activity')).filter({ visible: true }).first()
+  return page.getByTestId('activity')
 }
 
 test.describe('design refresh smoke', () => {
