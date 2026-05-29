@@ -1,197 +1,209 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { images, blueskyPosts, pressReleases, constructionNotices, youtubeVideos } from '../assets/activityData'
+import { ref, computed } from "vue";
+import {
+  images,
+  blueskyPosts,
+  pressReleases,
+  constructionNotices,
+  youtubeVideos,
+} from "../assets/activityData";
 
-type TimelineItemType = 'photo' | 'bluesky' | 'press' | 'construction' | 'video'
+type TimelineItemType = "photo" | "bluesky" | "press" | "construction" | "video";
 
 type TimelineItem = {
-  type: TimelineItemType
-  date: Date
-  dateDisplay: string
-  title: string
-  content: string
-  imageUrl?: string
-  link?: string
-  videoId?: string
-}
+  type: TimelineItemType;
+  date: Date;
+  dateDisplay: string;
+  title: string;
+  content: string;
+  imageUrl?: string;
+  link?: string;
+  videoId?: string;
+};
 
-const parseDate = (dateStr: string): Date => new Date(dateStr)
+const parseDate = (dateStr: string): Date => new Date(dateStr);
 
 const formatDate = (date: Date, includeTime = false): string => {
-  const d = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear() % 100}`
-  if (!includeTime) return d
-  const h = date.getHours()
-  const m = date.getMinutes().toString().padStart(2, '0')
-  return `${d} ${h % 12 || 12}:${m}${h >= 12 ? 'pm' : 'am'}`
-}
+  const d = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear() % 100}`;
+  if (!includeTime) return d;
+  const h = date.getHours();
+  const m = date.getMinutes().toString().padStart(2, "0");
+  return `${d} ${h % 12 || 12}:${m}${h >= 12 ? "pm" : "am"}`;
+};
 
 const formatTime = (date: Date): string => {
-  const h = date.getHours()
-  const m = date.getMinutes().toString().padStart(2, '0')
-  return `${h % 12 || 12}:${m}${h >= 12 ? 'pm' : 'am'}`
-}
+  const h = date.getHours();
+  const m = date.getMinutes().toString().padStart(2, "0");
+  return `${h % 12 || 12}:${m}${h >= 12 ? "pm" : "am"}`;
+};
 
 const timelineItems = computed<TimelineItem[]>(() => {
-  const items: TimelineItem[] = []
+  const items: TimelineItem[] = [];
 
-  images.forEach(image => {
+  images.forEach((image) => {
     items.push({
-      type: 'photo',
+      type: "photo",
       date: parseDate(image.date),
       dateDisplay: formatDate(parseDate(image.date)),
       title: image.caption,
       content: image.caption,
-      imageUrl: image.url
-    })
-  })
+      imageUrl: image.url,
+    });
+  });
 
-  blueskyPosts.forEach(post => {
+  blueskyPosts.forEach((post) => {
     items.push({
-      type: 'bluesky',
+      type: "bluesky",
       date: parseDate(post.date),
       dateDisplay: formatDate(parseDate(post.date), true),
-      title: post.text.substring(0, 60) + (post.text.length > 60 ? '...' : ''),
+      title: post.text.substring(0, 60) + (post.text.length > 60 ? "..." : ""),
       content: post.text,
       link: post.link,
-      imageUrl: post.imageUrl
-    })
-  })
+      imageUrl: post.imageUrl,
+    });
+  });
 
-  pressReleases.forEach(press => {
+  pressReleases.forEach((press) => {
     items.push({
-      type: 'press',
+      type: "press",
       date: parseDate(press.date),
       dateDisplay: formatDate(parseDate(press.date)),
       title: press.title,
-      content: '',
-      link: press.link
-    })
-  })
+      content: "",
+      link: press.link,
+    });
+  });
 
-  constructionNotices.forEach(notice => {
+  constructionNotices.forEach((notice) => {
     items.push({
-      type: 'construction',
+      type: "construction",
       date: parseDate(notice.date),
       dateDisplay: formatDate(parseDate(notice.date)),
       title: notice.title,
-      content: '',
-      link: notice.link
-    })
-  })
+      content: "",
+      link: notice.link,
+    });
+  });
 
-  youtubeVideos.forEach(video => {
+  youtubeVideos.forEach((video) => {
     items.push({
-      type: 'video',
+      type: "video",
       date: parseDate(video.date),
       dateDisplay: formatDate(parseDate(video.date)),
       title: video.title,
-      content: video.description || '',
-      videoId: video.videoId
-    })
-  })
+      content: video.description || "",
+      videoId: video.videoId,
+    });
+  });
 
-  return items.sort((a, b) => b.date.getTime() - a.date.getTime())
-})
+  return items.sort((a, b) => b.date.getTime() - a.date.getTime());
+});
 
 // --- Filtering ---
 
-type FilterValue = 'all' | TimelineItemType
+type FilterValue = "all" | TimelineItemType;
 
-const activeFilter = ref<FilterValue>('all')
+const activeFilter = ref<FilterValue>("all");
 
 const filterTabs: { value: FilterValue; label: string }[] = [
-  { value: 'all',          label: 'All' },
-  { value: 'photo',        label: 'Photos' },
-  { value: 'press',        label: 'Press' },
-  { value: 'construction', label: 'Notices' },
-  { value: 'bluesky',      label: 'Bluesky' },
-  { value: 'video',        label: 'Video' },
-]
+  { value: "all", label: "All" },
+  { value: "photo", label: "Photos" },
+  { value: "press", label: "Press" },
+  { value: "construction", label: "Notices" },
+  { value: "bluesky", label: "Bluesky" },
+  { value: "video", label: "Video" },
+];
 
 const filteredItems = computed(() =>
-  activeFilter.value === 'all'
+  activeFilter.value === "all"
     ? timelineItems.value
-    : timelineItems.value.filter(item => item.type === activeFilter.value)
-)
+    : timelineItems.value.filter((item) => item.type === activeFilter.value),
+);
 
 // --- Date grouping ---
 
-type DateGroup = { dateKey: string; dateLabel: string; items: TimelineItem[] }
+type DateGroup = { dateKey: string; dateLabel: string; items: TimelineItem[] };
 
 const getDateKey = (date: Date) =>
-  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 
 const formatGroupDate = (date: Date) =>
-  date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 // Note: groupedItems passes `key + 'T12:00:00'` (local noon) to formatGroupDate
 // to prevent UTC midnight being parsed as the prior day in western timezones
 
 const groupedItems = computed<DateGroup[]>(() => {
-  const map = new Map<string, TimelineItem[]>()
+  const map = new Map<string, TimelineItem[]>();
   for (const item of filteredItems.value) {
-    const key = getDateKey(item.date)
-    if (!map.has(key)) map.set(key, [])
-    map.get(key)!.push(item)
+    const key = getDateKey(item.date);
+    if (!map.has(key)) map.set(key, []);
+    map.get(key)!.push(item);
   }
   return Array.from(map.entries()).map(([key, items]) => ({
     dateKey: key,
-    dateLabel: formatGroupDate(new Date(key + 'T12:00:00')),
+    dateLabel: formatGroupDate(new Date(key + "T12:00:00")),
     items,
-  }))
-})
+  }));
+});
 
 // --- Layout mode helpers ---
 
 // Mode A: compact text strip — no image, just header + title + link
 const isCompact = (item: TimelineItem) =>
-  item.type === 'press' ||
-  item.type === 'construction' ||
-  (item.type === 'bluesky' && !item.imageUrl)
+  item.type === "press" ||
+  item.type === "construction" ||
+  (item.type === "bluesky" && !item.imageUrl);
 
 // Mode B: full-width gallery photo
-const isPhotoFull = (item: TimelineItem) => item.type === 'photo'
+const isPhotoFull = (item: TimelineItem) => item.type === "photo";
 
 // Mode C: side-thumbnail — bluesky with image
-const isThumb = (item: TimelineItem) => item.type === 'bluesky' && !!item.imageUrl
+const isThumb = (item: TimelineItem) => item.type === "bluesky" && !!item.imageUrl;
 
 // Mode D: full-width video embed (everything else)
 
-const badgeLabel = (type: TimelineItemType): string => ({
-  photo: 'Photo', bluesky: 'Bluesky',
-  press: 'Press', construction: 'Construction Notice', video: 'Video',
-} satisfies Record<TimelineItemType, string>)[type]
+const badgeLabel = (type: TimelineItemType): string =>
+  (
+    ({
+      photo: "Photo",
+      bluesky: "Bluesky",
+      press: "Press",
+      construction: "Construction Notice",
+      video: "Video",
+    }) satisfies Record<TimelineItemType, string>
+  )[type];
 
 // --- Image handling ---
 
 const transformImage = (url: string, width: number) => {
-  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-    return url
+  if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+    return url;
   }
 
   const params = new URLSearchParams({
     url,
     w: width.toString(),
-    fm: 'webp',
-  })
-  return `/.netlify/images?${params.toString()}`
-}
+    fm: "webp",
+  });
+  return `/.netlify/images?${params.toString()}`;
+};
 
-const selectedImage = ref<TimelineItem | null>(null)
+const selectedImage = ref<TimelineItem | null>(null);
 
 const openImage = (item: TimelineItem) => {
-  if (item.type === 'photo' && item.imageUrl) selectedImage.value = item
-}
+  if (item.type === "photo" && item.imageUrl) selectedImage.value = item;
+};
 
-const closeImage = () => { selectedImage.value = null }
+const closeImage = () => {
+  selectedImage.value = null;
+};
 </script>
 
 <template>
   <div class="activity-timeline">
-
     <!-- Header: title + live count -->
     <div class="timeline-header">
       <div>
-        <p class="timeline-kicker">Latest evidence</p>
         <h3 class="timeline-title">
           Updates from the <span class="tooltip" title="Gateway Development Commission">GDC</span>
         </h3>
@@ -209,13 +221,14 @@ const closeImage = () => { selectedImage.value = null }
         role="tab"
         :aria-selected="activeFilter === tab.value"
         @click="activeFilter = tab.value"
-      >{{ tab.label }}</button>
+      >
+        {{ tab.label }}
+      </button>
     </div>
 
     <!-- Timeline feed grouped by date -->
     <div class="timeline">
       <section v-for="group in groupedItems" :key="group.dateKey" class="date-group">
-
         <h4 class="date-header">{{ group.dateLabel }}</h4>
 
         <div class="date-group-items">
@@ -225,22 +238,25 @@ const closeImage = () => { selectedImage.value = null }
             class="timeline-item"
             :class="[
               `timeline-item-${item.type}`,
-              isCompact(item)   && 'timeline-item--compact',
+              isCompact(item) && 'timeline-item--compact',
               isPhotoFull(item) && 'timeline-item--photo-full',
-              isThumb(item)     && 'timeline-item--thumb',
+              isThumb(item) && 'timeline-item--thumb',
               item.type === 'video' && 'timeline-item--video-card',
             ]"
           >
-
             <!-- Mode A: compact text strip (press, construction, bluesky w/o image) -->
             <template v-if="isCompact(item)">
               <div class="compact-header">
-                <span class="item-badge" :class="`badge-${item.type}`">{{ badgeLabel(item.type) }}</span>
-                <time v-if="item.type === 'bluesky'" class="item-time">{{ formatTime(item.date) }}</time>
+                <span class="item-badge" :class="`badge-${item.type}`">{{
+                  badgeLabel(item.type)
+                }}</span>
+                <time v-if="item.type === 'bluesky'" class="item-time">{{
+                  formatTime(item.date)
+                }}</time>
               </div>
-              <p class="compact-title">{{ item.type === 'bluesky' ? item.content : item.title }}</p>
+              <p class="compact-title">{{ item.type === "bluesky" ? item.content : item.title }}</p>
               <a v-if="item.link" :href="item.link" target="_blank" class="item-link">
-                {{ item.type === 'bluesky' ? 'View on Bluesky →' : 'View →' }}
+                {{ item.type === "bluesky" ? "View on Bluesky →" : "View →" }}
               </a>
             </template>
 
@@ -275,22 +291,31 @@ const closeImage = () => { selectedImage.value = null }
                 <iframe
                   :src="`https://www.youtube.com/embed/${item.videoId}`"
                   :title="item.title"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allow="
+                    accelerometer;
+                    autoplay;
+                    clipboard-write;
+                    encrypted-media;
+                    gyroscope;
+                    picture-in-picture;
+                  "
                   allowfullscreen
                   loading="lazy"
                 ></iframe>
               </div>
               <div class="video-footer">
                 <p class="compact-title">{{ item.title }}</p>
-                <a :href="`https://www.youtube.com/watch?v=${item.videoId}`" target="_blank" class="item-link">
+                <a
+                  :href="`https://www.youtube.com/watch?v=${item.videoId}`"
+                  target="_blank"
+                  class="item-link"
+                >
                   Watch on YouTube →
                 </a>
               </div>
             </template>
-
           </article>
         </div>
-
       </section>
     </div>
 
@@ -305,7 +330,6 @@ const closeImage = () => { selectedImage.value = null }
         </div>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -328,16 +352,6 @@ const closeImage = () => { selectedImage.value = null }
   justify-content: space-between;
   gap: var(--spacing-sm);
   margin-bottom: 12px;
-}
-
-.timeline-kicker {
-  margin: 0 0 4px;
-  color: var(--color-primary);
-  font-size: 10px;
-  font-weight: var(--font-weight-bold);
-  letter-spacing: 0.08em;
-  line-height: 1;
-  text-transform: uppercase;
 }
 
 .timeline-title {
@@ -437,7 +451,7 @@ const closeImage = () => { selectedImage.value = null }
 }
 
 .date-header::after {
-  content: '';
+  content: "";
   flex: 1;
   height: 1px;
   background: var(--color-border);
@@ -455,14 +469,26 @@ const closeImage = () => { selectedImage.value = null }
   border: 1px solid var(--color-border);
   border-left-width: 3px;
   border-radius: var(--radius-md);
-  transition: box-shadow var(--transition-base), background var(--transition-base);
+  transition:
+    box-shadow var(--transition-base),
+    background var(--transition-base);
 }
 
-.timeline-item-photo        { border-left-color: var(--color-primary); }
-.timeline-item-bluesky      { border-left-color: #0085ff; }
-.timeline-item-press        { border-left-color: #b8900a; }
-.timeline-item-construction { border-left-color: #ea580c; }
-.timeline-item-video        { border-left-color: #cc0000; }
+.timeline-item-photo {
+  border-left-color: var(--color-primary);
+}
+.timeline-item-bluesky {
+  border-left-color: #0085ff;
+}
+.timeline-item-press {
+  border-left-color: #b8900a;
+}
+.timeline-item-construction {
+  border-left-color: #ea580c;
+}
+.timeline-item-video {
+  border-left-color: #cc0000;
+}
 
 /* =============================================
    Mode A — compact text strip
@@ -506,7 +532,6 @@ const closeImage = () => { selectedImage.value = null }
 .timeline-item--photo-full:hover {
   box-shadow: none;
 }
-
 
 .photo-full {
   width: 100%;
@@ -623,8 +648,10 @@ const closeImage = () => { selectedImage.value = null }
 
 .item-video iframe {
   position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   border: none;
 }
 
@@ -654,10 +681,15 @@ const closeImage = () => { selectedImage.value = null }
   line-height: 1.5;
 }
 
-.badge-bluesky      { color: #0085ff; }
-.badge-press        { color: var(--color-badge-press); }
-.badge-construction { color: #ea580c; }
-
+.badge-bluesky {
+  color: #0085ff;
+}
+.badge-press {
+  color: var(--color-badge-press);
+}
+.badge-construction {
+  color: #ea580c;
+}
 
 .item-time {
   font-size: 12px;
@@ -702,7 +734,10 @@ const closeImage = () => { selectedImage.value = null }
 
 .lightbox {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: var(--color-lightbox-overlay);
   display: flex;
   align-items: center;
