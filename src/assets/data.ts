@@ -50,7 +50,10 @@ export const projects: Project[] = [
     earthcam:
       "https://share.earthcam.net/tJ90CoLmq7TzrY396Yd88P0bHGwxARMYJSW9OX-yWIs!.tJ90CoLmq7TzrY396Yd88Ghihgs7KQYXaVZwYJQ3kKA!",
     facts: [
-      { label: "Construction status", value: "80% complete" },
+      {
+        label: "Construction status",
+        value: `The "cover" part of "cut and cover" tunneling has begun`,
+      },
       { label: "Location", value: "Hudson Yards" },
     ],
   },

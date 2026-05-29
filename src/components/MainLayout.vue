@@ -4,12 +4,12 @@
 
 <template>
   <div class="main-layout container">
-    <aside class="sidebar-area">
-      <slot name="sidebar"></slot>
-    </aside>
     <div class="content-area">
       <slot name="content"></slot>
     </div>
+    <aside class="sidebar-area">
+      <slot name="sidebar"></slot>
+    </aside>
   </div>
 </template>
 
