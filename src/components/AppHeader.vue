@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import ThemeToggle from './ThemeToggle.vue'
-
 defineProps<{ explainerOpen: boolean }>()
 const emit = defineEmits<{ (e: 'toggle-explainer'): void }>()
 </script>
@@ -17,7 +15,6 @@ const emit = defineEmits<{ (e: 'toggle-explainer'): void }>()
               <span class="brand-subtitle">Gateway construction tracker</span>
             </span>
           </a>
-          <ThemeToggle />
         </div>
       </div>
 

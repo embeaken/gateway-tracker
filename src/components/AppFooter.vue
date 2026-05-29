@@ -1,11 +1,14 @@
 <script setup lang="ts">
+import ThemeToggle from './ThemeToggle.vue'
+
 // Gateway Tracker Footer
 </script>
 
 <template>
   <footer class="app-footer">
-    <div class="container">
+    <div class="container footer-content">
       <p>Made with civic pride by <a href="https://ilya.pizza" target="_blank">Ilya Rubnich</a> &hearts; | <a href="https://bsky.app/profile/ilya.pizza" target="_blank">Bluesky</a> | <a href="https://github.com/embeaken/gateway-tracker" target="_blank">GitHub</a></p>
+      <ThemeToggle />
     </div>
   </footer>
 </template>
@@ -15,6 +18,13 @@
   margin-top: var(--spacing-sm);
   padding: var(--spacing-md) 0;
   background-color: var(--color-background);
+}
+
+.footer-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
 }
 
 .app-footer p {
