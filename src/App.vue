@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import AppHeader from './components/AppHeader.vue'
 import GatewayOverview from './components/GatewayOverview.vue'
 import OverviewExplainer from './components/OverviewExplainer.vue'
@@ -7,25 +8,36 @@ import MainLayout from './components/MainLayout.vue'
 import ProjectCard from './components/ProjectCard.vue'
 import Sidebar from './components/Sidebar.vue'
 import ActivityTimeline from './components/ActivityTimeline.vue'
-import CommitmentTracker from './components/CommitmentTracker.vue'
 import { projects } from './assets/data'
 
 if (import.meta.env.VITE_PLAYWRIGHT) {
   document.documentElement.dataset.visualTest = 'true'
 }
+
+// The "What's going on?" explainer is tucked under the header and pulled into
+// view by the tab on the header's bottom edge. Toggles open and closed; the
+// viewport is intentionally left where it is.
+const showExplainer = ref(false)
+
+function toggleExplainer() {
+  showExplainer.value = !showExplainer.value
+}
+
 </script>
 
 <template>
-  <AppHeader />
+  <AppHeader :explainer-open="showExplainer" @toggle-explainer="toggleExplainer" />
+  <div class="explainer-collapse">
+    <Transition name="explainer">
+      <OverviewExplainer v-if="showExplainer" />
+    </Transition>
+  </div>
   <GatewayOverview />
-  <OverviewExplainer />
 
   <main>
     <MainLayout>
       <template #content>
         <div id="construction-cameras" class="camera-anchor"></div>
-
-        <CommitmentTracker class="mobile-only-tracker" />
 
         <section id="activity" class="mobile-activity" data-testid="mobile-activity">
           <Sidebar>
@@ -42,7 +54,6 @@ if (import.meta.env.VITE_PLAYWRIGHT) {
 
       <template #sidebar>
         <div id="desktop-activity" class="activity-anchor"></div>
-        <CommitmentTracker class="desktop-only-tracker" />
         <Sidebar data-testid="desktop-activity">
           <ActivityTimeline />
         </Sidebar>
@@ -54,6 +65,26 @@ if (import.meta.env.VITE_PLAYWRIGHT) {
 </template>
 
 <style scoped>
+/* Simple CSS transition for the explainer: transform + opacity (animates
+   reliably). Layout shift is instant — height is not animated. */
+.explainer-enter-active,
+.explainer-leave-active {
+  transition: transform 280ms ease, opacity 280ms ease;
+}
+
+.explainer-enter-from,
+.explainer-leave-to {
+  opacity: 0;
+  transform: translateY(-12px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .explainer-enter-active,
+  .explainer-leave-active {
+    transition: none;
+  }
+}
+
 .camera-anchor,
 .activity-anchor {
   scroll-margin-top: var(--spacing-lg);
@@ -68,19 +99,6 @@ if (import.meta.env.VITE_PLAYWRIGHT) {
   .mobile-activity {
     display: block;
     margin-bottom: var(--spacing-md);
-  }
-}
-
-.desktop-only-tracker {
-  display: none;
-}
-
-@media (min-width: 1200px) {
-  .desktop-only-tracker {
-    display: block;
-  }
-  .mobile-only-tracker {
-    display: none;
   }
 }
 </style>

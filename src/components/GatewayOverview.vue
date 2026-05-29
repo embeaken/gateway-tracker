@@ -310,14 +310,6 @@ onUnmounted(() => {
     font-size: 32px;
   }
 
-  .overview-actions {
-    flex-direction: column;
-  }
-
-  .primary-link {
-    width: 100%;
-  }
-
   .metric-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
