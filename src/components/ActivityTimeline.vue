@@ -11,6 +11,7 @@ import {
 type TimelineItemType = "photo" | "bluesky" | "press" | "construction" | "video";
 
 type TimelineItem = {
+  id: string;
   type: TimelineItemType;
   date: Date;
   dateDisplay: string;
@@ -22,6 +23,10 @@ type TimelineItem = {
 };
 
 const parseDate = (dateStr: string): Date => new Date(dateStr);
+
+const FEED_LIMIT = 100;
+const INITIAL_VISIBLE_ITEMS = 30;
+const PAGE_SIZE = 20;
 
 const formatDate = (date: Date, includeTime = false): string => {
   const d = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear() % 100}`;
@@ -42,6 +47,7 @@ const timelineItems = computed<TimelineItem[]>(() => {
 
   images.forEach((image) => {
     items.push({
+      id: image.url,
       type: "photo",
       date: parseDate(image.date),
       dateDisplay: formatDate(parseDate(image.date)),
@@ -53,6 +59,7 @@ const timelineItems = computed<TimelineItem[]>(() => {
 
   blueskyPosts.forEach((post) => {
     items.push({
+      id: post.link,
       type: "bluesky",
       date: parseDate(post.date),
       dateDisplay: formatDate(parseDate(post.date), true),
@@ -65,6 +72,7 @@ const timelineItems = computed<TimelineItem[]>(() => {
 
   pressReleases.forEach((press) => {
     items.push({
+      id: press.link,
       type: "press",
       date: parseDate(press.date),
       dateDisplay: formatDate(parseDate(press.date)),
@@ -76,6 +84,7 @@ const timelineItems = computed<TimelineItem[]>(() => {
 
   constructionNotices.forEach((notice) => {
     items.push({
+      id: notice.link,
       type: "construction",
       date: parseDate(notice.date),
       dateDisplay: formatDate(parseDate(notice.date)),
@@ -87,6 +96,7 @@ const timelineItems = computed<TimelineItem[]>(() => {
 
   youtubeVideos.forEach((video) => {
     items.push({
+      id: video.videoId,
       type: "video",
       date: parseDate(video.date),
       dateDisplay: formatDate(parseDate(video.date)),
@@ -99,26 +109,15 @@ const timelineItems = computed<TimelineItem[]>(() => {
   return items.sort((a, b) => b.date.getTime() - a.date.getTime());
 });
 
-// --- Filtering ---
+const visibleItemCount = ref(INITIAL_VISIBLE_ITEMS);
 
-type FilterValue = "all" | TimelineItemType;
+const recentItems = computed(() => timelineItems.value.slice(0, FEED_LIMIT));
+const visibleItems = computed(() => recentItems.value.slice(0, visibleItemCount.value));
+const hasMoreItems = computed(() => visibleItems.value.length < recentItems.value.length);
 
-const activeFilter = ref<FilterValue>("all");
-
-const filterTabs: { value: FilterValue; label: string }[] = [
-  { value: "all", label: "All" },
-  { value: "photo", label: "Photos" },
-  { value: "press", label: "Press" },
-  { value: "construction", label: "Notices" },
-  { value: "bluesky", label: "Bluesky" },
-  { value: "video", label: "Video" },
-];
-
-const filteredItems = computed(() =>
-  activeFilter.value === "all"
-    ? timelineItems.value
-    : timelineItems.value.filter((item) => item.type === activeFilter.value),
-);
+const showMoreItems = () => {
+  visibleItemCount.value = Math.min(visibleItemCount.value + PAGE_SIZE, recentItems.value.length);
+};
 
 // --- Date grouping ---
 
@@ -134,7 +133,7 @@ const formatGroupDate = (date: Date) =>
 
 const groupedItems = computed<DateGroup[]>(() => {
   const map = new Map<string, TimelineItem[]>();
-  for (const item of filteredItems.value) {
+  for (const item of visibleItems.value) {
     const key = getDateKey(item.date);
     if (!map.has(key)) map.set(key, []);
     map.get(key)!.push(item);
@@ -201,29 +200,13 @@ const closeImage = () => {
 
 <template>
   <div class="activity-timeline">
-    <!-- Header: title + live count -->
+    <!-- Header -->
     <div class="timeline-header">
       <div>
         <h3 class="timeline-title">
           Updates from the <span class="tooltip" title="Gateway Development Commission">GDC</span>
         </h3>
       </div>
-      <span class="timeline-count">{{ timelineItems.length }} items</span>
-    </div>
-
-    <!-- Filter tabs -->
-    <div class="filter-tabs" role="tablist">
-      <button
-        v-for="tab in filterTabs"
-        :key="tab.value"
-        class="filter-tab"
-        :class="{ 'filter-tab--active': activeFilter === tab.value }"
-        role="tab"
-        :aria-selected="activeFilter === tab.value"
-        @click="activeFilter = tab.value"
-      >
-        {{ tab.label }}
-      </button>
     </div>
 
     <!-- Timeline feed grouped by date -->
@@ -233,8 +216,8 @@ const closeImage = () => {
 
         <div class="date-group-items">
           <article
-            v-for="(item, index) in group.items"
-            :key="index"
+            v-for="item in group.items"
+            :key="item.id"
             class="timeline-item"
             :class="[
               `timeline-item-${item.type}`,
@@ -319,6 +302,12 @@ const closeImage = () => {
       </section>
     </div>
 
+    <div v-if="hasMoreItems" class="timeline-footer">
+      <button type="button" class="load-more-button" @click="showMoreItems">
+        Show more updates
+      </button>
+    </div>
+
     <!-- Lightbox -->
     <div v-if="selectedImage" class="lightbox" @click="closeImage">
       <div class="lightbox-content" @click.stop>
@@ -361,66 +350,9 @@ const closeImage = () => {
   margin: 0;
 }
 
-.timeline-count {
-  flex-shrink: 0;
-  padding: 4px 7px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  color: var(--color-text-secondary);
-  font-size: 11px;
-  font-weight: var(--font-weight-bold);
-  line-height: 1;
-}
-
 .timeline-title .tooltip {
   text-decoration: underline dotted;
   cursor: help;
-}
-
-/* =============================================
-   Filter tabs
-   ============================================= */
-
-.filter-tabs {
-  display: flex;
-  gap: 4px;
-  flex-wrap: wrap;
-  margin-bottom: 14px;
-}
-
-.filter-tab {
-  font-family: inherit;
-  font-size: 11px;
-  font-weight: var(--font-weight-semibold);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  padding: 3px 8px;
-  line-height: 1.6;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--color-border);
-  background: transparent;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  white-space: nowrap;
-}
-
-.filter-tab:hover {
-  border-color: var(--color-primary);
-  color: var(--color-primary);
-  background: var(--color-primary-muted);
-}
-
-.filter-tab--active {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-  color: white;
-}
-
-.filter-tab--active:hover {
-  background: var(--color-primary-dark);
-  border-color: var(--color-primary-dark);
-  color: white;
 }
 
 /* =============================================
@@ -469,6 +401,8 @@ const closeImage = () => {
   border: 1px solid var(--color-border);
   border-left-width: 3px;
   border-radius: var(--radius-md);
+  content-visibility: auto;
+  contain-intrinsic-size: auto 180px;
   transition:
     box-shadow var(--transition-base),
     background var(--transition-base);
@@ -726,6 +660,43 @@ const closeImage = () => {
   font-weight: var(--font-weight-semibold);
   align-self: flex-start;
   flex-shrink: 0;
+}
+
+.timeline-footer {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.load-more-button {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 7px 12px;
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.load-more-button:hover {
+  color: var(--color-primary-dark);
+  border-color: var(--color-primary);
+  background: var(--color-primary-muted);
+}
+
+.load-more-button:focus {
+  outline: none;
+}
+
+.load-more-button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 /* =============================================

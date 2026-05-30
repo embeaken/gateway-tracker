@@ -25,6 +25,7 @@ from datetime import datetime
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.error import HTTPError, URLError
+from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 import anthropic
@@ -43,7 +44,8 @@ DATA_FILE = SCRIPT_DIR.parent / "src" / "assets" / "activityData.json"
 
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".avif"}
 
-MAX_MONTHS_LOOKBACK = 24
+FEED_ITEM_LIMIT = 100
+MAX_MONTHS_LOOKBACK = 60
 
 # PDF filename substrings matched against lowercase filename.
 # Order matters in fetch_pdfs: press releases checked first, then construction
@@ -234,43 +236,54 @@ def extract_image_url(embed):
     return None
 
 
-def fetch_bluesky_posts(limit=10):
+def fetch_bluesky_posts(limit=FEED_ITEM_LIMIT):
     print("Fetching Bluesky posts...")
-    url = (
-        f"https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed"
-        f"?actor={ACTOR}&limit=50&filter=posts_no_replies"
-    )
-    data, err = fetch_url(url, as_json=True)
-    if err:
-        print(f"  ERROR: {err}")
-        return []
+    request_limit = max(1, min(limit, 100))
 
     posts = []
-    for item in data.get("feed", []):
-        if item.get("reason"):
-            continue  # skip reposts
-        post = item["post"]
-        record = post.get("record", {})
-        if record.get("reply"):
-            continue  # belt-and-suspenders; filter param should handle this
+    cursor = None
+    while len(posts) < limit:
+        params = {"actor": ACTOR, "limit": request_limit, "filter": "posts_no_replies"}
+        if cursor:
+            params["cursor"] = cursor
+        url = (
+            "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed"
+            f"?{urlencode(params)}"
+        )
+        data, err = fetch_url(url, as_json=True)
+        if err:
+            print(f"  ERROR: {err}")
+            break
 
-        text = normalize(record.get("text", "").strip())
-        if not text:
-            continue
+        for item in data.get("feed", []):
+            if item.get("reason"):
+                continue  # skip reposts
+            post = item["post"]
+            record = post.get("record", {})
+            if record.get("reply"):
+                continue  # belt-and-suspenders; filter param should handle this
 
-        uri = post.get("uri", "")
-        rkey = uri.rsplit("/", 1)[-1] if "/" in uri else uri
-        entry = {
-            "text": text,
-            "date": record.get("createdAt", ""),
-            "link": f"https://bsky.app/profile/{ACTOR}/post/{rkey}",
-        }
-        image_url = extract_image_url(post.get("embed"))
-        if image_url:
-            entry["imageUrl"] = image_url
-        posts.append(entry)
+            text = normalize(record.get("text", "").strip())
+            if not text:
+                continue
 
-        if len(posts) >= limit:
+            uri = post.get("uri", "")
+            rkey = uri.rsplit("/", 1)[-1] if "/" in uri else uri
+            entry = {
+                "text": text,
+                "date": record.get("createdAt", ""),
+                "link": f"https://bsky.app/profile/{ACTOR}/post/{rkey}",
+            }
+            image_url = extract_image_url(post.get("embed"))
+            if image_url:
+                entry["imageUrl"] = image_url
+            posts.append(entry)
+
+            if len(posts) >= limit:
+                break
+
+        cursor = data.get("cursor")
+        if not cursor or not data.get("feed"):
             break
 
     print(f"  → {len(posts)} posts")
@@ -338,7 +351,7 @@ def strip_caption_date(caption):
     return caption.strip()
 
 
-def fetch_photos(limit=10):
+def fetch_photos(limit=FEED_ITEM_LIMIT):
     print("Fetching photo gallery...")
     html_content, err = fetch_url(GALLERY_URL)
     if err:
@@ -464,7 +477,7 @@ Return only the JSON array, no other text."""
 
     message = client.messages.create(
         model="claude-haiku-4-5-20251001",
-        max_tokens=512,
+        max_tokens=4096,
         messages=[{"role": "user", "content": prompt}],
     )
     raw = message.content[0].text.strip()
@@ -547,7 +560,7 @@ def enrich_pdfs(entries, client, existing):
     return enriched
 
 
-def fetch_pdfs(n_press=15, n_notices=15):
+def fetch_pdfs(n_press=FEED_ITEM_LIMIT, n_notices=FEED_ITEM_LIMIT):
     """Walk backward through months to collect press releases and construction notices."""
     print("Fetching press releases and construction notices...")
     press, notices, unclassified = [], [], []
@@ -640,7 +653,7 @@ def fetch_video_upload_date(video_id):
     return None
 
 
-def fetch_videos(existing, limit=10):
+def fetch_videos(existing, limit=FEED_ITEM_LIMIT):
     """Scrape YouTube video IDs and titles from the GDC video gallery page,
     then fetch upload dates from each video's watch page for new entries.
     """
@@ -740,10 +753,10 @@ def main():
     client = anthropic.Anthropic(api_key=os.environ["HUDSON_TUBE_ANTHROPIC_API_KEY"]) if os.environ.get("HUDSON_TUBE_ANTHROPIC_API_KEY") else None
     existing = {} if args.force else load_existing_data()
 
-    posts = fetch_bluesky_posts()
-    videos = fetch_videos(existing)
+    posts = fetch_bluesky_posts(limit=FEED_ITEM_LIMIT)
+    videos = fetch_videos(existing, limit=FEED_ITEM_LIMIT)
 
-    gallery_photos = fetch_photos()
+    gallery_photos = fetch_photos(limit=FEED_ITEM_LIMIT)
     dates_needing_review = []
     photos = []
 
@@ -773,7 +786,10 @@ def main():
             dates_needing_review.append(("photo", p["url"], date_str))
         photos.append({"url": p["url"], "caption": p.get("caption", ""), "date": date_str})
 
-    press_releases, notices, unclassified = fetch_pdfs()
+    press_releases, notices, unclassified = fetch_pdfs(
+        n_press=FEED_ITEM_LIMIT,
+        n_notices=FEED_ITEM_LIMIT,
+    )
 
     print("Enriching press releases...")
     press_releases = enrich_pdfs(press_releases, client, existing)
