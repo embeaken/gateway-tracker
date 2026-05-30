@@ -308,17 +308,19 @@ const closeImage = () => {
       </button>
     </div>
 
-    <!-- Lightbox -->
-    <div v-if="selectedImage" class="lightbox" @click="closeImage">
-      <div class="lightbox-content" @click.stop>
-        <button class="close-button" @click="closeImage">×</button>
-        <img :src="selectedImage.imageUrl" :alt="selectedImage.title" />
-        <div class="lightbox-caption">
-          <p class="caption-date">{{ selectedImage.dateDisplay }}</p>
-          <p class="caption-text">{{ selectedImage.content }}</p>
+    <Teleport to="body">
+      <!-- Lightbox -->
+      <div v-if="selectedImage" class="lightbox" @click="closeImage">
+        <div class="lightbox-content" @click.stop>
+          <button type="button" class="close-button" @click="closeImage">×</button>
+          <img :src="selectedImage.imageUrl" :alt="selectedImage.title" />
+          <div class="lightbox-caption">
+            <p class="caption-date">{{ selectedImage.dateDisplay }}</p>
+            <p class="caption-text">{{ selectedImage.content }}</p>
+          </div>
         </div>
       </div>
-    </div>
+    </Teleport>
   </div>
 </template>
 
