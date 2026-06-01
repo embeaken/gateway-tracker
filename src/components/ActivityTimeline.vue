@@ -22,7 +22,10 @@ type TimelineItem = {
   videoId?: string;
 };
 
-const parseDate = (dateStr: string): Date => new Date(dateStr);
+const DATE_ONLY_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+const parseDate = (dateStr: string): Date =>
+  DATE_ONLY_RE.test(dateStr) ? new Date(`${dateStr}T12:00:00`) : new Date(dateStr);
 
 const FEED_LIMIT = 100;
 const INITIAL_VISIBLE_ITEMS = 30;

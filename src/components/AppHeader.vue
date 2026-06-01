@@ -89,17 +89,8 @@ const emit = defineEmits<{ (e: 'toggle-explainer'): void }>()
   transition: transform var(--transition-base);
 }
 
-/* Chevron leans in the toggle direction on hover — down to pull out, up to tuck back. */
-.explainer-tab:hover .explainer-tab-chevron {
-  transform: translateY(2px);
-}
-
 .explainer-tab--open .explainer-tab-chevron {
   transform: rotate(180deg);
-}
-
-.explainer-tab--open:hover .explainer-tab-chevron {
-  transform: rotate(180deg) translateY(2px);
 }
 
 [data-theme="dark"] .app-header,
