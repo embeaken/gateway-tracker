@@ -7,7 +7,17 @@ export const projects: Project[] = [
     earthcam:
       "https://share.earthcam.net/tJ90CoLmq7TzrY396Yd88KKPTYvGpuC9sn7UZHiL1L4.tJ90CoLmq7TzrY396Yd88KndwTghhAJ91QbmhhD8hKQ",
     facts: [
-      { label: "Construction status", value: "TBMs being assembled" },
+      { label: "Construction status", value: "TBM being assembled" },
+      { label: "Location", value: "North Bergen, NJ" },
+    ],
+  },
+  {
+    name: "Palisades TBM Launch Box",
+    desc: "This is the view from the tunnel's west portal, where the first TBM is being assembled and launched.",
+    earthcam:
+      "https://share.earthcam.net/tJ90CoLmq7TzrY396Yd88KKPTYvGpuC9sn7UZHiL1L4.tJ90CoLmq7TzrY396Yd88CZT6ML9h96L1Eg7ajNm3vs",
+    facts: [
+      { label: "Construction status", value: "TBM being assembled" },
       { label: "Location", value: "North Bergen, NJ" },
     ],
   },
