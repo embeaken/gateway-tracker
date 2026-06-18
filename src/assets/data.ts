@@ -7,7 +7,7 @@ export const projects: Project[] = [
     earthcam:
       "https://share.earthcam.net/tJ90CoLmq7TzrY396Yd88KKPTYvGpuC9sn7UZHiL1L4.tJ90CoLmq7TzrY396Yd88KndwTghhAJ91QbmhhD8hKQ",
     facts: [
-      { label: "Construction status", value: "TBM being assembled" },
+      { label: "Construction status", value: "TBMs being assembled" },
       { label: "Location", value: "North Bergen, NJ" },
     ],
   },
@@ -17,7 +17,7 @@ export const projects: Project[] = [
     earthcam:
       "https://share.earthcam.net/tJ90CoLmq7TzrY396Yd88KKPTYvGpuC9sn7UZHiL1L4.tJ90CoLmq7TzrY396Yd88CZT6ML9h96L1Eg7ajNm3vs",
     facts: [
-      { label: "Construction status", value: "TBM being assembled" },
+      { label: "Construction status", value: "TBMs being assembled" },
       { label: "Location", value: "North Bergen, NJ" },
     ],
   },
@@ -29,7 +29,7 @@ export const projects: Project[] = [
     facts: [
       {
         label: "Construction status",
-        value: "Slurry wall installed, rock mass grouting in progress",
+        value: "Shaft excavation in progress",
       },
       { label: "Location", value: "Hudson County, NJ" },
     ],
@@ -40,7 +40,7 @@ export const projects: Project[] = [
     earthcam:
       "https://share.earthcam.net/tJ90CoLmq7TzrY396Yd88FEc2KIPXPpEyk01ZY6DV6k.tJ90CoLmq7TzrY396Yd88MxvGIEVbP8q434ixctMxNg",
     facts: [
-      { label: "Construction status", value: "75% complete" },
+      { label: "Construction status", value: "80% complete" },
       { label: "Location", value: "Hudson River" },
     ],
   },
@@ -50,19 +50,22 @@ export const projects: Project[] = [
     earthcam:
       "https://share.earthcam.net/tJ90CoLmq7TzrY396Yd88AalamigCKiwQn4WPzxftJM.tJ90CoLmq7TzrY396Yd88OFHG2cZ-RCafkbJvvWEIZs",
     facts: [
-      { label: "Construction status", value: "Slurry wall nearing completion" },
+      {
+        label: "Construction status",
+        value: "Slurry wall installed, prep for shaft excavation in progress",
+      },
       { label: "Location", value: "12th Avenue & 30th Street" },
     ],
   },
   {
     name: "Hudson Yards Concrete Casing - Section 3",
-    desc: "This project is building out the connection from the new tunnel to Penn Station.",
+    desc: "This project will connect the new tunnel to Penn Station.",
     earthcam:
       "https://share.earthcam.net/tJ90CoLmq7TzrY396Yd88P0bHGwxARMYJSW9OX-yWIs!.tJ90CoLmq7TzrY396Yd88Ghihgs7KQYXaVZwYJQ3kKA!",
     facts: [
       {
         label: "Construction status",
-        value: `The "cover" part of "cut and cover" tunneling has begun`,
+        value: `Tunnel roof installation in progress`,
       },
       { label: "Location", value: "Hudson Yards" },
     ],
