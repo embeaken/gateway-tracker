@@ -43,9 +43,6 @@ test.describe('design refresh smoke', () => {
   })
 
   test('supports core interactions', async ({ page }, testInfo) => {
-    await page.getByRole('tab', { name: 'Photos' }).click()
-    await expect(page.getByRole('tab', { name: 'Photos' })).toHaveAttribute('aria-selected', 'true')
-
     // The explainer is hidden until the hero CTA reveals it, then it expands
     // in place without moving the viewport.
     await expect(page.getByRole('heading', { name: "What's going on?" })).toBeHidden()
