@@ -503,6 +503,12 @@
   ],
   "blueskyPosts": [
     {
+      "text": "Two years ago today, GDC signed the Full Funding Grant Agreement for the Hudson Tunnel Project. You can see the progress we've made since then on both sides of the Hudson River, and in it. We're getting the job done, and we won't stop until we deliver the reliable infrastructure riders deserve!",
+      "date": "2026-07-08T13:31:45.514Z",
+      "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3mq5a5pwj2s2p",
+      "imageUrl": "https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:skgfj7jggympcb2nxuiadj4i/bafkreiagmy64howcw5bfsu4fd3bcux3qdyznjpw3coe3dzzra7xqs7pszy"
+    },
+    {
       "text": "GDC will hold a virtual public Board Meeting tomorrow, Wednesday, July 8, 2026, at 12:00 P.M. More information, including instructions on how to watch the meeting live and provide public comment, is available here: www.gatewayprogram.org/board-meetin...",
       "date": "2026-07-07T16:00:09.410Z",
       "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3mq2xy5uhik23"
@@ -1060,14 +1066,14 @@
       "date": "2025-12-03T17:39:37.940Z",
       "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3m73yt6doxc25",
       "imageUrl": "https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:skgfj7jggympcb2nxuiadj4i/bafkreihcnepp7sfhqz4qyx3t7x3sfxlzy6nktgfkwam3bkbcb7en3riphm"
-    },
-    {
-      "text": "This Thanksgiving, we're grateful for the thousands of people building the Hudson Tunnel Project. Earlier this year, we interviewed workers on our construction sites. They shared what the opportunity to work on this once-in-a-generation project means to them. www.youtube.com/watch?v=YDTE...",
-      "date": "2025-11-29T16:35:04.976Z",
-      "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3m6rte2x2o22j"
     }
   ],
   "pressReleases": [
+    {
+      "title": "GDC Board Approves Hudson River Ground Stabilization Project Change Order",
+      "date": "2026-07-08",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/07/July-8-2026-Board-Meeting-Press-Release.pdf"
+    },
     {
       "title": "The GDC Gazette: Summer 2026 - Hudson Tunnel Project Construction Updates",
       "date": "2026-06-01",
@@ -1481,9 +1487,9 @@
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/07/2026.7.1_Bike-Ped-Park-FAQ-vf.pdf"
     },
     {
-      "title": "Controlled Blasting Resumes at North Bergen Portal Site - Palisades Tunnel Project",
-      "date": "2026-06-30",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/07/P1A-Construction-Notice_Blasting-6.30.26-Eng.-Spa.-1-1.pdf"
+      "title": "North Bergen Portal Site Summer Update: Controlled Blasting Resumes",
+      "date": "2026-07-01",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/07/P1A-Construction-Notice_Blasting-6.30.26-Eng.-Spa.-FV-1.pdf"
     },
     {
       "title": "Hudson River Tunnel Section Site Mobilization Construction Notice",
