@@ -1,6 +1,21 @@
 {
   "images": [
     {
+      "url": "https://www.gatewayprogram.org/wp-content/uploads/2026/07/PKG1A_PH_20260629_NJ_GatewayPalisadesTonnelle_PANYNJ_GDC_DJI_MM-37.jpg",
+      "caption": "Excavation of the launch box continues at the Palisades Portal construction site.",
+      "date": "2026-06-29"
+    },
+    {
+      "url": "https://www.gatewayprogram.org/wp-content/uploads/2026/07/PKG0_PH_20260708_NY_GatewayHYCC3Photo_PANYNJ_GDC_MM-1.jpg",
+      "caption": "Construction of the HYCC-3 tunnel roof.",
+      "date": "2026-07-08"
+    },
+    {
+      "url": "https://www.gatewayprogram.org/wp-content/uploads/2026/07/PKG1B_PH_20260624_NY_GatewayManhattanTunnels_Photo_PANYNJ_GDC_MM-12.jpg",
+      "caption": "Installation of the 12th Avenue Access Shaft cap beam",
+      "date": "2026-06-24"
+    },
+    {
       "url": "https://www.gatewayprogram.org/wp-content/uploads/2026/07/PKG1A_PH_20260622_NJ_GatewayPalisadesTonnelle_PANYNJ_GDC_MM-19.jpg",
       "caption": "Cranes are used to lower parts of the tunnel boring machine gantries into place for assembly in the launch box.",
       "date": "2026-06-22"
@@ -484,21 +499,6 @@
       "url": "https://www.gatewayprogram.org/wp-content/uploads/2025/06/Tonnelle-1.3.2025_2.png",
       "caption": "Stage 2 of the Tonnelle Ave. Project begins. This stage involves building the middle portion of the bridge and relocating utility lines.",
       "date": "2025-01-03"
-    },
-    {
-      "url": "https://www.gatewayprogram.org/wp-content/uploads/2025/06/2025.01.11_NB-Open-House.jpg",
-      "caption": "GDC hosted an open house in North Bergen, NJ to share information about the project with the communities where construction is happening.",
-      "date": "2025-01-11"
-    },
-    {
-      "url": "https://www.gatewayprogram.org/wp-content/uploads/2025/06/12-13-2024-NJ-Gateway-Tonnelle-Palisades-DJI_0051-107.jpg",
-      "caption": "The team reached the halfway point of the Tonnelle Avenue Project on schedule and on budget.",
-      "date": "2024-12-13"
-    },
-    {
-      "url": "https://www.gatewayprogram.org/wp-content/uploads/2025/06/PKGEA1_PH-20241217_NY-GatewayHRGSPhoto_PANYNJ_GDC-CT-11.jpg",
-      "caption": "The Hudson River Ground Stabilization team started deep soil mixing. This will stabilize the riverbed in preparation for tunnel boring through the soft ground beneath the Hudson River.",
-      "date": "2024-12-17"
     }
   ],
   "blueskyPosts": [
@@ -1505,6 +1505,11 @@
       "title": "Noise Abatement Program: Frequently Asked Questions (Spanish)",
       "date": "2026-07-14",
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/07/SP-FAQs_V3_Noise-Abatement-Program_rev07142026.pdf"
+    },
+    {
+      "title": "Hudson Tunnel Project: Bike and Pedestrian Path FAQ for Hudson River Park",
+      "date": "2026-07-01",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/07/Sp_2026.7.1_Bike-Ped-Park-FAQ-vf.pdf"
     },
     {
       "title": "Boater Safety Alert: Hudson Tunnel Project Cofferdam Shift Eastward",
