@@ -12,7 +12,7 @@ const emit = defineEmits<{ (e: 'toggle-explainer'): void }>()
             <span class="brand-mark" aria-hidden="true">🚇️</span>
             <span>
               <span class="brand-name">hudson.tube</span>
-              <span class="brand-subtitle">Gateway construction tracker</span>
+              <span class="brand-subtitle">Tunnel tracker</span>
             </span>
           </a>
         </div>
