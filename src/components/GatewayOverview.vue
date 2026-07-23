@@ -54,25 +54,6 @@ onUnmounted(() => {
           work will strengthen the busiest rail corridor in the US, create thousands of jobs, and
           maybe prove that not everything is terrible.
         </p>
-
-        <div class="metric-grid" aria-label="Project summary">
-          <div class="metric">
-            <span class="metric-value">5</span>
-            <span class="metric-label">active construction sites</span>
-          </div>
-          <div class="metric">
-            <span class="metric-value">95k</span>
-            <span class="metric-label">construction jobs</span>
-          </div>
-          <div class="metric">
-            <span class="metric-value">$19.6B</span>
-            <span class="metric-label">economic activity</span>
-          </div>
-          <div class="metric">
-            <span class="metric-value">2</span>
-            <span class="metric-label">new rail tubes</span>
-          </div>
-        </div>
       </div>
 
       <div class="proof-panel">
@@ -119,17 +100,18 @@ onUnmounted(() => {
 
 .overview-grid {
   display: grid;
-  align-items: end;
+  align-items: center;
   grid-template-columns: minmax(0, 0.95fr) minmax(440px, 1.05fr);
   gap: clamp(var(--spacing-lg), 4vw, var(--spacing-2xl));
   padding-top: calc(var(--spacing-xl) + 18px);
-  padding-bottom: var(--spacing-sm);
+  padding-bottom: var(--spacing-xl);
 }
 
 .overview-copy {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  max-width: 620px;
   min-width: 0;
 }
 
@@ -143,51 +125,12 @@ onUnmounted(() => {
 }
 
 .lede {
-  max-width: 680px;
+  max-width: 58ch;
   margin: var(--spacing-md) 0 0;
   color: var(--color-text-secondary);
-  font-size: 18px;
-  line-height: 1.55;
-}
-
-.metric-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1px;
-  margin-top: var(--spacing-lg);
-  overflow: hidden;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-border);
-}
-
-.metric {
-  min-width: 0;
-  padding: 14px;
-  background: var(--color-card-bg);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.metric-value,
-.metric-label {
-  display: block;
-}
-
-.metric-value {
-  color: var(--color-text-primary);
-  font-size: 24px;
-  font-weight: var(--font-weight-bold);
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
-}
-
-.metric-label {
-  margin-top: 6px;
-  color: var(--color-text-secondary);
-  font-size: 12px;
-  line-height: 1.25;
+  font-size: 19px;
+  line-height: 1.65;
+  text-wrap: pretty;
 }
 
 .proof-panel {
@@ -304,19 +247,11 @@ onUnmounted(() => {
     font-size: 16px;
   }
 
-  .metric-grid {
-    grid-template-columns: 1fr 1fr;
-  }
 }
 
 @media (max-width: 560px) {
   .overview h2 {
     font-size: 32px;
-  }
-
-  .metric-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
   }
 
   .feature-photo {
