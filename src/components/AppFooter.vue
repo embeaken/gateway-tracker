@@ -7,7 +7,7 @@ import ThemeToggle from './ThemeToggle.vue'
 <template>
   <footer class="app-footer">
     <div class="container footer-content">
-      <p>Made with civic pride by <a href="https://ilya.pizza" target="_blank">Ilya Rubnich</a> &hearts; | <a href="https://bsky.app/profile/ilya.pizza" target="_blank">Bluesky</a> | <a href="https://github.com/embeaken/gateway-tracker" target="_blank">GitHub</a></p>
+      <p>Made with civic pride by Ilya Rubnich &bull; <a href="https://github.com/embeaken/gateway-tracker" target="_blank">GitHub</a></p>
       <ThemeToggle />
     </div>
   </footer>
