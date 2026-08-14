@@ -859,6 +859,8 @@ def main():
             print(f"  {u}")
 
     print()
+    print("Data changed." if change_lines else "No data changes.")
+    print()
 
 
 if __name__ == "__main__":
