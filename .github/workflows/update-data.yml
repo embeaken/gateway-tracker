@@ -1,0 +1,55 @@
+name: Update data
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 1PM eastern
+    - cron: "0 17 * * *"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Update activity data
+        run: uv run scripts/update_data.py
+        env:
+          HUDSON_TUBE_ANTHROPIC_API_KEY: ${{ secrets.HUDSON_TUBE_ANTHROPIC_API_KEY }}
+
+      - name: Validate generated data
+        run: pnpm type-check
+
+      - name: Branch name
+        id: branch-name
+        run: echo "::set-output name=branch-name::$(date +'%Y-%m-%d-%s')"
+
+      - name: Create or update pull request
+        uses: peter-evans/create-pull-request@v8
+        with:
+          branch: ci/update-data-${{ steps.date.outputs.branch-name }}
+          delete-branch: true
+          commit-message: "update data"
+          title: "[${{ steps.date.outputs.branch-name }}] update data"
+          body: Automated data update.
