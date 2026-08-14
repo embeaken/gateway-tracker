@@ -37,5 +37,5 @@ jobs:
           branch: ci/update-data-${{ steps.branch-name.outputs.branch-name }}
           delete-branch: true
           commit-message: "update data"
-          title: "[${{ steps.date.outputs.branch-name }}] update data"
+          title: "[${{ steps.branch-name.outputs.branch-name }}] update data"
           body: Automated data update.
