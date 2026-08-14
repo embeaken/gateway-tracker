@@ -21,25 +21,10 @@ jobs:
       - name: Set up uv
         uses: astral-sh/setup-uv@v5
 
-      - name: Set up pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
       - name: Update activity data
         run: uv run scripts/update_data.py
         env:
           HUDSON_TUBE_ANTHROPIC_API_KEY: ${{ secrets.HUDSON_TUBE_ANTHROPIC_API_KEY }}
-
-      - name: Validate generated data
-        run: pnpm type-check
 
       - name: Branch name
         id: branch-name
