@@ -28,7 +28,7 @@ jobs:
 
       - name: Branch name
         id: branch-name
-        run: echo "::set-output name=branch-name::$(date +'%Y-%m-%d-%s')"
+        run: echo "branch-name=$(date +'%Y-%m-%d-%s')" >> $GITHUB_OUTPUT
 
       - name: Create or update pull request
         uses: peter-evans/create-pull-request@v8
