@@ -33,7 +33,7 @@ jobs:
       - name: Create or update pull request
         uses: peter-evans/create-pull-request@v8
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT_TOKEN }}
           branch: ci/update-data-${{ steps.branch-name.outputs.branch-name }}
           delete-branch: true
           commit-message: "update data"
