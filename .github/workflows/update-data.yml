@@ -3,8 +3,8 @@ name: Update data
 on:
   workflow_dispatch:
   schedule:
-    # 1PM eastern
-    - cron: "0 17 * * *"
+    # 1PM and 7PM eastern
+    - cron: "0 17,23 * * *"
 
 permissions:
   contents: write
