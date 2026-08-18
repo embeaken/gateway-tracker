@@ -3,8 +3,9 @@ name: Update data
 on:
   workflow_dispatch:
   schedule:
-    # 1PM and 7PM eastern
-    - cron: "0 17,23 * * *"
+    # 10AM, 1PM, 5PM, 7PM, and 9PM Eastern on weekdays (UTC schedule)
+    - cron: "0 14,17,21,23 * * 1-5"
+    - cron: "0 1 * * 2-6"
 
 permissions:
   contents: write
@@ -31,6 +32,7 @@ jobs:
         run: echo "branch-name=$(date +'%Y-%m-%d-%s')" >> $GITHUB_OUTPUT
 
       - name: Create or update pull request
+        id: create-pr
         uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.PAT_TOKEN }}
@@ -39,3 +41,16 @@ jobs:
           commit-message: "update data"
           title: "[${{ steps.branch-name.outputs.branch-name }}] update data"
           body: Automated data update.
+
+      - name: Close older PRs
+        if: steps.create-pr.outputs.pull-request-number
+        run: |
+          gh pr list --state open --limit 100 --json number,headRefName \
+            --jq '.[] | select(.headRefName | startswith("ci/update-data-")) | .number' |
+          while read -r number; do
+            if [ "$number" != "${{ steps.create-pr.outputs.pull-request-number }}" ]; then
+              gh pr close "$number" --delete-branch
+            fi
+          done
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
