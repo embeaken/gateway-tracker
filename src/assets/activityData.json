@@ -503,6 +503,12 @@
   ],
   "blueskyPosts": [
     {
+      "text": "This summer, GDC's Community Engagement Centers became hands-on classrooms during our STEM exploration days \ud83d\udd0d\n\nStudents learned about the work behind building a new train tunnel. With guidance from project experts, they planned and built their own model tunnels \ud83d\ude86",
+      "date": "2026-08-18T21:08:25.544Z",
+      "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3mtf4s2jf6s2z",
+      "imageUrl": "https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:skgfj7jggympcb2nxuiadj4i/bafkreig6lenbfumn76ag2tzhuu47rr6inuf7onqxunhmbqudpqoyzdknfq"
+    },
+    {
       "text": "The Gateway Development Commission will hold a virtual public Board Meeting on Monday, August 24, 2026, at 11:00 AM. Information about the meeting, including instructions on how to watch the meeting live and provide public comment, is available here: gatewayprogram.org/board-meetin...",
       "date": "2026-08-17T20:51:38.916Z",
       "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3mtclf52l7223"
@@ -1057,12 +1063,6 @@
       "date": "2025-12-30T15:41:25.071Z",
       "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3mb7osnitys2j",
       "imageUrl": "https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:skgfj7jggympcb2nxuiadj4i/bafkreif3mhjrmaa7g2n7w2frr6vysmlbdm24ernli5wn6gtzko4uyse4qm"
-    },
-    {
-      "text": "Happy holidays from GDC! From the portal launch box in New Jersey to the concrete casing in Manhattan, the thousands of construction workers on the Hudson Tunnel Project made significant progress on both sides of the Hudson River this year.",
-      "date": "2025-12-23T15:05:42.261Z",
-      "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3manzkdq3a22f",
-      "imageUrl": "https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:skgfj7jggympcb2nxuiadj4i/bafkreibsr5zojbbuq7ptdc2eqgjkmqvffsnq3a5dbltipxjdrf6wxcgfzm"
     }
   ],
   "pressReleases": [
@@ -1475,7 +1475,7 @@
   "constructionNotices": [
     {
       "title": "Damage Claims FAQ",
-      "date": "2026-08-01",
+      "date": "2026-08-04",
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/08/Damage-Claims-FAQ_English-Spanish-8.4.26.pdf"
     },
     {
@@ -1492,6 +1492,11 @@
       "title": "Hudson Tunnel Project Frequently Asked Questions: New York Key Terms",
       "date": "2026-01-01",
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/08/NY-CEC-Key-Terms-FAQs-2026-V4.pdf"
+    },
+    {
+      "title": "Hudson Tunnel Project Frequently Asked Questions: New York",
+      "date": "2026-08-01",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/08/NY-FAQ_English-Spanish_FV.pdf"
     },
     {
       "title": "Gateway Development Commission Construction Notice: Temporary Bikeway and Walkway Shift at Hudson River Park",
