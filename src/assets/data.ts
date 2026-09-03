@@ -7,7 +7,7 @@ export const projects: Project[] = [
     earthcam:
       "https://share.earthcam.net/public/tJ90CoLmq7TzrY396Yd88DHnIWc3K6LbTCb94NA4Z6s/tonnelle_ave_bridge",
     facts: [
-      { label: "Construction status", value: "TBMs being assembled" },
+      { label: "Construction status", value: "Launch box and TBMs are being assembled" },
       { label: "Location", value: "North Bergen, NJ" },
     ],
   },
@@ -17,13 +17,13 @@ export const projects: Project[] = [
     earthcam:
       "https://share.earthcam.net/public/tJ90CoLmq7TzrY396Yd88DYh7fIx4oqpKxs7kkPWy_A/palisades_portal_site",
     facts: [
-      { label: "Construction status", value: "TBMs being assembled" },
+      { label: "Construction status", value: "Launch box and TBMs are being assembled" },
       { label: "Location", value: "North Bergen, NJ" },
     ],
   },
   {
     name: "Hudson County Access Shaft",
-    desc: "The first TBMs will drill up to this access shaft in Hudson County. Here they will be replaced by new TBMs that will drill under the Hudson River. Once the tunnel is excavated, this will be the location of a ventilation tower and emergency exit.",
+    desc: "TBMs will drill east from Tonnelle Avenue to this access shaft. The Hudson River Tunnel TBMs will then launch from here.",
     earthcam:
       "https://share.earthcam.net/public/tJ90CoLmq7TzrY396Yd88GNFxpIIqJR7pVbVOesSSvk/hudson_county_shaft_site",
     facts: [
@@ -40,19 +40,19 @@ export const projects: Project[] = [
     earthcam:
       "https://share.earthcam.net/public/tJ90CoLmq7TzrY396Yd88NgWcY4qcaFR1ARpUFeGtWU/311_-_11th_ave",
     facts: [
-      { label: "Construction status", value: "80% complete" },
-      { label: "Location", value: "Hudson River" },
+      { label: "Construction status", value: "Ground stabilization 80% complete, progress of pier removal unknown" },
+      { label: "Location", value: "Hudson River near 30th Street" },
     ],
   },
   {
     name: "Manhattan Access Shaft",
-    desc: "The Hudson River TBMs will emerge here once they're done drilling. Another ventilation structure will be built here.",
+    desc: "The Hudson River TBMs will emerge here when they're done drilling.",
     earthcam:
       "https://share.earthcam.net/public/tJ90CoLmq7TzrY396Yd88O0s3ogRDpd-gZcv_VlnrGM/311_-_11th_ave",
     facts: [
       {
         label: "Construction status",
-        value: "Slurry wall installed, prep for shaft excavation in progress",
+        value: "Shaft excavation in progress",
       },
       { label: "Location", value: "12th Avenue & 30th Street" },
     ],
@@ -62,8 +62,8 @@ export const projects: Project[] = [
     desc: "This project will connect the new tunnel to Penn Station.",
     earthcam: "https://share.earthcam.net/public/edgenyc/hudson_yards/camera",
     facts: [
-      { label: "Construction status", value: "Tunnel roof installation in progress" },
-      { label: "Location", value: "Hudson Yards" },
+      { label: "Construction status", value: "Tunnel roof installation in progress. Substantial completion is expected by the end of 2026." },
+      { label: "Location", value: "Hudson Yards between 11th and 12th Avenues" },
     ],
   },
 ];
