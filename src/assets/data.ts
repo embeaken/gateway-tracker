@@ -57,4 +57,13 @@ export const projects: Project[] = [
       { label: "Location", value: "12th Avenue & 30th Street" },
     ],
   },
+  {
+    name: "Hudson Yards Concrete Casing – Section 3",
+    desc: "This project will connect the new tunnel to Penn Station.",
+    earthcam: "https://share.earthcam.net/public/edgenyc/hudson_yards/camera",
+    facts: [
+      { label: "Construction status", value: "Tunnel roof installation in progress" },
+      { label: "Location", value: "Hudson Yards" },
+    ],
+  },
 ];
