@@ -11,7 +11,6 @@ defineProps<{
   <article class="project-card">
     <div class="project-header">
       <div>
-        <p class="project-kicker">Live construction camera</p>
         <h2 class="project-title">{{ project.name }}</h2>
       </div>
     </div>
@@ -57,16 +56,6 @@ defineProps<{
   justify-content: space-between;
   gap: var(--spacing-sm);
   margin-bottom: 8px;
-}
-
-.project-kicker {
-  margin: 0 0 4px;
-  color: var(--color-primary);
-  font-size: 11px;
-  font-weight: var(--font-weight-bold);
-  letter-spacing: 0.07em;
-  line-height: 1;
-  text-transform: uppercase;
 }
 
 .project-title {

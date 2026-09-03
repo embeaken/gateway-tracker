@@ -28,26 +28,25 @@ const VIDEO_URL = "https://www.youtube.com/embed/slP5zyoLpk4";
       <div class="overview-copy">
         <h3>What's going on?</h3>
         <p>
-          The North River Tunnels, built in <strong>1910</strong>, carry Amtrak and NJ Transit
+          The North River Tunnels, built in 1910, carry Amtrak and NJ Transit
           trains under the Hudson River, connecting New York and New Jersey. These tunnels have
           exceeded their useful lifespan after serving the region for over a century, and are
-          <strong>at risk of catastrophic failure</strong>.
+          now at risk of catastrophic failure.
         </p>
         <p>
           To keep safely serving the region by rail,
-          <strong>we're building two new tunnels under the Hudson River</strong>, then
-          gut-renovating the old ones. It's called the <strong>Gateway Program</strong> and it's the
+          NY and NJ are building two new tunnels under the Hudson River, then
+          gut-renovating the old ones. This project is called the <strong>Gateway Program</strong> and it's the
           largest infrastructure project in America, expected to create
-          <strong>95,000 jobs</strong> and generate
-          <strong>$19.6 billion in economic activity</strong>.
+          95,000 jobs and generate $19.6 billion in economic activity.
         </p>
         <p>
           Gateway is visible proof that America can still build massive, inspiring public works.
-          These tunnels will serve <strong>hundreds of thousands of passengers</strong> every day
+          These tunnels will serve hundreds of thousands of passengers every day
           for generations to come. Five construction sites are currently active. The first tunnel
           boring machines are about to start drilling through the New Jersey Palisades.
-          <strong>This is happening.</strong>
         </p>
+        <p>This is happening!</p>
       </div>
     </div>
   </section>
