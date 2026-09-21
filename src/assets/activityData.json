@@ -66,19 +66,9 @@
       "date": "2026-06-15"
     },
     {
-      "url": "https://www.gatewayprogram.org/wp-content/uploads/2026/06/PKG1A_PH_20260608_NJ_GatewayPalisadesTonnelle_PANYNJ_GDC_MM-69.jpg",
-      "caption": "Moving the gantry for one of the tunnel boring machines into position for assembly.",
-      "date": "2026-06-08"
-    },
-    {
       "url": "https://www.gatewayprogram.org/wp-content/uploads/2026/06/PKG0_PH_20260527_NY_GatewayHYCC3Photo_PANYNJ_GDC_MM-7.jpg",
       "caption": "Pouring concrete for the roof of the HYCC-3 tunnel box.",
       "date": "2026-05-27"
-    },
-    {
-      "url": "https://www.gatewayprogram.org/wp-content/uploads/2026/06/PKG1A_PH__NJ_20260528_GatewayPalisadesTonnelle_Photo_PANYNJ_GDC_EP11.jpg",
-      "caption": "Welding the shield for one of the tunnel boring machines.",
-      "date": "2026-05-28"
     },
     {
       "url": "https://www.gatewayprogram.org/wp-content/uploads/2026/06/PKG1A_PH_20260526_NJ_GatewayPalisadesTonnelle_PANYNJ_GDC_MM-47.jpg",
@@ -499,9 +489,25 @@
       "url": "https://www.gatewayprogram.org/wp-content/uploads/2025/06/IMG_1031.jpg",
       "caption": "GDC CEO Tom Prendergast speaks to members of Congress during a tour of the active construction sites in Manhattan.",
       "date": "2025-06-01"
+    },
+    {
+      "url": "https://www.gatewayprogram.org/wp-content/uploads/2025/06/PKG1A_PH_20250327_NJ_GatewayPalisadesTonnelle_PANYNJ_GDC_MM-52.jpg",
+      "caption": "Construction of the center portion of the bridge continues at Tonnelle Avenue.",
+      "date": "2025-03-27"
+    },
+    {
+      "url": "https://www.gatewayprogram.org/wp-content/uploads/2025/06/PKG1A_PH_20250402_NJ_GatewayPalisadesTonnelle_PANYNJ_GDC_CT-27.jpg",
+      "caption": "Heavy equipment has started to arrive at the Palisades Tunnel Project site as prep work for tunnel boring continues to ramp up, including the start of soldier pile installation.",
+      "date": "2025-04-02"
     }
   ],
   "blueskyPosts": [
+    {
+      "text": "The Hudson River Ground Stabilization project is mixing concrete into the Hudson riverbed to make the ground firm enough for our tunnel boring machines to dig through. \n\nThis takes a lot concrete mix. 208,000 cubic yards, to be exact. That's enough concrete to build a sidewalk from NYC to Chicago!",
+      "date": "2026-09-21T14:08:48.160Z",
+      "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3mvzv6z626c2b",
+      "imageUrl": "https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:skgfj7jggympcb2nxuiadj4i/bafkreidrzhs7jcd6qd2m7wb3qjwc7ypiadp7p4sig32ejkjgcnb36trkey"
+    },
     {
       "text": "Tunnel boring machines are heavy hitters! Each machine weighs 1,680 tons - about as much as 300 large African elephants \ud83d\udc18",
       "date": "2026-09-15T16:33:36.060Z",
@@ -1056,12 +1062,6 @@
       "text": "Today GDC notified our contractors that construction of the Hudson Tunnel Project will pause on February 6 if federal funding disbursements do not resume.",
       "date": "2026-01-27T16:02:44.027Z",
       "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3mdg52k4ans2v"
-    },
-    {
-      "text": "Major delivery in North Bergen! The main drive unit for the first tunnel boring machine has arrived at our construction site. Most of the components for this TBM are now on site.",
-      "date": "2026-01-26T15:52:19.599Z",
-      "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3mddlyz5hos2c",
-      "imageUrl": "https://video.bsky.app/watch/did%3Aplc%3Askgfj7jggympcb2nxuiadj4i/bafkreiaizc2yqfukpjhaheb53q46oyw2kpzryvlijjer3d55tjpmlvcnhi/thumbnail.jpg"
     }
   ],
   "pressReleases": [
