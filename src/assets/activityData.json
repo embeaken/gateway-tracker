@@ -503,6 +503,23 @@
   ],
   "blueskyPosts": [
     {
+      "text": "Our first tunnel boring machine is ready to launch! Check out everything that went into bringing this massive machine to life, from manufacturing and testing it in Germany to reassembling it on site in the launch box. This moment has been years in the making. Now it's time to start digging!",
+      "date": "2026-09-28T19:37:57.332Z",
+      "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3mwm2tzo32c2j",
+      "imageUrl": "https://video.bsky.app/watch/did%3Aplc%3Askgfj7jggympcb2nxuiadj4i/bafkreifc2n6whigr4j7kpuifhrwqi7fxmtgsrz6na3ezapafizsjpghr7i/thumbnail.jpg"
+    },
+    {
+      "text": "Today we made history! After years of work, we celebrated the start of tunnel boring for the Hudson Tunnel Project. Reaching this major milestone sends a clear message: we are delivering the reliable, modern rail system riders deserve. \n \nLearn more here: www.gatewayprogram.org/wp-content/u...",
+      "date": "2026-09-28T17:35:03.710Z",
+      "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3mwltybn2bc2t",
+      "imageUrl": "https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:skgfj7jggympcb2nxuiadj4i/bafkreibldjrpcve2lt7y5mad5aqp25guoz4aynzyl22zdxrzhpp4afgxcm"
+    },
+    {
+      "text": "GDC will hold a public Board meeting on Tuesday, September 29, 2026, at 10:00 A.M. Those wishing to participate virtually may submit written or pre-recorded video statements no later than Monday, September 28, 2026, at 5:00 P.M. Thank you to those who have already done so.",
+      "date": "2026-09-26T13:29:13.586Z",
+      "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3mwgfctvhd22x"
+    },
+    {
       "text": "The Gateway Development Commission will hold a public Board meeting on September 29, 2026, at 10:00 A.M. Registration and public comment information can be found here: www.gatewayprogram.org/board-meetin...",
       "date": "2026-09-22T15:39:50.093Z",
       "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3mw4kqpjmac2o"
@@ -1044,27 +1061,14 @@
       "date": "2026-01-29T22:07:10.046Z",
       "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3mdlse23nuc23",
       "imageUrl": "https://video.bsky.app/watch/did%3Aplc%3Askgfj7jggympcb2nxuiadj4i/bafkreiamznvupxa25ew6n5ggvjsb4z6x5fjxbhyt262npbowdgu57xwjam/thumbnail.jpg"
-    },
-    {
-      "text": "The Newsday Editorial Board is right: the Hudson Tunnel Project is the most important rail project in the country, for workers, riders, and our economy. Federal funding must be restored so construction can continue. \n\nRead the whole editorial here: www.newsday.com/opinion/edit...",
-      "date": "2026-01-29T17:58:06.432Z",
-      "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3mdlegoqtqk2o",
-      "imageUrl": "https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:skgfj7jggympcb2nxuiadj4i/bafkreicnpqc3og53764rxfpjh6kinwfz3vrs6rmey76ktvvzhxrwubebce"
-    },
-    {
-      "text": "Snow and ice don't stop us. The hundreds of hardworking men and women building the Hudson Tunnel Project show up every day and endure the elements to deliver the most urgent passenger rail project in the country. Federal funding must be restored so these workers can stay on the job.",
-      "date": "2026-01-29T15:52:32.200Z",
-      "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3mdl5g5kh7k2b",
-      "imageUrl": "https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:skgfj7jggympcb2nxuiadj4i/bafkreidcv6c2eiilrgwwyf57egoiwluuuruschdzdxvduzho7uteq5mp5u"
-    },
-    {
-      "text": "The Hudson Tunnel Project is the most urgent infrastructure project in the country - for workers, riders, and the economy - and funding must be restored now. That's the message we heard loud and clear from workers building the tunnel at our Board Meeting yesterday.",
-      "date": "2026-01-29T00:04:41.251Z",
-      "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3mdjihb6n7s26",
-      "imageUrl": "https://video.bsky.app/watch/did%3Aplc%3Askgfj7jggympcb2nxuiadj4i/bafkreidjae4f7pildbtpgkuvjtzt7yv4hlta45mjroyvpnwefr2hjc5xgu/thumbnail.jpg"
     }
   ],
   "pressReleases": [
+    {
+      "title": "Gateway Development Commission Celebrates Start of Tunnel Boring for Hudson Tunnel Project",
+      "date": "2026-09-28",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/09/September-2026-TBM-Launch-Press-Release.pdf"
+    },
     {
       "title": "GDC Board Approves Agreements to Support Tunnel Rescue and Emergency Response Preparedness",
       "date": "2026-08-24",
