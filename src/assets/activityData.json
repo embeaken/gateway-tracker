@@ -503,6 +503,11 @@
   ],
   "blueskyPosts": [
     {
+      "text": "We've come a long way since crews dug the North River Tunnel by hand. \n\n@colleenonthescene.bsky.social dug deep into the history of the North River Tunnel for @northjerseynews.bsky.social to explain how tunneling has changed over the past 100 years. \n\nSpoiler alert: it's a lot easier with TBMs!",
+      "date": "2026-09-30T19:19:05.177Z",
+      "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3mwr2q4uvxc2t"
+    },
+    {
       "text": "ICYMI: Yesterday we celebrated the start of tunnel boring for the Hudson Tunnel Project! \n\nThis video explains the first phase of tunneling and how tunnel boring machines dig and build the tunnel at the same time.",
       "date": "2026-09-29T17:27:27.601Z",
       "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3mwodzm4efc2v",
@@ -1056,11 +1061,6 @@
       "date": "2026-02-02T16:26:28.917Z",
       "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3mdvb6jqxrk2b",
       "imageUrl": "https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:skgfj7jggympcb2nxuiadj4i/bafkreigfd7po3kjzokbst3ilsmjf6kui5yuxjd5bmqzlxs6wwu33pdlrpu"
-    },
-    {
-      "text": "Delays like this will become more frequent - and impact more riders - the longer we rely on the North River Tunnel. We need to complete the Hudson Tunnel Project as soon as possible to deliver reliable, modern rail infrastructure that riders can count on. \n\nwww.bloomberg.com/news/article...",
-      "date": "2026-01-30T15:56:32.316Z",
-      "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3mdno47yrn222"
     }
   ],
   "pressReleases": [
@@ -1624,6 +1624,16 @@
   ],
   "youtubeVideos": [
     {
+      "videoId": "BIDEGCw6f_I",
+      "title": "Palisades Tunnel Project Tunnel Boring Machine Manufacturing and Assembly",
+      "date": "2026-10-01"
+    },
+    {
+      "videoId": "5n_gBfRZtS4",
+      "title": "Building the Palisades Tunnel Project",
+      "date": "2026-10-01"
+    },
+    {
       "videoId": "slP5zyoLpk4",
       "title": "Virtual Tour of the Hudson Tunnel Project",
       "date": "2026-02-20"
@@ -1717,16 +1727,6 @@
       "videoId": "-OURv3RnF4A",
       "title": "Portal Bridge Opens - Summer 2020",
       "date": "2020-08-06"
-    },
-    {
-      "videoId": "QJi2-I18kW4",
-      "title": "Ready To Build: Hudson Tunnel Project",
-      "date": "2017-10-04"
-    },
-    {
-      "videoId": "Ty7F3bOjkZU",
-      "title": "Ready To Build: Portal North Bridge Project",
-      "date": "2017-10-04"
     },
     {
       "videoId": "0uaHFkJti0Y",
