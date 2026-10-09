@@ -110,7 +110,7 @@ const CASING_START_FT = MANHATTAN_BULKHEAD_FT + 700; // 12,765
 const TENTH_AVE_FT = CASING_START_FT + 500 + 800; // ~14,065
 
 export const ROUTE = {
-  /** County Road, Secaucus: new tracks leave the existing Northeast Corridor */
+  /** County Road, Secaucus: west end of the NJ Surface Alignment (the NEC widens from 2 to 4 tracks) */
   westFt: -NJ_SURFACE_FT,
   /** Tie-in to the Penn Station approach tracks, just east of 10th Ave */
   eastFt: TENTH_AVE_FT + 300,
