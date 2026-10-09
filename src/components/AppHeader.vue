@@ -2,39 +2,34 @@
 import BrandMark from './BrandMark.vue'
 import { useSiteClock } from '../useSiteClock'
 
-const { time, miningDay } = useSiteClock()
+const { miningDay } = useSiteClock()
 </script>
 
 <template>
   <header class="app-header">
     <div class="container header-content">
       <a href="#" class="brand-lockup" aria-label="hudson.tube home">
-        <BrandMark />
+        <BrandMark class="brand-icon" />
         <span>
-          <span class="brand-name">hudson<span class="brand-dot">.</span>tube</span>
-          <span class="brand-subtitle">Tunnel tracker</span>
+          <span class="brand-name">hudson.tube</span>
+          <span class="brand-subtitle">Hudson River Tunnel tracker</span>
         </span>
       </a>
 
-      <a href="#cameras" class="header-status">
-        <span class="live-dot" aria-hidden="true"></span>
-        <span class="status-text">
-          <span class="status-strong">TBM boring</span>
-          <span class="status-sep" aria-hidden="true">·</span>
-          day {{ miningDay }}
-        </span>
-        <span class="status-clock">{{ time }} ET</span>
+      <a href="#route" class="header-status">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span>Tunnel boring</span>
+        <span class="status-day tabular">Day {{ miningDay }}</span>
       </a>
     </div>
-    <div class="hazard-tape" aria-hidden="true"></div>
   </header>
 </template>
 
 <style scoped>
 .app-header {
-  position: relative;
-  background: var(--color-ink);
+  background: var(--color-navy);
   color: white;
+  border-bottom: 3px solid var(--color-accent);
 }
 
 .header-content {
@@ -42,18 +37,8 @@ const { time, miningDay } = useSiteClock()
   align-items: center;
   justify-content: space-between;
   gap: var(--spacing-md);
-  padding-top: 12px;
-  padding-bottom: 12px;
-}
-
-/* Hazard tape: the construction-site signature, used exactly once. */
-.hazard-tape {
-  height: 6px;
-  background: repeating-linear-gradient(
-    -45deg,
-    var(--color-accent) 0 10px,
-    var(--color-ink) 10px 20px
-  );
+  padding-top: 14px;
+  padding-bottom: 14px;
 }
 
 .brand-lockup {
@@ -71,6 +56,10 @@ const { time, miningDay } = useSiteClock()
   border-bottom: 0;
 }
 
+.brand-icon {
+  color: var(--color-accent);
+}
+
 .brand-name,
 .brand-subtitle {
   display: block;
@@ -78,81 +67,86 @@ const { time, miningDay } = useSiteClock()
 
 .brand-name {
   font-family: var(--font-family-display);
-  font-size: 26px;
-  font-weight: var(--font-weight-bold);
-  line-height: 0.9;
-  letter-spacing: 0.005em;
-}
-
-.brand-dot {
-  color: var(--color-accent);
+  font-size: 23px;
+  font-weight: var(--font-weight-semibold);
+  line-height: 1;
 }
 
 .brand-subtitle {
   margin-top: 4px;
-  color: rgba(255, 255, 255, 0.6);
-  font-family: var(--font-family-mono);
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 12px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.02em;
 }
 
 .header-status {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 6px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  gap: 8px;
+  padding: 6px 6px 6px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 999px;
-  color: rgba(255, 255, 255, 0.85);
-  font-family: var(--font-family-mono);
-  font-size: 12px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 13px;
+  font-weight: var(--font-weight-medium);
   white-space: nowrap;
 }
 
 .header-status:hover,
 .header-status:visited {
   color: white;
-  border-color: rgba(255, 255, 255, 0.35);
-  border-bottom-color: rgba(255, 255, 255, 0.35);
+  border-color: rgba(255, 255, 255, 0.4);
+  border-bottom-color: rgba(255, 255, 255, 0.4);
 }
 
-.status-strong {
-  color: white;
+.header-status .status-dot {
+  background: #6FCF97;
 }
 
-.status-sep {
-  margin: 0 4px;
-  opacity: 0.5;
-}
-
-.status-clock {
-  padding-left: 10px;
-  border-left: 1px solid rgba(255, 255, 255, 0.16);
-  color: rgba(255, 255, 255, 0.6);
+.status-day {
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: var(--color-accent);
+  color: var(--color-navy);
+  font-weight: var(--font-weight-bold);
 }
 
 @media (max-width: 640px) {
-  .status-clock {
-    display: none;
+  .header-content {
+    gap: 12px;
   }
 
-  .header-status {
-    font-size: 11px;
-    padding: 5px 10px;
+  .brand-lockup {
+    gap: 9px;
+  }
+
+  .brand-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .brand-name {
+    font-size: 20px;
   }
 
   .brand-subtitle {
     display: none;
   }
+
+  .header-status {
+    gap: 6px;
+    padding: 4px 4px 4px 10px;
+    font-size: 12px;
+  }
+
+  .status-day {
+    padding: 2px 7px;
+  }
 }
 
 @media (max-width: 370px) {
-  .status-strong,
-  .status-sep {
+  .header-status > span:nth-child(2) {
     display: none;
   }
 }

@@ -1,13 +1,17 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from "vue";
-import { images } from "../assets/activityData";
+import {
+  images,
+  blueskyPosts,
+  pressReleases,
+  constructionNotices,
+  youtubeVideos,
+} from "../assets/activityData";
 import { PALISADES_DRIVE_FT } from "../assets/data";
-import { useSiteClock } from "../useSiteClock";
 
 defineProps<{ explainerOpen: boolean }>();
 const emit = defineEmits<{ (e: "toggle-explainer"): void }>();
 
-const { miningDay } = useSiteClock();
 
 const activePhotoIndex = ref(0);
 const paused = ref(false);
@@ -34,6 +38,13 @@ const transformImage = (url: string, width: number) => {
   });
   return `/.netlify/images?${params.toString()}`;
 };
+
+// Most recent item across every source: a "last updated" trust signal.
+const lastUpdated = formatDate(
+  [...images, ...blueskyPosts, ...pressReleases, ...constructionNotices, ...youtubeVideos]
+    .map((item) => item.date)
+    .reduce((latest, d) => (parseDate(d) > parseDate(latest) ? d : latest)),
+);
 
 const heroPhotos = computed(() =>
   [...images].sort((a, b) => parseDate(b.date).getTime() - parseDate(a.date).getTime()).slice(0, 5),
@@ -72,26 +83,21 @@ onUnmounted(() => {
   <section class="overview">
     <div class="container overview-grid">
       <div class="overview-copy">
-        <p class="status-line">
-          <span class="live-dot" aria-hidden="true"></span>
-          <span>Tunnel boring is underway</span>
-          <span class="status-day">Day {{ miningDay }}</span>
+        <p class="kicker eyebrow">
+          Hudson Tunnel Project <span aria-hidden="true">·</span> Updated {{ lastUpdated }}
         </p>
 
         <h1>America is building a big new infrastructure project. <em>Yes, really.</em></h1>
 
         <p class="lede">
-          A tunnel boring machine is chewing through the New Jersey Palisades right now, cutting the
-          first stretch of two new passenger rail tubes between New York and New Jersey. It's the
-          busiest rail corridor in the US, thousands of people have jobs on it, and it might even
-          prove that not everything is terrible.
+          Two new passenger rail tubes are under construction beneath the Hudson River, and on
+          October 8, 2026 the first tunnel boring machine started digging. This work will strengthen
+          the busiest rail corridor in the US, create thousands of jobs, and maybe prove that not
+          everything is terrible.
         </p>
 
         <div class="cta-row">
-          <a href="#cameras" class="cta cta-primary">
-            <span class="live-dot live-dot--light" aria-hidden="true"></span>
-            Watch the live cams
-          </a>
+          <a href="#cameras" class="cta cta-primary">Watch the live cameras</a>
           <button
             type="button"
             class="cta cta-secondary"
@@ -128,7 +134,7 @@ onUnmounted(() => {
           />
         </a>
         <figcaption class="photo-caption">
-          <span class="photo-date">{{ formatDate(activePhoto.date) }}</span>
+          <span class="photo-date tabular">{{ formatDate(activePhoto.date) }}</span>
           {{ activePhoto.caption }}
         </figcaption>
         <div class="photo-dots" role="group" aria-label="Choose photo">
@@ -149,7 +155,7 @@ onUnmounted(() => {
     <div class="container">
       <dl class="stats">
         <div v-for="stat in stats" :key="stat.label" class="stat">
-          <dt class="stat-value">{{ stat.value }}</dt>
+          <dt class="stat-value tabular">{{ stat.value }}</dt>
           <dd class="stat-label">{{ stat.label }}</dd>
         </div>
       </dl>
@@ -176,39 +182,25 @@ onUnmounted(() => {
   max-width: 660px;
 }
 
-.status-line {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  margin: 0 0 var(--spacing-md);
-  color: var(--color-text-primary);
-  font-family: var(--font-family-mono);
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
-.status-day {
-  padding: 4px 7px;
-  border-radius: var(--radius-sm);
-  background: var(--color-accent);
-  color: white;
+.eyebrow {
+  margin: 0 0 var(--spacing-sm);
+  color: var(--color-accent-ink);
 }
 
 .overview h1 {
   margin: 0;
   color: var(--color-text-primary);
-  font-size: clamp(44px, 5.4vw, 76px);
-  line-height: 0.92;
-  letter-spacing: -0.01em;
-  text-wrap: balance;
+  font-size: clamp(40px, 4.6vw, 64px);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.04;
+  letter-spacing: -0.015em;
+  text-wrap: pretty;
 }
 
 .overview h1 em {
-  font-style: normal;
-  color: var(--color-accent);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--color-primary);
 }
 
 .lede {
@@ -231,9 +223,9 @@ onUnmounted(() => {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  min-height: 44px;
-  padding: 0 18px;
-  border-radius: 999px;
+  min-height: 46px;
+  padding: 0 20px;
+  border-radius: var(--radius-md);
   font-family: inherit;
   font-size: 15px;
   font-weight: var(--font-weight-semibold);
@@ -247,15 +239,28 @@ onUnmounted(() => {
 /* Inverts with the theme: ink-on-concrete in light, white-on-ink in dark. */
 .cta-primary,
 .cta-primary:visited {
-  border: 1px solid var(--color-text-primary);
-  background: var(--color-text-primary);
-  color: var(--color-background);
+  border: 1px solid var(--color-primary);
+  background: var(--color-primary);
+  color: white;
 }
 
 .cta-primary:hover {
-  color: var(--color-background);
-  border-bottom-color: var(--color-text-primary);
-  background: color-mix(in srgb, var(--color-text-primary), var(--color-background) 18%);
+  color: white;
+  border-color: var(--color-primary-dark);
+  background: var(--color-primary-dark);
+}
+
+/* Dark: the light-blue primary needs dark text. */
+[data-theme="dark"] .cta-primary,
+[data-theme="dark"] .cta-primary:hover {
+  color: var(--color-navy);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .cta-primary,
+  :root:not([data-theme="light"]) .cta-primary:hover {
+    color: var(--color-navy);
+  }
 }
 
 .cta-secondary {
@@ -269,12 +274,8 @@ onUnmounted(() => {
 }
 
 .cta:focus-visible {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
-}
-
-.live-dot--light {
-  background: #ff5a4f;
 }
 
 .cta-chevron {
@@ -297,7 +298,7 @@ onUnmounted(() => {
   width: 100%;
   overflow: hidden;
   border-radius: var(--radius-lg);
-  background: var(--color-ink);
+  background: var(--color-navy);
   color: white;
 }
 
@@ -345,11 +346,11 @@ onUnmounted(() => {
 
 .photo-date {
   display: block;
-  margin-bottom: 5px;
-  color: rgba(255, 255, 255, 0.75);
-  font-family: var(--font-family-mono);
-  font-size: 11px;
-  letter-spacing: 0.08em;
+  margin-bottom: 4px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
@@ -391,7 +392,7 @@ onUnmounted(() => {
 .stats {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  border-top: 2px solid var(--color-text-primary);
+  border-top: 3px solid var(--color-accent);
 }
 
 .stat {
@@ -405,15 +406,25 @@ onUnmounted(() => {
 
 .stat-value {
   font-family: var(--font-family-display);
-  font-size: 40px;
-  font-weight: var(--font-weight-bold);
+  font-size: 44px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-navy);
   line-height: 1;
+}
+
+[data-theme="dark"] .stat-value {
   color: var(--color-text-primary);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .stat-value {
+    color: var(--color-text-primary);
+  }
 }
 
 .stat-label {
   margin-top: 6px;
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.35;
   color: var(--color-text-secondary);
 }

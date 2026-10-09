@@ -16,15 +16,13 @@ const status = computed(() => factValue('Construction status'))
 const otherFacts = computed(() =>
   props.project.facts.filter((f) => !['location', 'construction status'].includes(f.label.toLowerCase())),
 )
-const camNumber = computed(() => String(props.index + 1).padStart(2, '0'))
 </script>
 
 <template>
   <article :id="`cam-${project.id}`" class="cam-card" :class="{ 'cam-card--featured': featured }">
     <div class="monitor">
       <div class="monitor-placeholder" aria-hidden="true">
-        <span class="kicker">Cam {{ camNumber }}</span>
-        <span class="placeholder-title">Connecting to EarthCam…</span>
+        <span class="placeholder-title">Loading live view…</span>
       </div>
       <iframe
         :src="project.earthcam"
@@ -37,9 +35,13 @@ const camNumber = computed(() => String(props.index + 1).padStart(2, '0'))
 
     <div class="cam-body">
       <p class="kicker cam-meta">
-        <span class="cam-live"><span class="live-dot" aria-hidden="true"></span>Live</span>
-        <span>Cam {{ camNumber }}</span>
-        <span v-if="location" class="cam-location">{{ location }}</span>
+        <span class="cam-live">Live view</span>
+        <span aria-hidden="true">·</span>
+        <span class="tabular">Camera {{ index + 1 }}</span>
+        <template v-if="location">
+          <span aria-hidden="true">·</span>
+          <span>{{ location }}</span>
+        </template>
       </p>
       <h3 class="cam-title">{{ project.name }}</h3>
       <p class="cam-desc">{{ project.desc }}</p>
@@ -70,14 +72,14 @@ const camNumber = computed(() => String(props.index + 1).padStart(2, '0'))
 }
 
 .cam-card:target {
-  border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent), transparent 70%);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-muted);
 }
 
 .monitor {
   position: relative;
   aspect-ratio: 16 / 9;
-  background: var(--color-ink);
+  background: var(--color-navy);
 }
 
 .monitor-placeholder {
@@ -91,13 +93,8 @@ const camNumber = computed(() => String(props.index + 1).padStart(2, '0'))
   color: white;
   text-align: center;
   background:
-    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.03) 0 1px, transparent 1px 3px),
-    radial-gradient(ellipse at center, #17303a, var(--color-ink));
+    radial-gradient(ellipse at center, #1C3A63, var(--color-navy));
   pointer-events: none;
-}
-
-.monitor-placeholder .kicker {
-  color: rgba(255, 255, 255, 0.5);
 }
 
 .placeholder-title {
@@ -130,41 +127,20 @@ const camNumber = computed(() => String(props.index + 1).padStart(2, '0'))
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px 12px;
+  gap: 4px 8px;
   margin: 0;
 }
 
 .cam-live {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--color-live);
+  color: var(--color-progress);
 }
 
-.cam-live .live-dot {
-  width: 6px;
-  height: 6px;
-}
 
-.cam-location {
-  position: relative;
-  padding-left: 12px;
-}
-
-.cam-location::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 50%;
-  width: 4px;
-  height: 1px;
-  background: currentColor;
-}
 
 .cam-title {
   margin: 0;
-  font-size: 24px;
-  line-height: 1.05;
+  font-size: 23px;
+  line-height: 1.15;
 }
 
 .cam-desc {
@@ -190,12 +166,11 @@ const camNumber = computed(() => String(props.index + 1).padStart(2, '0'))
   flex-shrink: 0;
   padding: 2px 6px;
   border-radius: var(--radius-sm);
-  background: color-mix(in srgb, var(--color-accent), transparent 85%);
-  color: var(--color-accent-ink);
-  font-family: var(--font-family-mono);
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.08em;
+  background: var(--color-primary-muted);
+  color: var(--color-primary);
+  font-size: 11px;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
@@ -206,7 +181,7 @@ const camNumber = computed(() => String(props.index + 1).padStart(2, '0'))
 
 /* Featured cam: wider, title a touch bigger */
 .cam-card--featured .cam-title {
-  font-size: 30px;
+  font-size: 28px;
 }
 
 @container cams (min-width: 1000px) {

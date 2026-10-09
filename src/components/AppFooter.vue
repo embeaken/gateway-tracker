@@ -25,14 +25,14 @@ import ThemeToggle from './ThemeToggle.vue'
 .app-footer {
   margin-top: var(--spacing-2xl);
   padding: var(--spacing-xl) 0;
-  background-color: var(--color-ink);
-  border-top: 6px solid var(--color-accent);
+  background-color: var(--color-navy);
+  border-top: 3px solid var(--color-accent);
 }
 
 .footer-sign {
   font-family: var(--font-family-display);
-  font-size: 22px !important;
-  font-weight: var(--font-weight-bold);
+  font-size: 21px !important;
+  font-weight: var(--font-weight-semibold);
   color: white !important;
   margin-bottom: 4px !important;
 }

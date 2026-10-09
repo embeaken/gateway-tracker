@@ -431,7 +431,7 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
 
 .timeline-title {
   font-size: 26px;
-  line-height: 1;
+  line-height: 1.1;
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
   margin: 0;
@@ -462,9 +462,8 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
   display: flex;
   align-items: center;
   gap: 8px;
-  font-family: var(--font-family-mono);
-  font-size: 11px;
-  font-weight: 500;
+  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
   text-transform: uppercase;
   letter-spacing: 0.7px;
   color: var(--color-text-secondary);
@@ -510,7 +509,7 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
   border-left-color: var(--color-accent);
 }
 .timeline-item-video {
-  border-left-color: #cc0000;
+  border-left-color: #B42318;
 }
 
 /* =============================================
@@ -696,11 +695,10 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
 }
 
 .item-badge {
-  font-family: var(--font-family-mono);
-  font-size: 10px;
-  font-weight: 500;
+  font-size: 11px;
+  font-weight: var(--font-weight-bold);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.05em;
   flex-shrink: 0;
   line-height: 1.5;
 }
@@ -952,7 +950,7 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
 }
 
 .caption-date {
-  font-family: var(--font-family-mono);
+  font-family: var(--font-family-base);
   font-size: 12px;
   color: var(--color-primary);
   font-weight: var(--font-weight-bold);

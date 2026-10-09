@@ -11,15 +11,15 @@ const hcShaft = routeStops.find((s) => s.id === "hudson-county-shaft")!;
 const camHref = (stop: (typeof routeStops)[number]) =>
   stop.cams.length ? `#cam-${stop.cams[0]}` : undefined;
 
-const camLabel = (n: number) => (n === 1 ? "1 cam" : `${n} cams`);
+const camLabel = (n: number) => (n === 1 ? "1 camera" : `${n} cameras`);
 </script>
 
 <template>
-  <section class="route" aria-labelledby="route-title">
+  <section id="route" class="route" aria-labelledby="route-title">
     <div class="container">
       <div class="route-head">
         <h2 id="route-title" class="route-title">The route</h2>
-        <p class="kicker">West → east · schematic, not to scale · tap a stop to jump to its camera</p>
+        <p class="route-note">West to east · schematic, not to scale · select a stop to see its camera</p>
       </div>
 
       <!-- Horizontal strip map (tablet / desktop) -->
@@ -41,7 +41,7 @@ const camLabel = (n: number) => (n === 1 ? "1 cam" : `${n} cams`);
           aria-hidden="true"
         >
           <span class="drive-label">
-            Drive 1 · {{ PALISADES_DRIVE_FT.toLocaleString("en-US") }} ft through the Palisades
+            Drive 1: {{ PALISADES_DRIVE_FT.toLocaleString("en-US") }} ft through the Palisades · about one year
           </span>
         </div>
 
@@ -49,7 +49,7 @@ const camLabel = (n: number) => (n === 1 ? "1 cam" : `${n} cams`);
           <div class="track-line"></div>
           <div class="tbm" :style="{ left: `${portal.at}%` }">
             <span class="tbm-head"></span>
-            <span class="tbm-label">TBM 1 →</span>
+            <span class="tbm-label">TBM 1</span>
           </div>
         </div>
 
@@ -70,9 +70,7 @@ const camLabel = (n: number) => (n === 1 ? "1 cam" : `${n} cams`);
               <span class="stop-text">
                 <span class="stop-label">{{ stop.label }}</span>
                 <span class="stop-sub">{{ stop.sublabel }}</span>
-                <span v-if="stop.cams.length" class="stop-cams">
-                  <span class="live-dot" aria-hidden="true"></span>{{ camLabel(stop.cams.length) }}
-                </span>
+                <span v-if="stop.cams.length" class="stop-cams">{{ camLabel(stop.cams.length) }}</span>
               </span>
             </component>
           </li>
@@ -93,12 +91,10 @@ const camLabel = (n: number) => (n === 1 ? "1 cam" : `${n} cams`);
               <span class="stop-label">{{ stop.label }}</span>
               <span class="stop-sub">{{ stop.sublabel }}</span>
             </span>
-            <span v-if="stop.cams.length" class="stop-cams">
-              <span class="live-dot" aria-hidden="true"></span>{{ camLabel(stop.cams.length) }}
-            </span>
+            <span v-if="stop.cams.length" class="stop-cams">{{ camLabel(stop.cams.length) }}</span>
           </component>
           <p v-if="stop.id === 'portal'" class="vstop-note">
-            TBM 1 is mining east toward the Hudson County shaft
+            TBM 1 is mining east toward the Hudson County shaft, about one year for {{ PALISADES_DRIVE_FT.toLocaleString("en-US") }} ft
           </p>
         </li>
       </ol>
@@ -122,7 +118,13 @@ const camLabel = (n: number) => (n === 1 ? "1 cam" : `${n} cams`);
 
 .route-title {
   font-size: 32px;
-  line-height: 1;
+  line-height: 1.1;
+}
+
+.route-note {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text-secondary);
 }
 
 /* =========== Horizontal strip =========== */
@@ -161,9 +163,9 @@ const camLabel = (n: number) => (n === 1 ? "1 cam" : `${n} cams`);
 .zone {
   position: absolute;
   top: 0;
-  font-family: var(--font-family-mono);
-  font-size: 10px;
-  letter-spacing: 0.14em;
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--color-text-secondary);
   white-space: nowrap;
@@ -191,10 +193,10 @@ const camLabel = (n: number) => (n === 1 ? "1 cam" : `${n} cams`);
   border-radius: 3px;
   background: repeating-linear-gradient(
     90deg,
-    var(--color-text-primary) 0 14px,
+    var(--color-map-line) 0 14px,
     transparent 14px 22px
   );
-  opacity: 0.85;
+  opacity: 0.8;
 }
 
 .drive {
@@ -203,7 +205,7 @@ const camLabel = (n: number) => (n === 1 ? "1 cam" : `${n} cams`);
   height: 28px;
   margin-left: 16px;
   border-radius: 14px;
-  background: color-mix(in srgb, var(--color-accent), transparent 82%);
+  background: var(--color-accent-muted);
 }
 
 .drive-label {
@@ -211,10 +213,8 @@ const camLabel = (n: number) => (n === 1 ? "1 cam" : `${n} cams`);
   left: 50%;
   top: 36px;
   transform: translateX(-50%);
-  font-family: var(--font-family-mono);
-  font-size: 10px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-accent-ink);
   white-space: nowrap;
 }
@@ -243,11 +243,9 @@ const camLabel = (n: number) => (n === 1 ? "1 cam" : `${n} cams`);
   padding: 2px 6px;
   border-radius: var(--radius-sm);
   background: var(--color-accent);
-  color: white;
-  font-family: var(--font-family-mono);
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.06em;
+  color: var(--color-navy);
+  font-size: 11px;
+  font-weight: var(--font-weight-bold);
   white-space: nowrap;
 }
 
@@ -289,26 +287,26 @@ a.stop-link:visited {
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  border: 4px solid var(--color-text-primary);
+  border: 4px solid var(--color-map-line);
   background: var(--color-card-bg);
   z-index: 3;
   transition: transform var(--transition-base), background var(--transition-base);
 }
 
 .stop--endpoint .stop-dot {
-  background: var(--color-text-primary);
+  background: var(--color-map-line);
 }
 
 a.stop-link:hover .stop-dot {
   transform: scale(1.2);
-  background: var(--color-accent);
+  background: var(--color-primary-light);
 }
 
 /* Leader line from dot to label */
 .stop-text {
   position: absolute;
   left: 11px;
-  width: 150px;
+  width: 190px;
   transform: translateX(-50%);
   display: flex;
   flex-direction: column;
@@ -348,13 +346,14 @@ a.stop-link:hover .stop-dot {
 
 .stop-label {
   font-family: var(--font-family-display);
-  font-size: 19px;
-  font-weight: var(--font-weight-bold);
-  line-height: 1.05;
+  font-size: 17px;
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.15;
+  white-space: nowrap;
 }
 
 a.stop-link:hover .stop-label {
-  color: var(--color-accent-ink);
+  color: var(--color-primary);
 }
 
 .stop-sub {
@@ -364,21 +363,11 @@ a.stop-link:hover .stop-label {
 }
 
 .stop-cams {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin: 4px 0;
-  font-family: var(--font-family-mono);
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-text-secondary);
-}
-
-.stop-cams .live-dot {
-  width: 6px;
-  height: 6px;
-  animation: none;
+  margin: 3px 0;
+  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+  white-space: nowrap;
 }
 
 /* =========== Vertical line (mobile) =========== */
@@ -408,7 +397,7 @@ a.stop-link:hover .stop-label {
   width: 4px;
   background: repeating-linear-gradient(
     180deg,
-    var(--color-text-primary) 0 10px,
+    var(--color-map-line) 0 10px,
     transparent 10px 16px
   );
 }
@@ -446,12 +435,12 @@ a.vstop-link:visited {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  border: 4px solid var(--color-text-primary);
+  border: 4px solid var(--color-map-line);
   background: var(--color-card-bg);
 }
 
 .vstop--endpoint .vstop-dot {
-  background: var(--color-text-primary);
+  background: var(--color-map-line);
 }
 
 .vstop-text {
@@ -463,18 +452,18 @@ a.vstop-link:visited {
 
 .vstop .stop-label {
   font-size: 18px;
+  white-space: normal;
 }
 
 .vstop-note {
   margin: -4px 0 10px;
   padding: 6px 10px;
   border-left: 3px solid var(--color-accent);
-  background: color-mix(in srgb, var(--color-accent), transparent 88%);
+  background: var(--color-accent-muted);
   color: var(--color-accent-ink);
-  font-family: var(--font-family-mono);
-  font-size: 11px;
+  font-size: 13px;
+  font-weight: var(--font-weight-medium);
   line-height: 1.4;
-  letter-spacing: 0.02em;
 }
 
 @media (max-width: 820px) {

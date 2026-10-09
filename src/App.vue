@@ -10,13 +10,10 @@ import ProjectCard from './components/ProjectCard.vue'
 import Sidebar from './components/Sidebar.vue'
 import ActivityTimeline from './components/ActivityTimeline.vue'
 import { projects } from './assets/data'
-import { useSiteClock } from './useSiteClock'
 
 if (import.meta.env.VITE_PLAYWRIGHT) {
   document.documentElement.dataset.visualTest = 'true'
 }
-
-const { time, isNight } = useSiteClock()
 
 // The "What's going on?" explainer expands in place under the hero.
 const showExplainer = ref(false)
@@ -42,10 +39,8 @@ function toggleExplainer() {
         <section id="cameras" class="cams" aria-labelledby="cams-title">
           <div class="section-head">
             <h2 id="cams-title" class="section-title">Live from the sites</h2>
-            <p class="kicker section-meta">
-              <span class="live-dot" aria-hidden="true"></span>
-              {{ projects.length }} cams · {{ time }} in New York
-              <span v-if="isNight" class="night-chip">Night shift</span>
+            <p class="section-meta">
+              {{ projects.length }} live views, west to east, via EarthCam
             </p>
           </div>
 
@@ -108,20 +103,13 @@ function toggleExplainer() {
 
 .section-title {
   font-size: 32px;
-  line-height: 1;
+  line-height: 1.1;
 }
 
 .section-meta {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.night-chip {
-  padding: 2px 6px;
-  border-radius: var(--radius-sm);
-  background: var(--color-ink);
-  color: #ffd27a;
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text-secondary);
 }
 
 .cam-grid {
