@@ -36,7 +36,9 @@ const markers = computed(() =>
 const camHref = (stop: (typeof routeStops)[number]) =>
   stop.cams.length ? `#cam-${stop.cams[0]}` : undefined;
 
-const camLabel = (n: number) => (n === 1 ? "1 camera" : `${n} cameras`);
+/** The tunnel's two ends are portals: tracks leave the ground there. */
+const portalSide = (i: number) =>
+  i === 0 ? "west" : i === routeStops.length - 1 ? "east" : null;
 </script>
 
 <template>
@@ -69,9 +71,13 @@ const camLabel = (n: number) => (n === 1 ? "1 camera" : `${n} cameras`);
             <!-- First drive highlight -->
             <div class="drive" :style="{ left: `${INSET}%`, width: `${DRIVE_TO - INSET}%` }"></div>
 
-            <!-- Twin tubes: planned (dashed) -->
+            <!-- Twin tubes: underground (dashed), plus surface track beyond each portal (solid) -->
             <div class="tube tube--north"></div>
             <div class="tube tube--south"></div>
+            <div class="surface surface--west tube--north"></div>
+            <div class="surface surface--west tube--south"></div>
+            <div class="surface surface--east tube--north"></div>
+            <div class="surface surface--east tube--south"></div>
 
             <!-- Bored so far (estimated) + machine position -->
             <template v-for="m in markers" :key="m.tbm.id">
@@ -96,18 +102,27 @@ const camLabel = (n: number) => (n === 1 ? "1 camera" : `${n} cameras`);
 
           <ol class="stops">
             <li
-              v-for="stop in routeStops"
+              v-for="(stop, i) in routeStops"
               :key="stop.id"
               class="stop"
-              :class="[`stop--${stop.state}`, `stop--${stop.side}`, `stop--align-${stop.align ?? 'center'}`]"
+              :class="[`stop--${stop.side}`, `stop--align-${stop.align ?? 'center'}`]"
               :style="{ left: `${pos(stop.ft)}%` }"
             >
               <component :is="camHref(stop) ? 'a' : 'div'" :href="camHref(stop)" class="stop-link">
-                <span class="stop-dot" aria-hidden="true"></span>
+                <!-- Tunnel portal: wing walls splay toward the open-air side -->
+                <svg
+                  v-if="portalSide(i)"
+                  class="portal"
+                  :class="`portal--${portalSide(i)}`"
+                  viewBox="-12 -26 24 52"
+                  aria-hidden="true"
+                >
+                  <path d="M0 -11 V-19 L-8 -26 M0 11 V19 L-8 26" />
+                </svg>
+                <span v-else class="stop-dot" aria-hidden="true"></span>
                 <span class="stop-text">
                   <span class="stop-label">{{ stop.label }}</span>
                   <span class="stop-sub">{{ stop.sublabel }}</span>
-                  <span v-if="stop.cams.length" class="stop-cams">{{ camLabel(stop.cams.length) }}</span>
                 </span>
               </component>
             </li>
@@ -122,21 +137,27 @@ const camLabel = (n: number) => (n === 1 ? "1 camera" : `${n} cameras`);
 
         <!-- Vertical line diagram (mobile) -->
         <ol class="vline">
-          <template v-for="stop in routeStops" :key="stop.id">
+          <template v-for="(stop, i) in routeStops" :key="stop.id">
             <li
               class="vstop"
-              :class="[`vstop--${stop.state}`, stop.id === 'river' && 'vstop--river']"
+              :class="[stop.id === 'river' && 'vstop--river', portalSide(i) && `vstop--portal-${portalSide(i)}`]"
             >
               <component :is="camHref(stop) ? 'a' : 'div'" :href="camHref(stop)" class="vstop-link">
-                <span class="vstop-dot" aria-hidden="true"></span>
+                <svg
+                  v-if="portalSide(i)"
+                  class="vportal"
+                  :class="`vportal--${portalSide(i)}`"
+                  viewBox="-20 -12 40 24"
+                  aria-hidden="true"
+                >
+                  <path d="M-8 0 H-13 L-19 -7 M8 0 H13 L19 -7" />
+                </svg>
+                <span v-else class="vstop-dot" aria-hidden="true"></span>
                 <span class="vstop-text">
                   <span class="stop-label">{{ stop.label }}</span>
                   <span class="stop-sub">{{ stop.sublabel }}</span>
                 </span>
-                <span class="vstop-meta">
-                  <span class="vstop-mile tabular">mile {{ miles(stop.ft) }}</span>
-                  <span v-if="stop.cams.length" class="stop-cams">{{ camLabel(stop.cams.length) }}</span>
-                </span>
+                <span class="vstop-mile tabular">mile {{ miles(stop.ft) }}</span>
               </component>
             </li>
             <!-- The first drive, with machine positions -->
@@ -251,13 +272,7 @@ const camLabel = (n: number) => (n === 1 ? "1 camera" : `${n} cameras`);
   /* Same coordinate frame as .track (16px inset each side) */
   left: calc(16px + (100% - 32px) * var(--river-from));
   right: calc(16px + (100% - 32px) * (1 - var(--river-to)));
-  background:
-    repeating-linear-gradient(
-      0deg,
-      transparent 0 9px,
-      color-mix(in srgb, var(--color-primary), transparent 88%) 9px 10px
-    ),
-    var(--color-river);
+  background: var(--river-waves) 0 0 / 40px 20px, var(--color-river);
 }
 
 .zone-labels {
@@ -295,6 +310,7 @@ const camLabel = (n: number) => (n === 1 ? "1 camera" : `${n} cameras`);
 }
 
 .tube,
+.surface,
 .bored {
   position: absolute;
   height: 4px;
@@ -320,6 +336,23 @@ const camLabel = (n: number) => (n === 1 ? "1 camera" : `${n} cameras`);
 .tube--south,
 .bored--south {
   top: calc(var(--tube-gap) - 2px);
+}
+
+/* Surface track beyond each portal: solid, from the card edge to the portal */
+.surface {
+  background: var(--color-map-line);
+  opacity: 0.75;
+}
+
+.surface--west {
+  left: 0;
+  width: 3%; /* = INSET */
+}
+
+.surface--east {
+  left: auto;
+  right: 0;
+  width: 3%;
 }
 
 .bored {
@@ -436,13 +469,40 @@ a.stop-link:visited {
   transition: background var(--transition-fast);
 }
 
-.stop--endpoint .stop-dot {
-  background: var(--color-map-line);
-}
+
 
 a.stop-link:hover .stop-dot,
 a.vstop-link:hover .vstop-dot {
   background: var(--color-primary);
+}
+
+.portal,
+.vportal {
+  position: absolute;
+  overflow: visible;
+  fill: none;
+  stroke: var(--color-map-line);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  z-index: 3;
+  transition: stroke var(--transition-fast);
+}
+
+.portal {
+  left: -1px;
+  top: -8px;
+  width: 24px;
+  height: 52px;
+}
+
+.portal--east {
+  transform: scaleX(-1);
+}
+
+a.stop-link:hover .portal,
+a.vstop-link:hover .vportal {
+  stroke: var(--color-primary);
 }
 
 .stop-text {
@@ -508,13 +568,6 @@ a.vstop-link:hover .stop-label {
   color: var(--color-text-secondary);
 }
 
-.stop-cams {
-  margin: 3px 0;
-  font-size: 12px;
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-primary);
-  white-space: nowrap;
-}
 
 .scale {
   position: absolute;
@@ -523,7 +576,6 @@ a.vstop-link:hover .stop-label {
   bottom: 10px;
   height: 16px;
   list-style: none;
-  border-top: 1px solid var(--color-border);
 }
 
 .scale li {
@@ -549,7 +601,7 @@ a.vstop-link:hover .stop-label {
 
 .vstop {
   position: relative;
-  padding: 0 var(--spacing-sm) 0 48px;
+  padding: 0 var(--spacing-sm) 0 54px;
 }
 
 /* twin tubes */
@@ -576,18 +628,34 @@ a.vstop-link:hover .stop-label {
   left: 31px;
 }
 
-.vstop:first-child::before,
-.vstop:first-child::after {
-  top: 22px;
+/* Portals: solid surface track on the open-air side, dashed tunnel beyond. */
+.vstop--portal-west::before,
+.vstop--portal-west::after {
+  background:
+    linear-gradient(var(--color-map-line) 0 50%, transparent 50%),
+    repeating-linear-gradient(180deg, var(--color-map-line) 0 9px, transparent 9px 14px) 0 50% / 100% 50% no-repeat;
 }
 
-.vstop:last-child::before,
-.vstop:last-child::after {
-  bottom: calc(100% - 22px);
+.vstop--portal-east::before,
+.vstop--portal-east::after {
+  background:
+    linear-gradient(transparent 0 50%, var(--color-map-line) 50%),
+    repeating-linear-gradient(180deg, var(--color-map-line) 0 9px, transparent 9px 14px) 0 0 / 100% 50% no-repeat;
+}
+
+.vportal {
+  left: 8px;
+  top: calc(50% - 12px);
+  width: 40px;
+  height: 24px;
+}
+
+.vportal--east {
+  transform: scaleY(-1);
 }
 
 .vstop--river {
-  background: var(--color-river);
+  background: var(--river-waves) 0 0 / 40px 20px, var(--color-river);
 }
 
 .vstop-link {
@@ -615,9 +683,6 @@ a.vstop-link:visited {
   z-index: 1;
 }
 
-.vstop--endpoint .vstop-dot {
-  background: var(--color-map-line);
-}
 
 .vstop-text {
   display: flex;
@@ -675,20 +740,9 @@ a.vstop-link:visited {
   color: var(--color-accent-ink);
 }
 
-.vstop-meta {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 2px;
-}
-
 .vstop-mile {
   font-size: 11px;
   color: var(--color-text-secondary);
-}
-
-.vstop-meta .stop-cams {
-  margin: 0;
 }
 
 .vstop .stop-label {

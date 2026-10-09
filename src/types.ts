@@ -23,8 +23,6 @@ export type RouteStop = {
   ft: number
   /** Project ids whose cameras live at this stop */
   cams: string[]
-  /** Visual state of the stop */
-  state: 'active' | 'endpoint'
   /** Label placement on the horizontal map (the Manhattan end is crowded) */
   side: 'above' | 'below'
   align?: 'start' | 'center' | 'end'
