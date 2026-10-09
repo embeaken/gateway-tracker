@@ -1,4 +1,4 @@
-import type { Project, RouteStop } from "../types";
+import type { Project, RouteSegment, RouteStop } from "../types";
 
 export const projects: Project[] = [
   {
@@ -116,11 +116,16 @@ export const ROUTE = {
     "https://www.gatewayprogram.org/wp-content/uploads/2026/04/April-2026-Board-Meeting-Public-Presentation.pdf",
 } as const;
 
+/** Tunnel-boring contracts, each bored by its own pair of TBMs. */
+export const routeSegments: RouteSegment[] = [
+  { id: "palisades", label: "Palisades Tunnel", fromFt: 0, toFt: HC_SHAFT_FT },
+  { id: "hudson-river", label: "Hudson River Tunnel", fromFt: HC_SHAFT_FT, toFt: TWELFTH_AVE_SHAFT_FT },
+];
+
 export const routeStops: RouteStop[] = [
   {
     id: "portal",
     label: "Palisades portal",
-    sublabel: "North Bergen, NJ",
     ft: 0,
     cams: ["palisades-tunnel", "launch-box"],
     side: "below",
@@ -129,15 +134,13 @@ export const routeStops: RouteStop[] = [
   {
     id: "hudson-county-shaft",
     label: "Hudson County shaft",
-    sublabel: "Weehawken / Hoboken",
     ft: HC_SHAFT_FT,
     cams: ["hudson-county-shaft"],
     side: "above",
   },
   {
     id: "river",
-    label: "Under the Hudson",
-    sublabel: "Ground stabilization",
+    label: "Ground stabilization",
     // Midpoint of the Hudson River Ground Stabilization zone (profile)
     ft: HC_SHAFT_FT + 5735,
     cams: ["river"],
@@ -147,29 +150,17 @@ export const routeStops: RouteStop[] = [
   {
     id: "manhattan-shaft",
     label: "12th Ave shaft",
-    sublabel: "W 30th St",
     ft: TWELFTH_AVE_SHAFT_FT,
     cams: ["manhattan-shaft"],
     side: "above",
-    align: "end",
   },
   {
     id: "hudson-yards",
-    label: "Hudson Yards",
-    sublabel: "Concrete casing",
+    label: "Hudson Yards\ncasing",
     ft: (CASING_START_FT + ELEVENTH_AVE_FT) / 2,
     cams: ["hudson-yards"],
     side: "below",
     align: "start",
-  },
-  {
-    id: "penn",
-    label: "Penn Station",
-    sublabel: "via 10th Ave portal",
-    ft: ROUTE.lengthFt,
-    cams: [],
-    side: "above",
-    align: "end",
   },
 ];
 

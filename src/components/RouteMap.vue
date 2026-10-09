@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { routeStops, PALISADES_DRIVE, ROUTE } from "../assets/data";
+import { routeStops, routeSegments, PALISADES_DRIVE, ROUTE } from "../assets/data";
 import { useTbmProgress, formatFt, formatPct, formatMonth } from "../useTbmProgress";
 
 // Drawn to scale: feet along the tunnel → percent of the track width, with a
@@ -13,12 +13,14 @@ const RIVER_TO = pos(ROUTE.riverToFt);
 const DRIVE_TO = pos(PALISADES_DRIVE.lengthFt);
 
 const MILE = 5280;
-const mileTicks = Array.from({ length: Math.floor(ROUTE.lengthFt / MILE) + 1 }, (_, i) => ({
-  label: i === 0 ? "0" : i === 1 ? "1 mile" : `${i} miles`,
-  at: pos(i * MILE),
-}));
-
 const miles = (ft: number) => (ft === 0 ? "0" : (ft / MILE).toFixed(1));
+
+const segments = routeSegments.map((seg) => ({
+  ...seg,
+  left: pos(seg.fromFt),
+  width: pos(seg.toFt) - pos(seg.fromFt),
+  length: formatFt(seg.toFt - seg.fromFt),
+}));
 
 const { progress } = useTbmProgress();
 
@@ -36,9 +38,11 @@ const markers = computed(() =>
 const camHref = (stop: (typeof routeStops)[number]) =>
   stop.cams.length ? `#cam-${stop.cams[0]}` : undefined;
 
-/** The tunnel's two ends are portals: tracks leave the ground there. */
-const portalSide = (i: number) =>
-  i === 0 ? "west" : i === routeStops.length - 1 ? "east" : null;
+const EAST_PORTAL = pos(ROUTE.lengthFt);
+
+/** Segment that begins at a stop (for the mobile list). */
+const segmentAfter = (stop: (typeof routeStops)[number]) =>
+  segments.find((seg) => seg.fromFt === stop.ft);
 </script>
 
 <template>
@@ -55,14 +59,14 @@ const portalSide = (i: number) =>
         <!-- Horizontal strip map (tablet / desktop) -->
         <div class="strip" :style="{ '--river-from': RIVER_FROM / 100, '--river-to': RIVER_TO / 100 }">
           <div class="zone-labels" aria-hidden="true">
-            <span class="zone" :style="{ left: '0%' }">New Jersey</span>
+            <span class="zone zone--dir" :style="{ left: '0%' }">← To Newark</span>
             <span
               class="zone zone--river"
               :style="{ left: `${RIVER_FROM}%`, width: `${RIVER_TO - RIVER_FROM}%` }"
             >
               Hudson River
             </span>
-            <span class="zone zone--end">Manhattan</span>
+            <span class="zone zone--dir zone--end">To Penn Station →</span>
           </div>
 
           <div class="river-band" aria-hidden="true"></div>
@@ -102,7 +106,7 @@ const portalSide = (i: number) =>
 
           <ol class="stops">
             <li
-              v-for="(stop, i) in routeStops"
+              v-for="stop in routeStops"
               :key="stop.id"
               class="stop"
               :class="[`stop--${stop.side}`, `stop--align-${stop.align ?? 'center'}`]"
@@ -110,79 +114,97 @@ const portalSide = (i: number) =>
             >
               <component :is="camHref(stop) ? 'a' : 'div'" :href="camHref(stop)" class="stop-link">
                 <!-- Tunnel portal: wing walls splay toward the open-air side -->
-                <svg
-                  v-if="portalSide(i)"
-                  class="portal"
-                  :class="`portal--${portalSide(i)}`"
-                  viewBox="-12 -26 24 52"
-                  aria-hidden="true"
-                >
+                <svg v-if="stop.ft === 0" class="portal" viewBox="-12 -26 24 52" aria-hidden="true">
                   <path d="M0 -11 V-19 L-8 -26 M0 11 V19 L-8 26" />
                 </svg>
                 <span v-else class="stop-dot" aria-hidden="true"></span>
                 <span class="stop-text">
                   <span class="stop-label">{{ stop.label }}</span>
-                  <span class="stop-sub">{{ stop.sublabel }}</span>
                 </span>
               </component>
             </li>
+            <!-- East end: the tunnel surfaces east of 10th Ave and joins the Penn Station tracks -->
+            <li class="stop" :style="{ left: `${EAST_PORTAL}%` }" aria-hidden="true">
+              <span class="stop-link">
+                <svg class="portal portal--east" viewBox="-12 -26 24 52">
+                  <path d="M0 -11 V-19 L-8 -26 M0 11 V19 L-8 26" />
+                </svg>
+              </span>
+            </li>
           </ol>
 
-          <ol class="scale" aria-hidden="true">
-            <li v-for="tick in mileTicks" :key="tick.label" :style="{ left: `${tick.at}%` }">
-              {{ tick.label }}
+          <!-- Tunnel-boring sections, dimensioned like an engineering drawing -->
+          <ol class="dims">
+            <li
+              v-for="seg in segments"
+              :key="seg.id"
+              class="dim"
+              :style="{ left: `${seg.left}%`, width: `${seg.width}%` }"
+            >
+              <span class="dim-label">{{ seg.label }}</span>
+              <span class="dim-length tabular">{{ seg.length }}</span>
             </li>
           </ol>
         </div>
 
         <!-- Vertical line diagram (mobile) -->
         <ol class="vline">
-          <template v-for="(stop, i) in routeStops" :key="stop.id">
+          <li class="vstop vterm vterm--west" aria-hidden="true">
+            <span class="vterm-text">↑ To Newark</span>
+          </li>
+          <template v-for="stop in routeStops" :key="stop.id">
             <li
               class="vstop"
-              :class="[stop.id === 'river' && 'vstop--river', portalSide(i) && `vstop--portal-${portalSide(i)}`]"
+              :class="[stop.id === 'river' && 'vstop--river', stop.ft === 0 && 'vstop--portal-west']"
             >
               <component :is="camHref(stop) ? 'a' : 'div'" :href="camHref(stop)" class="vstop-link">
-                <svg
-                  v-if="portalSide(i)"
-                  class="vportal"
-                  :class="`vportal--${portalSide(i)}`"
-                  viewBox="-20 -12 40 24"
-                  aria-hidden="true"
-                >
+                <svg v-if="stop.ft === 0" class="vportal" viewBox="-20 -12 40 24" aria-hidden="true">
                   <path d="M-8 0 H-13 L-19 -7 M8 0 H13 L19 -7" />
                 </svg>
                 <span v-else class="vstop-dot" aria-hidden="true"></span>
                 <span class="vstop-text">
-                  <span class="stop-label">{{ stop.label }}</span>
-                  <span class="stop-sub">{{ stop.sublabel }}</span>
+                  <span class="stop-label">{{ stop.label.replace("\n", " ") }}</span>
                 </span>
                 <span class="vstop-mile tabular">mile {{ miles(stop.ft) }}</span>
               </component>
             </li>
-            <!-- The first drive, with machine positions -->
-            <li v-if="stop.id === 'portal'" class="vstop vdrive" aria-hidden="true">
-              <span
-                v-for="m in markers"
-                :key="m.tbm.id"
-                class="vfill"
-                :class="[`vfill--${m.lane}`, `vfill--${m.status}`]"
-                :style="{ height: `${m.fraction * 100}%` }"
-              ></span>
-              <span class="vdrive-text">
-                <span v-for="m in markers" :key="m.tbm.id">
-                  <strong>{{ m.tbm.label }}</strong> ·
-                  {{ m.status === "upcoming" ? "launching soon" : `${formatPct(m.fraction)} of the way (est.)` }}
+            <li v-if="segmentAfter(stop)" class="vstop vseg" :class="`vseg--${segmentAfter(stop)!.id}`">
+              <template v-if="stop.ft === 0">
+                <span
+                  v-for="m in markers"
+                  :key="m.tbm.id"
+                  class="vfill"
+                  :class="[`vfill--${m.lane}`, `vfill--${m.status}`]"
+                  :style="{ height: `${m.fraction * 100}%` }"
+                  aria-hidden="true"
+                ></span>
+              </template>
+              <span class="vseg-text">
+                <span class="vseg-label">
+                  {{ segmentAfter(stop)!.label }}
+                  <span class="vseg-length tabular">· {{ segmentAfter(stop)!.length }}</span>
                 </span>
+                <template v-if="stop.ft === 0">
+                  <span v-for="m in markers" :key="m.tbm.id" class="vseg-tbm">
+                    <strong>{{ m.tbm.label }}</strong> ·
+                    {{ m.status === "upcoming" ? "launching soon" : `${formatPct(m.fraction)} of the way (est.)` }}
+                  </span>
+                </template>
               </span>
             </li>
           </template>
+          <li class="vstop vstop--portal-east vterm" aria-hidden="true">
+            <svg class="vportal vportal--east" viewBox="-20 -12 40 24">
+              <path d="M-8 0 H-13 L-19 -7 M8 0 H13 L19 -7" />
+            </svg>
+            <span class="vterm-text">To Penn Station ↓</span>
+          </li>
         </ol>
 
         <!-- Progress table -->
         <div class="progress">
           <h3 class="progress-title">
-            Tunnel boring progress <span class="progress-est">estimated</span>
+            Palisades Tunnel progress <span class="progress-est">estimated</span>
           </h3>
           <ul class="progress-rows">
             <li v-for="m in markers" :key="m.tbm.id" class="progress-row">
@@ -258,10 +280,11 @@ const portalSide = (i: number) =>
 /* =========== Horizontal strip =========== */
 
 .strip {
-  --track-y: 136px;
+  --track-y: 104px;
   --tube-gap: 7px; /* half the distance between tube centrelines */
+  --dims-y: 190px;
   position: relative;
-  height: 296px;
+  height: 236px;
   border-bottom: 1px solid var(--color-border);
 }
 
@@ -299,6 +322,10 @@ const portalSide = (i: number) =>
 
 .zone--end {
   right: 0;
+}
+
+.zone--dir {
+  letter-spacing: 0.06em;
 }
 
 .track {
@@ -520,11 +547,11 @@ a.vstop-link:hover .vportal {
 
 /* Labels sit clear of the tracks so TBM tags can pass underneath them. */
 .stop--below .stop-text {
-  top: 62px;
+  top: 60px;
 }
 
 .stop--above .stop-text {
-  bottom: 62px;
+  bottom: 60px;
   flex-direction: column-reverse;
 }
 
@@ -553,7 +580,7 @@ a.vstop-link:hover .vportal {
   font-size: 17px;
   font-weight: var(--font-weight-semibold);
   line-height: 1.15;
-  white-space: nowrap;
+  white-space: pre; /* labels may contain a manual line break */
 }
 
 a.stop-link:hover .stop-label,
@@ -562,32 +589,55 @@ a.vstop-link:hover .stop-label {
   text-decoration: underline;
 }
 
-.stop-sub {
-  font-size: 12px;
-  line-height: 1.3;
-  color: var(--color-text-secondary);
-}
-
-
-.scale {
+/* Dimension lines naming each tunnel-boring section */
+.dims {
   position: absolute;
   left: 16px;
   right: 16px;
-  bottom: 10px;
-  height: 16px;
+  top: var(--dims-y);
   list-style: none;
 }
 
-.scale li {
+.dim {
   position: absolute;
   top: 0;
-  padding: 3px 0 0 5px;
-  border-left: 1px solid var(--color-text-secondary);
-  height: 14px;
-  font-size: 10.5px;
-  line-height: 1;
-  color: var(--color-text-secondary);
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 6px;
+  padding: 0 10px 6px;
+  border-bottom: 1px solid var(--color-text-secondary);
+  font-size: 12.5px;
+  line-height: 1.2;
   white-space: nowrap;
+}
+
+/* End ticks */
+.dim::before,
+.dim::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  width: 1px;
+  height: 10px;
+  background: var(--color-text-secondary);
+}
+
+.dim::before {
+  left: 0;
+}
+
+.dim::after {
+  right: 0;
+}
+
+.dim-label {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.dim-length {
+  color: var(--color-text-secondary);
 }
 
 /* =========== Vertical line (mobile) =========== */
@@ -595,7 +645,7 @@ a.vstop-link:hover .stop-label {
 .vline {
   display: none;
   list-style: none;
-  padding: var(--spacing-sm) 0;
+  padding: 0;
   border-bottom: 1px solid var(--color-border);
 }
 
@@ -691,11 +741,61 @@ a.vstop-link:visited {
   min-width: 0;
 }
 
-.vdrive {
-  min-height: 96px;
+.vseg {
+  min-height: 64px;
   display: flex;
   align-items: center;
+}
+
+.vseg--palisades {
+  min-height: 96px;
   background: var(--color-accent-muted);
+}
+
+.vseg-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 0;
+}
+
+.vseg-label {
+  font-size: 13px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.vseg-length {
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.vseg-tbm {
+  font-size: 13px;
+  color: var(--color-accent-ink);
+}
+
+/* Open-air track at each end of the list */
+.vterm {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+.vterm--west::before,
+.vterm--west::after {
+  background: var(--color-map-line);
+}
+
+.vterm-text {
+  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
 }
 
 .vfill {
@@ -730,14 +830,6 @@ a.vstop-link:visited {
 
 .vfill--south {
   left: 31px;
-}
-
-.vdrive-text {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  font-size: 13px;
-  color: var(--color-accent-ink);
 }
 
 .vstop-mile {

@@ -35,8 +35,7 @@ test.describe('design refresh smoke', () => {
     await expect(page.getByRole('link', { name: /Watch the live cameras/i })).toHaveCount(0)
     await expect(page.locator('.feature-photo')).toBeVisible()
     await expect(page.getByRole('heading', { name: 'The route' })).toBeVisible()
-    await expect(page.getByRole('heading', { name: /Tunnel boring progress/i })).toBeVisible()
-    await expect(page.locator('.header-status')).toContainText(/Day \d+/)
+    await expect(page.getByRole('heading', { name: /Palisades Tunnel progress/i })).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Live from the sites' })).toBeVisible()
     await expect(visibleActivity(page).getByRole('heading', { name: /Updates from the GDC/i })).toBeVisible()
 

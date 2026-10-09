@@ -14,11 +14,18 @@ export type ProjectFact = {
   value: string
 }
 
+/** A named tunnel section on the route diagram. */
+export type RouteSegment = {
+  id: string
+  label: string
+  fromFt: number
+  toFt: number
+}
+
 /** A stop on the west→east route diagram. */
 export type RouteStop = {
   id: string
   label: string
-  sublabel: string
   /** Distance along the new tunnel from the North Bergen portal, in feet */
   ft: number
   /** Project ids whose cameras live at this stop */
