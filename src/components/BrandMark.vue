@@ -1,6 +1,8 @@
 <script setup lang="ts">
-// A tunnel boring machine cutterhead, face-on: a solid steel face with muck
-// openings (slots) and disc cutters (dots). Inherits colour from `currentColor`.
+// The Palisades TBM cutterhead (Herrenknecht S-1432), face-on, simplified for
+// small sizes: the large centre plate, eight muck buckets just inside the rim,
+// and two disc-cutter housings between each pair. Inherits colour from `currentColor`.
+// Reference: gatewayprogram.org/wp-content/uploads/2025/12/S-1432-PEP-109.jpg
 </script>
 
 <template>
@@ -9,21 +11,33 @@
       <mask id="cutterhead-mask">
         <rect width="40" height="40" fill="white" />
         <g fill="black">
-          <rect x="18.4" y="5.2" width="3.2" height="9" rx="1.6" transform="rotate(45 20 20)" />
-          <rect x="18.4" y="5.2" width="3.2" height="9" rx="1.6" transform="rotate(135 20 20)" />
-          <rect x="18.4" y="5.2" width="3.2" height="9" rx="1.6" transform="rotate(225 20 20)" />
-          <rect x="18.4" y="5.2" width="3.2" height="9" rx="1.6" transform="rotate(315 20 20)" />
-          <circle cx="20.00" cy="11.40" r="1.5" />
-          <circle cx="20.00" cy="5.80" r="1.5" />
-          <circle cx="28.60" cy="20.00" r="1.5" />
-          <circle cx="34.20" cy="20.00" r="1.5" />
-          <circle cx="20.00" cy="28.60" r="1.5" />
-          <circle cx="20.00" cy="34.20" r="1.5" />
-          <circle cx="11.40" cy="20.00" r="1.5" />
-          <circle cx="5.80" cy="20.00" r="1.5" />
-          <circle cx="20" cy="20" r="2.4" />
+          <rect x="18.7" y="4" width="2.6" height="4.6" rx="1.3" transform="rotate(0 20 20)" />
+          <rect x="18.7" y="4" width="2.6" height="4.6" rx="1.3" transform="rotate(45 20 20)" />
+          <rect x="18.7" y="4" width="2.6" height="4.6" rx="1.3" transform="rotate(90 20 20)" />
+          <rect x="18.7" y="4" width="2.6" height="4.6" rx="1.3" transform="rotate(135 20 20)" />
+          <rect x="18.7" y="4" width="2.6" height="4.6" rx="1.3" transform="rotate(180 20 20)" />
+          <rect x="18.7" y="4" width="2.6" height="4.6" rx="1.3" transform="rotate(225 20 20)" />
+          <rect x="18.7" y="4" width="2.6" height="4.6" rx="1.3" transform="rotate(270 20 20)" />
+          <rect x="18.7" y="4" width="2.6" height="4.6" rx="1.3" transform="rotate(315 20 20)" />
+          <rect x="18.55" y="7.3" width="2.9" height="2.0" rx="0.7" transform="rotate(22.5 20 20)" />
+          <rect x="18.55" y="7.3" width="2.9" height="2.0" rx="0.7" transform="rotate(67.5 20 20)" />
+          <rect x="18.55" y="7.3" width="2.9" height="2.0" rx="0.7" transform="rotate(112.5 20 20)" />
+          <rect x="18.55" y="7.3" width="2.9" height="2.0" rx="0.7" transform="rotate(157.5 20 20)" />
+          <rect x="18.55" y="7.3" width="2.9" height="2.0" rx="0.7" transform="rotate(202.5 20 20)" />
+          <rect x="18.55" y="7.3" width="2.9" height="2.0" rx="0.7" transform="rotate(247.5 20 20)" />
+          <rect x="18.55" y="7.3" width="2.9" height="2.0" rx="0.7" transform="rotate(292.5 20 20)" />
+          <rect x="18.55" y="7.3" width="2.9" height="2.0" rx="0.7" transform="rotate(337.5 20 20)" />
+          <rect x="18.3" y="4.2" width="3.4" height="2.0" rx="0.7" transform="rotate(22.5 20 20)" />
+          <rect x="18.3" y="4.2" width="3.4" height="2.0" rx="0.7" transform="rotate(67.5 20 20)" />
+          <rect x="18.3" y="4.2" width="3.4" height="2.0" rx="0.7" transform="rotate(112.5 20 20)" />
+          <rect x="18.3" y="4.2" width="3.4" height="2.0" rx="0.7" transform="rotate(157.5 20 20)" />
+          <rect x="18.3" y="4.2" width="3.4" height="2.0" rx="0.7" transform="rotate(202.5 20 20)" />
+          <rect x="18.3" y="4.2" width="3.4" height="2.0" rx="0.7" transform="rotate(247.5 20 20)" />
+          <rect x="18.3" y="4.2" width="3.4" height="2.0" rx="0.7" transform="rotate(292.5 20 20)" />
+          <rect x="18.3" y="4.2" width="3.4" height="2.0" rx="0.7" transform="rotate(337.5 20 20)" />
         </g>
-        <circle cx="20" cy="20" r="17" fill="none" stroke="black" stroke-width="1" />
+        <!-- Gap that sets off the centre plate -->
+        <circle cx="20" cy="20" r="7" fill="none" stroke="black" stroke-width="1.3" />
       </mask>
     </defs>
     <circle cx="20" cy="20" r="19" fill="currentColor" mask="url(#cutterhead-mask)" />

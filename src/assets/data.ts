@@ -116,7 +116,14 @@ export const ROUTE = {
 
 /** Construction sections, west → east. */
 export const routeSegments: RouteSegment[] = [
-  { id: "palisades", label: "Palisades Tunnel", fromFt: 0, toFt: HC_SHAFT_FT, kind: "bored" },
+  {
+    id: "palisades",
+    label: "Palisades Tunnel",
+    fromFt: 0,
+    toFt: HC_SHAFT_FT,
+    kind: "bored",
+    cam: "launch-box",
+  },
   {
     id: "hudson-river",
     label: "Hudson River Tunnel",
@@ -140,7 +147,7 @@ export const routeStops: RouteStop[] = [
     id: "portal",
     label: "Tonnelle Avenue",
     ft: 0,
-    cams: ["palisades-tunnel", "launch-box"],
+    cams: ["palisades-tunnel"],
     side: "below",
   },
   {

@@ -10,6 +10,9 @@ const pos = (ft: number) => STUB + ((100 - STUB) * ft) / ROUTE.eastFt;
 
 const PORTAL = pos(0);
 const RIVER_FROM = pos(ROUTE.riverFromFt);
+// The Palisades: the diabase ridge the first drive bores through, portal → HC shaft
+const ROCK_FROM = PORTAL;
+const ROCK_TO = pos(PALISADES_DRIVE.lengthFt);
 const RIVER_TO = pos(ROUTE.riverToFt);
 
 const MILE = 5280;
@@ -43,13 +46,19 @@ const sites = [
     href: stop.cams.length ? `#cam-${stop.cams[0]}` : undefined,
     anchor: { pct: pos(stop.ft), px: 0 } as Anchor,
   })),
-  {
-    id: casing.id,
-    label: casing.label,
-    href: casing.href,
-    anchor: { pct: (casing.left + 100) / 2, px: 8 } as Anchor,
-  },
-];
+  // Sections with a camera are sites too, anchored mid-band
+  ...segments
+    .filter((seg) => seg.href)
+    .map((seg) => ({
+      id: seg.id,
+      label: seg.label,
+      href: seg.href,
+      anchor:
+        seg.kind === "casing"
+          ? ({ pct: (seg.left + 100) / 2, px: 8 } as Anchor) // band runs to the card edge
+          : ({ pct: seg.left + seg.width / 2, px: 0 } as Anchor),
+    })),
+].sort((a, b) => a.anchor.pct - b.anchor.pct);
 
 const hits = sites.map((site, i) => {
   const prev = sites[i - 1];
@@ -64,6 +73,18 @@ const hits = sites.map((site, i) => {
 });
 
 const hovered = ref<string | null>(null);
+
+// Hover glow for sections. The glow layer is the track plus the 16px run-off to
+// the card edge, so a track percentage p sits at calc(p% - 0.16p px) inside it.
+const tp = (p: number) => `calc(${p}% - ${(p * 0.16).toFixed(2)}px)`;
+const glows = segments
+  .filter((seg) => seg.href)
+  .map((seg) => {
+    const from = tp(seg.left);
+    const to = seg.kind === "casing" ? "100%" : tp(seg.left + seg.width);
+    const mask = `linear-gradient(to right, transparent ${from}, #000 ${from}, #000 ${to}, transparent ${to})`;
+    return { id: seg.id, style: { maskImage: mask, WebkitMaskImage: mask } };
+  });
 
 const { progress } = useTbmProgress();
 
@@ -99,9 +120,15 @@ const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && 
 
       <div class="route-card">
         <!-- Horizontal strip map (tablet / desktop) -->
-        <div class="strip" :style="{ '--river-from': RIVER_FROM / 100, '--river-to': RIVER_TO / 100 }">
+        <div class="strip">
           <div class="zone-labels" aria-hidden="true">
             <span class="zone zone--dir" :style="{ left: '0%' }">← To Washington, DC</span>
+            <span
+              class="zone zone--rock"
+              :style="{ left: `${ROCK_FROM}%`, width: `${ROCK_TO - ROCK_FROM}%` }"
+            >
+              Palisades
+            </span>
             <span
               class="zone zone--river"
               :style="{ left: `${RIVER_FROM}%`, width: `${RIVER_TO - RIVER_FROM}%` }"
@@ -111,19 +138,38 @@ const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && 
             <span class="zone zone--dir zone--end">To Boston →</span>
           </div>
 
-          <div class="river-band" aria-hidden="true"></div>
+          <div class="terrain terrain--rock" :style="{ '--from': ROCK_FROM / 100, '--to': ROCK_TO / 100 }" aria-hidden="true"></div>
+          <div class="terrain terrain--river" :style="{ '--from': RIVER_FROM / 100, '--to': RIVER_TO / 100 }" aria-hidden="true"></div>
 
           <div class="track" aria-hidden="true">
             <!-- The active TBM drive -->
-            <div class="drive" :style="{ left: `${drive.left}%`, width: `${drive.width}%` }"></div>
+            <div
+              class="band drive"
+              :style="{ left: `${drive.left}%`, width: `${drive.width}%` }"
+            ></div>
             <!-- Hudson Yards casing: cut-and-cover box from the 12th Ave shaft into Penn -->
-            <div class="casing-band" :style="{ left: `${casing.left}%` }"></div>
+            <div
+              class="band casing-band"
+              :style="{ left: `${casing.left}%` }"
+            ></div>
 
             <!-- New tracks: on the surface to the portal (solid), then in tunnel (dashed) -->
             <div class="surface tube--north" :style="{ width: `calc(${PORTAL}% + 16px)` }"></div>
             <div class="surface tube--south" :style="{ width: `calc(${PORTAL}% + 16px)` }"></div>
                         <div class="tube tube--north" :style="{ left: `${PORTAL}%` }"></div>
             <div class="tube tube--south" :style="{ left: `${PORTAL}%` }"></div>
+
+            <!-- Hover glow: the section's own dashed line lights up -->
+            <div
+              v-for="glow in glows"
+              :key="glow.id"
+              class="glow"
+              :class="hovered === glow.id && 'glow--on'"
+              :style="glow.style"
+            >
+              <div class="glow-tube tube--north" :style="{ left: tp(PORTAL) }"></div>
+              <div class="glow-tube tube--south" :style="{ left: tp(PORTAL) }"></div>
+            </div>
 
             <!-- Bored so far (estimated) + machine position -->
             <template v-for="m in markers" :key="m.tbm.id">
@@ -239,7 +285,11 @@ const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && 
                   aria-hidden="true"
                 ></span>
               </template>
-              <span class="vseg-text">
+              <component
+                :is="segmentFrom(stop.ft)!.href ? 'a' : 'span'"
+                :href="segmentFrom(stop.ft)!.href"
+                class="vseg-text"
+              >
                 <span class="vseg-label">
                   {{ segmentFrom(stop.ft)!.label }}
                   <span class="vseg-length tabular">· {{ segmentFrom(stop.ft)!.length }}</span>
@@ -250,7 +300,7 @@ const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && 
                     {{ m.status === "upcoming" ? "launching soon" : `${formatPct(m.fraction)} of the way (est.)` }}
                   </span>
                 </template>
-              </span>
+              </component>
             </li>
           </template>
           <li class="vstop vcasing">
@@ -346,14 +396,22 @@ const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && 
   border-bottom: 1px solid var(--color-border);
 }
 
-.river-band {
+/* Background terrain bands: rock under the Palisades, water over the river */
+.terrain {
   position: absolute;
   top: 0;
   bottom: 0;
   /* Same coordinate frame as .track (16px inset each side) */
-  left: calc(16px + (100% - 32px) * var(--river-from));
-  right: calc(16px + (100% - 32px) * (1 - var(--river-to)));
+  left: calc(16px + (100% - 32px) * var(--from));
+  right: calc(16px + (100% - 32px) * (1 - var(--to)));
+}
+
+.terrain--river {
   background: var(--river-waves) 0 0 / 40px 20px, var(--color-river);
+}
+
+.terrain--rock {
+  background: var(--rock-pattern) 0 0 / 40px 32px, var(--color-rock);
 }
 
 .zone-labels {
@@ -374,8 +432,12 @@ const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && 
   white-space: nowrap;
 }
 
-.zone--river {
+.zone--river,
+.zone--rock {
   text-align: center;
+}
+
+.zone--river {
   color: var(--color-primary);
 }
 
@@ -432,28 +494,56 @@ const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && 
   opacity: 0.75;
 }
 
+.glow {
+  position: absolute;
+  left: 0;
+  right: -16px;
+  top: -20px;
+  height: 40px;
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+.glow--on {
+  opacity: 1;
+}
+
+/* Same dash rhythm as .tube, so the glow sits exactly on the line */
+.glow-tube {
+  position: absolute;
+  right: 0;
+  height: 4px;
+  margin-top: 20px;
+  border-radius: 2px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--color-primary) 0 12px,
+    transparent 12px 19px
+  );
+  filter: drop-shadow(0 0 2px var(--color-glow)) drop-shadow(0 0 5px var(--color-glow));
+}
+
 .bored {
   background: var(--color-accent);
   z-index: 1;
   transition: width 600ms ease;
 }
 
-.drive,
-.casing-band {
+.band {
   position: absolute;
   top: -17px;
   height: 34px;
+  /* Opaque, so the pill reads the same over rock, water or plain card */
+  background: linear-gradient(var(--color-accent-muted), var(--color-accent-muted)), var(--color-card-bg);
 }
 
 .drive {
   border-radius: 17px;
-  background: var(--color-accent-muted);
 }
 
 .casing-band {
   right: -16px; /* into Penn Station, off the card edge */
   border-radius: 17px 0 0 17px;
-  background: color-mix(in srgb, var(--color-map-line), transparent 86%);
 }
 
 /* TBMs: identical machine-shaped pills riding their tube, leading edge at the
@@ -829,7 +919,7 @@ a.vstop-link:visited {
 
 .vseg--palisades {
   min-height: 96px;
-  background: var(--color-accent-muted);
+  background: var(--rock-pattern) 0 0 / 40px 32px, var(--color-rock);
 }
 
 .vseg-text {
@@ -837,6 +927,18 @@ a.vstop-link:visited {
   flex-direction: column;
   gap: 2px;
   padding: 10px 0;
+}
+
+a.vseg-text,
+a.vseg-text:visited {
+  flex: 1;
+  color: inherit;
+  text-decoration: none;
+}
+
+a.vseg-text:hover .vseg-label {
+  color: var(--color-primary);
+  text-decoration: underline;
 }
 
 .vseg-label {
@@ -871,7 +973,7 @@ a.vstop-link:visited {
 }
 
 .vcasing {
-  background: color-mix(in srgb, var(--color-map-line), transparent 88%);
+  background: var(--color-accent-muted);
 }
 
 .vterm-text {
