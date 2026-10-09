@@ -3,20 +3,23 @@ import { computed } from "vue";
 import { routeStops, routeSegments, PALISADES_DRIVE, ROUTE } from "../assets/data";
 import { useTbmProgress, formatFt, formatPct, formatMonth } from "../useTbmProgress";
 
-// Drawn to scale: feet along the route → percent of the track width. The left
-// inset leaves room for the existing Northeast Corridor before the junction;
-// on the right the tunnel runs off the edge into Penn Station.
-const LEFT_INSET = 4;
-const SPAN = ROUTE.eastFt - ROUTE.westFt;
-const pos = (ft: number) => LEFT_INSET + ((100 - LEFT_INSET) * (ft - ROUTE.westFt)) / SPAN;
+// Feet along the route → percent of the track width. Tunnel (portal → Penn) is
+// drawn to scale; the NJ Surface Alignment west of the portal is compressed
+// into a fixed slice so the tunnel gets the room.
+const STUB = 2; // track running in from the card edge
+const NJ_SLICE = 15;
+const pos = (ft: number) =>
+  ft <= 0
+    ? STUB + (NJ_SLICE * (ft - ROUTE.westFt)) / -ROUTE.westFt
+    : STUB + NJ_SLICE + ((100 - STUB - NJ_SLICE) * ft) / ROUTE.eastFt;
 
-const JUNCTION = pos(ROUTE.westFt);
 const PORTAL = pos(0);
+const SCALE_BREAK = pos(ROUTE.westFt / 2);
 const RIVER_FROM = pos(ROUTE.riverFromFt);
 const RIVER_TO = pos(ROUTE.riverToFt);
 
 const MILE = 5280;
-const miles = (ft: number) => ((ft - ROUTE.westFt) / MILE).toFixed(1);
+const miles = (ft: number) => (ft === 0 ? "0" : (ft / MILE).toFixed(1));
 
 const segments = routeSegments.map((seg) => ({
   ...seg,
@@ -28,15 +31,24 @@ const segments = routeSegments.map((seg) => ({
 
 const drive = segments.find((seg) => seg.id === "palisades")!;
 const casing = segments.find((seg) => seg.kind === "casing")!;
+const dimSegments = segments.filter((seg) => seg.kind !== "casing");
 
 const { progress } = useTbmProgress();
 
+// A machine at 0 ft still sits just inside the portal, clear of the wing walls.
+const MIN_INSIDE_PX = 22;
+
 const markers = computed(() =>
-  progress.value.map((p) => ({
-    ...p,
-    at: pos(p.fraction * PALISADES_DRIVE.lengthFt),
-    lane: p.tbm.tube === "North" ? "north" : "south",
-  })),
+  progress.value.map((p) => {
+    const run = pos(p.fraction * PALISADES_DRIVE.lengthFt) - PORTAL;
+    return {
+      ...p,
+      lane: p.tbm.tube === "North" ? "north" : "south",
+      /** Leading edge of the machine, in track coordinates */
+      x: `calc(${PORTAL}% + max(${MIN_INSIDE_PX}px, ${run}%))`,
+      run: `max(${MIN_INSIDE_PX}px, ${run}%)`,
+    };
+  }),
 );
 
 const camHref = (stop: (typeof routeStops)[number]) =>
@@ -52,7 +64,7 @@ const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && 
       <div class="route-head">
         <h2 id="route-title" class="route-title">The route</h2>
         <p class="route-note">
-          Two new tracks, west to east, drawn to scale · select a site to see its camera
+          Two new tracks, west to east · tunnel drawn to scale · select a site to see its camera
         </p>
       </div>
 
@@ -60,40 +72,28 @@ const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && 
         <!-- Horizontal strip map (tablet / desktop) -->
         <div class="strip" :style="{ '--river-from': RIVER_FROM / 100, '--river-to': RIVER_TO / 100 }">
           <div class="zone-labels" aria-hidden="true">
-            <span class="zone zone--dir" :style="{ left: '0%' }">← To Newark</span>
+            <span class="zone zone--dir" :style="{ left: '0%' }">← To Washington, DC</span>
             <span
               class="zone zone--river"
               :style="{ left: `${RIVER_FROM}%`, width: `${RIVER_TO - RIVER_FROM}%` }"
             >
               Hudson River
             </span>
-            <span class="zone zone--dir zone--end">To Penn Station →</span>
+            <span class="zone zone--dir zone--end">To Boston →</span>
           </div>
 
           <div class="river-band" aria-hidden="true"></div>
 
           <div class="track" aria-hidden="true">
-            <!-- Section highlights: the active TBM drive, and the Hudson Yards casing -->
+            <!-- The active TBM drive -->
             <div class="drive" :style="{ left: `${drive.left}%`, width: `${drive.width}%` }"></div>
-
-            <!-- Existing Northeast Corridor from Newark; at County Road it peels off
-                 toward the 1910 North River Tunnel and the new tracks carry on. -->
-            <div class="nec tube--north" :style="{ width: `calc(${JUNCTION}% + 16px)` }"></div>
-            <div class="nec tube--south" :style="{ width: `calc(${JUNCTION}% + 16px)` }"></div>
-            <svg class="nec-branch" :style="{ left: `${JUNCTION}%` }" viewBox="0 -60 140 70">
-              <defs>
-                <linearGradient id="nec-fade" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0.35" stop-color="currentColor" />
-                  <stop offset="1" stop-color="currentColor" stop-opacity="0" />
-                </linearGradient>
-              </defs>
-              <path d="M0 -7 C40 -7 70 -14 130 -52 M0 7 C48 7 82 -2 138 -40" stroke="url(#nec-fade)" />
-            </svg>
-            <span class="nec-label" :style="{ left: `${JUNCTION}%` }">Existing Northeast Corridor</span>
+            <!-- Hudson Yards casing: cut-and-cover box from the 12th Ave shaft into Penn -->
+            <div class="casing-band" :style="{ left: `${casing.left}%` }"></div>
 
             <!-- New tracks: on the surface to the portal (solid), then in tunnel (dashed) -->
-            <div class="surface tube--north" :style="{ left: `${JUNCTION}%`, width: `${PORTAL - JUNCTION}%` }"></div>
-            <div class="surface tube--south" :style="{ left: `${JUNCTION}%`, width: `${PORTAL - JUNCTION}%` }"></div>
+            <div class="surface tube--north" :style="{ width: `calc(${PORTAL}% + 16px)` }"></div>
+            <div class="surface tube--south" :style="{ width: `calc(${PORTAL}% + 16px)` }"></div>
+            <div class="scale-break" :style="{ left: `${SCALE_BREAK}%` }"></div>
             <div class="tube tube--north" :style="{ left: `${PORTAL}%` }"></div>
             <div class="tube tube--south" :style="{ left: `${PORTAL}%` }"></div>
 
@@ -103,14 +103,10 @@ const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && 
                 v-if="m.status !== 'upcoming'"
                 class="bored"
                 :class="`bored--${m.lane}`"
-                :style="{ left: `${PORTAL}%`, width: `${m.at - PORTAL}%` }"
+                :style="{ left: `${PORTAL}%`, width: m.run }"
               ></div>
-              <div
-                class="tbm"
-                :class="[`tbm--${m.lane}`, `tbm--${m.status}`]"
-                :style="{ left: `${m.at}%` }"
-              >
-                <span class="tbm-head"></span>
+              <div class="tbm" :class="[`tbm--${m.lane}`, `tbm--${m.status}`]" :style="{ left: m.x }">
+                <span class="tbm-body"></span>
                 <span class="tbm-label">
                   {{ m.tbm.label }}<template v-if="m.status === 'upcoming'"> · soon</template>
                 </span>
@@ -118,6 +114,7 @@ const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && 
             </template>
           </div>
 
+          <!-- Sites. Each link is one padded box around its marker and label. -->
           <ol class="stops">
             <li
               v-for="stop in routeStops"
@@ -127,37 +124,35 @@ const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && 
               :style="{ left: `${pos(stop.ft)}%` }"
             >
               <component :is="camHref(stop) ? 'a' : 'div'" :href="camHref(stop)" class="stop-link">
-                <!-- Tunnel portal: wing walls splay toward the open-air side -->
-                <svg v-if="stop.ft === 0" class="portal" viewBox="-12 -26 24 52" aria-hidden="true">
-                  <path d="M0 -11 V-19 L-8 -26 M0 11 V19 L-8 26" />
-                </svg>
-                <span v-else class="stop-dot" aria-hidden="true"></span>
-                <span class="stop-text">
-                  <span class="stop-label">{{ stop.label }}</span>
+                <span class="stop-label">{{ stop.label }}</span>
+                <span class="stop-marker" aria-hidden="true">
+                  <!-- Tunnel portal: wing walls splay toward the open-air side -->
+                  <svg v-if="stop.ft === 0" class="portal" viewBox="-12 -26 24 52">
+                    <path d="M0 -11 V-19 L-8 -26 M0 11 V19 L-8 26" />
+                  </svg>
+                  <span v-else class="stop-dot"></span>
                 </span>
               </component>
             </li>
+            <li class="stop stop--below stop--casing" :style="{ left: `${casing.left}%` }">
+              <a :href="casing.href" class="stop-link">
+                <span class="stop-label">{{ casing.label }}</span>
+                <span class="stop-marker" aria-hidden="true"></span>
+              </a>
+            </li>
           </ol>
-
-          <!-- Hudson Yards casing: a cut-and-cover box, shown as a band you can click -->
-          <a
-            class="casing"
-            :href="casing.href"
-            :style="{ left: `calc(16px + (100% - 32px) * ${casing.left / 100})` }"
-            :aria-label="`${casing.label} camera`"
-          ></a>
 
           <!-- Construction sections, dimensioned like an engineering drawing -->
           <ol class="dims">
             <li
-              v-for="seg in segments"
+              v-for="seg in dimSegments"
               :key="seg.id"
               class="dim"
               :class="`dim--${seg.kind}`"
               :style="{ left: `${seg.left}%`, width: `${seg.width}%` }"
             >
               <span class="dim-text">
-                <component :is="seg.href ? 'a' : 'span'" :href="seg.href" class="dim-label">{{ seg.label }}</component>
+                <span class="dim-label">{{ seg.label }}</span>
                 <span v-if="seg.length" class="dim-length tabular">{{ seg.length }}</span>
               </span>
             </li>
@@ -167,11 +162,7 @@ const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && 
         <!-- Vertical line diagram (mobile) -->
         <ol class="vline">
           <li class="vstop vterm vterm--west" aria-hidden="true">
-            <span class="vterm-text">↑ To Newark</span>
-          </li>
-          <li class="vstop vjunction">
-            <span class="vjunction-text">New tracks leave the existing Northeast Corridor at County Road</span>
-            <span class="vstop-mile tabular">mile 0</span>
+            <span class="vterm-text">↑ To Washington, DC</span>
           </li>
           <li class="vstop vseg vseg--surface">
             <span class="vseg-text">
@@ -203,7 +194,7 @@ const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && 
                   :key="m.tbm.id"
                   class="vfill"
                   :class="[`vfill--${m.lane}`, `vfill--${m.status}`]"
-                  :style="{ height: `${m.fraction * 100}%` }"
+                  :style="{ height: `max(26px, ${m.fraction * 100}%)` }"
                   aria-hidden="true"
                 ></span>
               </template>
@@ -229,7 +220,7 @@ const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && 
             </a>
           </li>
           <li class="vstop vterm" aria-hidden="true">
-            <span class="vterm-text">To Penn Station ↓</span>
+            <span class="vterm-text">To Boston ↓</span>
           </li>
         </ol>
 
@@ -399,42 +390,24 @@ const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && 
   top: calc(var(--tube-gap) - 2px);
 }
 
-/* New surface track, County Road → portal */
+/* New surface track, from the card edge to the portal */
 .surface {
+  left: -16px;
   background: var(--color-map-line);
   opacity: 0.75;
 }
 
-/* Existing Northeast Corridor: lighter, thinner */
-.nec {
+/* "Not to scale" break across the compressed NJ Surface Alignment */
+.scale-break {
   position: absolute;
-  left: -16px;
-  height: 3px;
-  border-radius: 2px;
-  background: var(--color-text-secondary);
-  opacity: 0.45;
-}
-
-.nec-branch {
-  position: absolute;
-  top: -60px;
-  width: 140px;
-  height: 70px;
-  overflow: visible;
-  color: var(--color-text-secondary);
-  opacity: 0.45;
-  fill: none;
-  stroke-width: 3;
-}
-
-.nec-label {
-  position: absolute;
-  top: -66px;
-  margin-left: 146px;
-  font-size: 11.5px;
-  font-style: italic;
-  color: var(--color-text-secondary);
-  white-space: nowrap;
+  top: -15px;
+  width: 8px;
+  height: 30px;
+  margin-left: -4px;
+  background: var(--color-card-bg);
+  border-inline: 2px solid var(--color-map-line);
+  transform: skewX(-24deg);
+  opacity: 0.75;
 }
 
 .bored {
@@ -443,29 +416,26 @@ const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && 
   transition: width 600ms ease;
 }
 
-.drive {
+.drive,
+.casing-band {
   position: absolute;
   top: -17px;
   height: 34px;
+}
+
+.drive {
   border-radius: 17px;
   background: var(--color-accent-muted);
 }
 
-/* Hudson Yards casing: a clickable band from the 12th Ave shaft into Penn */
-.casing {
-  position: absolute;
-  top: calc(var(--track-y) - 17px);
-  right: 0;
-  height: 34px;
+.casing-band {
+  right: -16px; /* into Penn Station, off the card edge */
   border-radius: 17px 0 0 17px;
   background: color-mix(in srgb, var(--color-map-line), transparent 86%);
-  transition: background var(--transition-fast);
 }
 
-.casing:hover {
-  background: color-mix(in srgb, var(--color-primary), transparent 72%);
-}
-
+/* TBMs: identical machine-shaped pills riding their tube, leading edge at the
+   estimated position. Labels sit outside the pair: north above, south below. */
 .tbm {
   position: absolute;
   z-index: 4;
@@ -482,41 +452,42 @@ const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && 
   top: var(--tube-gap);
 }
 
-.tbm-head {
+.tbm-body {
   position: absolute;
-  left: -6px;
-  top: -6px;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
+  left: -18px;
+  top: -5px;
+  width: 18px;
+  height: 10px;
+  box-sizing: border-box;
+  border-radius: 5px;
   background: var(--color-accent);
   box-shadow: 0 0 0 2px var(--color-card-bg);
 }
 
-.tbm--upcoming .tbm-head {
+.tbm--upcoming .tbm-body {
   background: var(--color-card-bg);
-  box-shadow: inset 0 0 0 2px var(--color-accent);
+  border: 2px solid var(--color-accent);
 }
 
 .tbm-label {
   position: absolute;
-  left: 4px;
-  padding: 2px 7px;
+  left: -18px;
+  padding: 1px 6px;
   border-radius: var(--radius-sm);
   background: var(--color-accent);
   color: var(--color-navy);
   font-size: 11px;
   font-weight: var(--font-weight-bold);
+  line-height: 16px;
   white-space: nowrap;
 }
 
-/* North label sits above its tube, south label below. */
 .tbm--north .tbm-label {
-  bottom: 10px;
+  bottom: 9px;
 }
 
 .tbm--south .tbm-label {
-  top: 10px;
+  top: 9px;
 }
 
 .tbm--upcoming .tbm-label {
@@ -525,12 +496,14 @@ const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && 
   box-shadow: inset 0 0 0 1px var(--color-accent);
 }
 
+/* --- Sites --- */
+
 .stops {
   position: absolute;
   z-index: 2;
   inset: 0 16px;
   list-style: none;
-  pointer-events: none; /* let clicks reach the casing band underneath */
+  pointer-events: none;
 }
 
 .stop {
@@ -540,17 +513,30 @@ const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && 
   height: 0;
 }
 
-/* The link box is the station capsule (a real hit target); labels hang off it.
-   The capsule spans both tubes. */
+/* One padded box per site: marker + label. The marker is centred on the track,
+   the label sits above or below, clear of the TBM tags. */
 .stop-link {
   position: absolute;
-  pointer-events: auto;
-  left: -11px;
-  top: -18px;
-  width: 22px;
-  height: 36px;
-  display: block;
+  left: 0;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  padding: 8px 12px;
+  border-radius: 10px;
   color: var(--color-text-primary);
+  pointer-events: auto;
+  transition: background var(--transition-fast);
+}
+
+.stop--above .stop-link {
+  bottom: -26px;
+}
+
+.stop--below .stop-link {
+  top: -26px;
+  flex-direction: column-reverse;
 }
 
 a.stop-link:hover,
@@ -559,17 +545,54 @@ a.stop-link:visited {
   text-decoration: none;
 }
 
+a.stop-link:hover {
+  background: color-mix(in srgb, var(--color-primary), transparent 91%);
+}
+
+a.stop-link:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 0;
+}
+
+.stop-marker {
+  position: relative;
+  width: 22px;
+  height: 36px;
+}
+
 .stop-dot {
   position: absolute;
   inset: 0;
   border-radius: 11px;
   border: 4px solid var(--color-map-line);
   background: var(--color-card-bg);
-  z-index: 3;
   transition: background var(--transition-fast);
 }
 
+/* Hudson Yards casing: the box spans the band, label below it */
+.stop--casing {
+  right: -16px;
+  width: auto;
+}
 
+.stop--casing .stop-link {
+  right: 0;
+  transform: none;
+  padding-inline: 6px;
+  top: -25px;
+  gap: 23px;
+  border-radius: 10px 0 0 10px;
+}
+
+.stop--casing .stop-marker {
+  width: 100%;
+  height: 34px;
+}
+
+.stop--casing .stop-label {
+  white-space: normal;
+  text-align: center;
+}
 
 a.stop-link:hover .stop-dot,
 a.vstop-link:hover .vstop-dot {
@@ -585,7 +608,6 @@ a.vstop-link:hover .vstop-dot {
   stroke-width: 3;
   stroke-linecap: round;
   stroke-linejoin: round;
-  z-index: 3;
   transition: stroke var(--transition-fast);
 }
 
@@ -601,39 +623,12 @@ a.vstop-link:hover .vportal {
   stroke: var(--color-primary);
 }
 
-.stop-text {
-  position: absolute;
-  left: 11px;
-  width: max-content;
-  max-width: 210px;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 1px;
-}
-
-/* Labels sit clear of the tracks so TBM tags can pass underneath them. */
-.stop--below .stop-text {
-  top: 60px;
-}
-
-.stop--above .stop-text {
-  bottom: 60px;
-  flex-direction: column-reverse;
-}
-
-.stop:first-child.stop--below .stop-text {
-  top: 64px;
-}
-
 .stop-label {
   font-family: var(--font-family-display);
   font-size: 17px;
   font-weight: var(--font-weight-semibold);
   line-height: 1.15;
-  white-space: pre; /* labels may contain a manual line break */
+  white-space: nowrap;
 }
 
 a.stop-link:hover .stop-label,
@@ -658,7 +653,7 @@ a.vstop-link:hover .stop-label {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  padding: 0 6px 6px;
+  padding: 0 2px 6px;
   border-bottom: 1px solid var(--color-text-secondary);
   font-size: 12.5px;
   line-height: 1.2;
@@ -673,20 +668,7 @@ a.vstop-link:hover .stop-label {
   text-align: center;
 }
 
-.dim--casing {
-  /* Runs off the card edge into Penn, like the tubes */
-  margin-right: -16px;
-  padding: 0 0 6px 4px;
-  border-bottom-style: dashed;
-}
 
-.dim--casing::after {
-  display: none;
-}
-
-a.dim-label:hover {
-  color: var(--color-primary);
-}
 
 /* End ticks */
 .dim::before,
@@ -708,6 +690,7 @@ a.dim-label:hover {
 }
 
 .dim-label {
+  white-space: nowrap;
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
 }
@@ -859,31 +842,7 @@ a.vstop-link:visited {
 
 .vterm--west::before,
 .vterm--west::after {
-  background: var(--color-text-secondary);
-  opacity: 0.45;
-}
-
-/* County Road: existing NEC above, new surface track below */
-.vjunction {
-  display: flex;
-  align-items: center;
-  min-height: 40px;
-}
-
-.vjunction::before,
-.vjunction::after {
-  background:
-    linear-gradient(transparent 0 50%, var(--color-map-line) 50%),
-    linear-gradient(color-mix(in srgb, var(--color-text-secondary), transparent 55%) 0 50%, transparent 50%);
-  opacity: 1;
-}
-
-.vjunction-text {
-  flex: 1;
-  padding: 8px 12px 8px 0;
-  font-size: 13px;
-  line-height: 1.35;
-  color: var(--color-text-secondary);
+  background: var(--color-map-line);
 }
 
 .vseg--surface::before,
@@ -912,21 +871,27 @@ a.vstop-link:visited {
   z-index: 1;
 }
 
+/* The machine: a vertical pill at the leading (bottom) end of the fill */
 .vfill::after {
   content: "";
   position: absolute;
-  left: -4px;
-  bottom: -5px;
-  width: 11px;
-  height: 11px;
-  border-radius: 50%;
+  left: -2px;
+  bottom: -2px;
+  width: 7px;
+  height: 16px;
+  box-sizing: border-box;
+  border-radius: 4px;
   background: var(--color-accent);
   box-shadow: 0 0 0 2px var(--color-card-bg);
 }
 
+.vfill--upcoming {
+  background: transparent;
+}
+
 .vfill--upcoming::after {
   background: var(--color-card-bg);
-  box-shadow: inset 0 0 0 2px var(--color-accent);
+  border: 2px solid var(--color-accent);
 }
 
 .vfill--north {
