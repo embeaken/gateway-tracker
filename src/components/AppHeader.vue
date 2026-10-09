@@ -47,17 +47,21 @@ const { miningDay } = useSiteClock()
   gap: 12px;
   min-width: 0;
   color: white;
-  border-bottom: 0;
 }
 
 .brand-lockup:hover,
 .brand-lockup:visited {
   color: white;
-  border-bottom: 0;
+  text-decoration: none;
 }
 
 .brand-icon {
   color: var(--color-accent);
+}
+
+/* The one playful hover: the cutterhead turns a quarter. */
+.brand-lockup:hover .brand-icon {
+  transform: rotate(90deg);
 }
 
 .brand-name,
@@ -89,15 +93,20 @@ const { miningDay } = useSiteClock()
   border-radius: 999px;
   color: rgba(255, 255, 255, 0.9);
   font-size: 13px;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
   font-weight: var(--font-weight-medium);
   white-space: nowrap;
 }
 
-.header-status:hover,
 .header-status:visited {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.header-status:hover {
   color: white;
-  border-color: rgba(255, 255, 255, 0.4);
-  border-bottom-color: rgba(255, 255, 255, 0.4);
+  text-decoration: none;
+  border-color: rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .header-status .status-dot {

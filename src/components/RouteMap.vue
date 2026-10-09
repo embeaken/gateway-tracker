@@ -271,13 +271,12 @@ const camLabel = (n: number) => (n === 1 ? "1 camera" : `${n} cameras`);
   height: 22px;
   display: block;
   color: var(--color-text-primary);
-  border-bottom: 0;
 }
 
 a.stop-link:hover,
 a.stop-link:visited {
   color: var(--color-text-primary);
-  border-bottom: 0;
+  text-decoration: none;
 }
 
 .stop-dot {
@@ -290,16 +289,16 @@ a.stop-link:visited {
   border: 4px solid var(--color-map-line);
   background: var(--color-card-bg);
   z-index: 3;
-  transition: transform var(--transition-base), background var(--transition-base);
+  transition: background var(--transition-fast);
 }
 
 .stop--endpoint .stop-dot {
   background: var(--color-map-line);
 }
 
-a.stop-link:hover .stop-dot {
-  transform: scale(1.2);
-  background: var(--color-primary-light);
+a.stop-link:hover .stop-dot,
+a.vstop-link:hover .vstop-dot {
+  background: var(--color-primary);
 }
 
 /* Leader line from dot to label */
@@ -352,8 +351,10 @@ a.stop-link:hover .stop-dot {
   white-space: nowrap;
 }
 
-a.stop-link:hover .stop-label {
+a.stop-link:hover .stop-label,
+a.vstop-link:hover .stop-label {
   color: var(--color-primary);
+  text-decoration: underline;
 }
 
 .stop-sub {
@@ -420,13 +421,12 @@ a.stop-link:hover .stop-label {
   gap: 12px;
   padding: 10px 0;
   color: var(--color-text-primary);
-  border-bottom: 0;
 }
 
 a.vstop-link:hover,
 a.vstop-link:visited {
   color: var(--color-text-primary);
-  border-bottom: 0;
+  text-decoration: none;
 }
 
 .vstop-dot {

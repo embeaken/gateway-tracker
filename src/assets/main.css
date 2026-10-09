@@ -215,11 +215,18 @@ body {
 }
 
 /* Links */
+/* Hover system:
+   - text links: colour shift + underline
+   - whole-row links (feed): row tint + the row's link underlines
+   - image links: one shared darken (.img-hover)
+   - buttons: background/border change
+   Block-level links opt out of the underline with `text-decoration: none`. */
 a {
   color: var(--color-primary);
   text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: all var(--transition-base);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  transition: color var(--transition-fast);
 }
 
 a:visited {
@@ -228,7 +235,7 @@ a:visited {
 
 a:hover {
   color: var(--color-primary-dark);
-  border-bottom-color: var(--color-accent);
+  text-decoration: underline;
 }
 
 a:focus {
@@ -322,6 +329,15 @@ main {
   border-radius: 50%;
   background: var(--color-progress);
   flex-shrink: 0;
+}
+
+/* Shared image-link hover: a slight darken, nothing else. */
+.img-hover img {
+  transition: filter var(--transition-base);
+}
+
+.img-hover:hover img {
+  filter: brightness(0.88);
 }
 
 /* Tabular figures wherever numbers line up */

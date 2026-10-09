@@ -233,7 +233,7 @@ onUnmounted(() => {
   transition:
     background var(--transition-base),
     border-color var(--transition-base),
-    transform var(--transition-base);
+    color var(--transition-base);
 }
 
 /* Inverts with the theme: ink-on-concrete in light, white-on-ink in dark. */
@@ -246,6 +246,7 @@ onUnmounted(() => {
 
 .cta-primary:hover {
   color: white;
+  text-decoration: none;
   border-color: var(--color-primary-dark);
   background: var(--color-primary-dark);
 }
@@ -270,7 +271,8 @@ onUnmounted(() => {
 }
 
 .cta-secondary:hover {
-  border-color: var(--color-text-primary);
+  border-color: var(--color-primary);
+  background: var(--color-primary-muted);
 }
 
 .cta:focus-visible {
@@ -305,7 +307,6 @@ onUnmounted(() => {
 .feature-photo-link {
   position: absolute;
   inset: 0;
-  border: 0;
 }
 
 .carousel-photo {

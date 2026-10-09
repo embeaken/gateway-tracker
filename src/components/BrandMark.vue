@@ -39,11 +39,6 @@
   transition: transform 900ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
-/* A quarter-turn of the cutterhead on hover. */
-:global(a:hover) > .brand-mark {
-  transform: rotate(90deg);
-}
-
 @media (prefers-reduced-motion: reduce) {
   .brand-mark {
     transition: none;

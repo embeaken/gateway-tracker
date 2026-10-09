@@ -63,7 +63,7 @@ import ThemeToggle from './ThemeToggle.vue'
 
 .app-footer a:hover {
   color: white;
-  border-bottom-color: var(--color-accent);
+  text-decoration: underline;
 }
 
 @media (max-width: 768px) {

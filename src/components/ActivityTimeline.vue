@@ -273,7 +273,7 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
                 v-for="(photo, pi) in block.photos.slice(0, MOSAIC_MAX)"
                 :key="photo.id"
                 type="button"
-                class="mosaic-tile"
+                class="mosaic-tile img-hover"
                 :aria-label="`Open photo: ${photo.title}`"
                 @click="openImage(photo, block.photos)"
               >
@@ -316,18 +316,23 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
 
             <!-- Mode B: full-width gallery photo -->
             <template v-else-if="isPhotoFull(block.item)">
-              <div class="photo-full" @click="openImage(block.item)">
+              <button
+                type="button"
+                class="photo-full img-hover"
+                :aria-label="`Open photo: ${block.item.title}`"
+                @click="openImage(block.item)"
+              >
                 <img :src="transformImage(block.item.imageUrl!, 800)" :alt="block.item.title" loading="lazy" />
-              </div>
+              </button>
               <p v-if="block.item.content" class="photo-caption">{{ block.item.content }}</p>
             </template>
 
             <!-- Mode C: bluesky with image (side thumbnail) -->
             <template v-else-if="isThumb(block.item)">
               <div class="thumb-layout">
-                <a :href="block.item.link" target="_blank" class="thumb-image">
+                <div class="thumb-image">
                   <img :src="block.item.imageUrl" :alt="block.item.title" loading="lazy" />
-                </a>
+                </div>
                 <div class="thumb-content">
                   <div class="compact-header">
                     <span class="item-badge badge-bluesky">Bluesky</span>
@@ -491,9 +496,7 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
   border-radius: var(--radius-md);
   content-visibility: auto;
   contain-intrinsic-size: auto 180px;
-  transition:
-    box-shadow var(--transition-base),
-    background var(--transition-base);
+  transition: background var(--transition-fast);
 }
 
 .timeline-item-photo {
@@ -531,9 +534,33 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
   box-shadow: none;
 }
 
-.timeline-item--compact:hover {
+/* Whole-row links: the row's "View →" link stretches over the row, so the
+   tint means "this entire row is clickable". */
+.timeline-item--compact,
+.timeline-item--thumb {
+  position: relative;
+}
+
+.timeline-item--compact .item-link::after,
+.timeline-item--thumb .item-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.timeline-item--compact:has(.item-link):hover,
+.timeline-item--thumb:hover {
   background: var(--color-primary-muted);
-  box-shadow: none;
+}
+
+.timeline-item--compact:hover .item-link,
+.timeline-item--thumb:hover .item-link {
+  color: var(--color-primary-dark);
+  text-decoration: underline;
+}
+
+.timeline-item--thumb:hover .thumb-image img {
+  filter: brightness(0.88);
 }
 
 /* =============================================
@@ -551,15 +578,15 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
   overflow: hidden;
 }
 
-.timeline-item--photo-full:hover {
-  box-shadow: none;
-}
-
 .photo-full {
+  display: block;
   width: 100%;
   aspect-ratio: 16 / 9;
+  padding: 0;
+  border: 0;
   overflow: hidden;
-  cursor: pointer;
+  background: var(--color-background-alt);
+  cursor: zoom-in;
 }
 
 .photo-full img {
@@ -567,11 +594,6 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: opacity var(--transition-base);
-}
-
-.photo-full:hover img {
-  opacity: 0.88;
 }
 
 .photo-caption {
@@ -596,11 +618,6 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
   box-shadow: none;
 }
 
-.timeline-item--thumb:hover {
-  background: var(--color-primary-muted);
-  box-shadow: none;
-}
-
 .thumb-layout {
   display: flex;
   gap: 10px;
@@ -613,7 +630,6 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
   flex-shrink: 0;
   border-radius: var(--radius-sm);
   overflow: hidden;
-  cursor: pointer;
   display: block;
 }
 
@@ -622,11 +638,7 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: opacity var(--transition-base);
-}
-
-.thumb-image:hover img {
-  opacity: 0.82;
+  transition: filter var(--transition-base);
 }
 
 .thumb-content {
@@ -651,11 +663,6 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
   display: flex;
   flex-direction: column;
   gap: 8px;
-  box-shadow: none;
-}
-
-.timeline-item--video-card:hover {
-  background: var(--color-primary-muted);
   box-shadow: none;
 }
 
@@ -764,11 +771,6 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform var(--transition-slow), opacity var(--transition-base);
-}
-
-.mosaic-tile:hover img {
-  transform: scale(1.04);
 }
 
 .mosaic-tile:focus-visible {
