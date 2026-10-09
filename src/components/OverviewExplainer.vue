@@ -43,10 +43,11 @@ const VIDEO_URL = "https://www.youtube.com/embed/slP5zyoLpk4";
         <p>
           Gateway is visible proof that America can still build massive, inspiring public works.
           These tunnels will serve hundreds of thousands of passengers every day
-          for generations to come. Five construction sites are currently active. The first tunnel
-          boring machines are about to start drilling through the New Jersey Palisades.
+          for generations to come. Five construction sites are currently active, and on
+          October 8, 2026 the first tunnel boring machine started drilling through the New Jersey
+          Palisades.
         </p>
-        <p>This is happening!</p>
+        <p class="kicker-line">This is happening!</p>
       </div>
     </div>
   </section>
@@ -54,9 +55,10 @@ const VIDEO_URL = "https://www.youtube.com/embed/slP5zyoLpk4";
 
 <style scoped>
 .overview-explainer {
-  padding: calc(var(--spacing-lg) + 14px) 0 var(--spacing-xl);
-  background:
-    linear-gradient(180deg, rgba(0, 94, 113, 0.03), rgba(0, 94, 113, 0)), var(--color-background);
+  padding: var(--spacing-xl) 0;
+  background: var(--color-card-bg);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
   scroll-margin-top: var(--spacing-lg);
 }
 
@@ -81,9 +83,14 @@ const VIDEO_URL = "https://www.youtube.com/embed/slP5zyoLpk4";
   text-transform: uppercase;
 }
 
+.kicker-line {
+  color: var(--color-accent-ink) !important;
+  font-weight: var(--font-weight-semibold);
+}
+
 .overview-copy h3 {
   margin: 0 0 var(--spacing-sm);
-  font-size: 28px;
+  font-size: 34px;
   line-height: 1.05;
 }
 
@@ -123,7 +130,7 @@ const VIDEO_URL = "https://www.youtube.com/embed/slP5zyoLpk4";
 
 @media (max-width: 900px) {
   .overview-explainer {
-    padding: calc(var(--spacing-md) + 14px) 0 var(--spacing-lg);
+    padding: var(--spacing-lg) 0;
   }
 
   .overview-explainer-grid {

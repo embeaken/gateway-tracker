@@ -1,131 +1,65 @@
 <script setup lang="ts">
-defineProps<{ explainerOpen: boolean }>()
-const emit = defineEmits<{ (e: 'toggle-explainer'): void }>()
+import BrandMark from './BrandMark.vue'
+import { useSiteClock } from '../useSiteClock'
+
+const { time, miningDay } = useSiteClock()
 </script>
 
 <template>
   <header class="app-header">
-    <div class="container">
-      <div class="header-content">
-        <div class="brand-row">
-          <a href="#" class="brand-lockup" aria-label="hudson.tube home">
-            <span class="brand-mark" aria-hidden="true">🚇️</span>
-            <span>
-              <span class="brand-name">hudson.tube</span>
-              <span class="brand-subtitle">Tunnel tracker</span>
-            </span>
-          </a>
-        </div>
-      </div>
+    <div class="container header-content">
+      <a href="#" class="brand-lockup" aria-label="hudson.tube home">
+        <BrandMark />
+        <span>
+          <span class="brand-name">hudson<span class="brand-dot">.</span>tube</span>
+          <span class="brand-subtitle">Tunnel tracker</span>
+        </span>
+      </a>
 
-      <button
-        type="button"
-        class="explainer-tab"
-        :class="{ 'explainer-tab--open': explainerOpen }"
-        :aria-expanded="explainerOpen"
-        aria-controls="overview-explainer"
-        @click="emit('toggle-explainer')"
-      >
-        <span class="explainer-tab-label">{{ explainerOpen ? 'Close' : "What's going on?" }}</span>
-        <svg class="explainer-tab-chevron" viewBox="0 0 10 6" aria-hidden="true">
-          <path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-      </button>
+      <a href="#cameras" class="header-status">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="status-text">
+          <span class="status-strong">TBM boring</span>
+          <span class="status-sep" aria-hidden="true">·</span>
+          day {{ miningDay }}
+        </span>
+        <span class="status-clock">{{ time }} ET</span>
+      </a>
     </div>
+    <div class="hazard-tape" aria-hidden="true"></div>
   </header>
 </template>
 
 <style scoped>
 .app-header {
   position: relative;
-  background: var(--color-primary-dark);
+  background: var(--color-ink);
   color: white;
-  padding: 12px 0;
-  border-bottom: 3px solid var(--color-accent);
 }
 
-/* Handle hanging off the header's bottom edge — pulls the explainer out. */
-.explainer-tab {
-  position: absolute;
-  left: 50%;
-  bottom: 0;
-  z-index: 2;
-  transform: translate(-50%, 100%);
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 5px 16px 7px;
-  border: 0;
-  /* Continue the header's accent stripe across the tab so the yellow line
-     isn't broken by the tab's dark background. */
-  border-top: 3px solid var(--color-accent);
-  border-radius: 0 0 var(--radius-md) var(--radius-md);
-  background: var(--color-primary-dark);
-  color: rgba(255, 255, 255, 0.9);
-  font-family: inherit;
-  font-size: 12px;
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  cursor: pointer;
-  box-shadow: var(--shadow-sm);
-  transition:
-    background var(--transition-base),
-    color var(--transition-base),
-    transform var(--transition-base);
-}
-
-/* Subtle lighten of the tab's own colour — never the bright accent teal, which
-   clashed with the gold header stripe. Stays flush to the header (no gap). */
-.explainer-tab:hover {
-  color: #fff;
-  background: color-mix(in srgb, #004555, white 12%);
-  box-shadow: var(--shadow-md);
-}
-
-.explainer-tab-chevron {
-  width: 10px;
-  height: 6px;
-  transition: transform var(--transition-base);
-}
-
-.explainer-tab--open .explainer-tab-chevron {
-  transform: rotate(180deg);
-}
-
-[data-theme="dark"] .app-header,
-[data-theme="dark"] .explainer-tab {
-  background: #083344;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .app-header,
-  :root:not([data-theme="light"]) .explainer-tab {
-    background: #083344;
-  }
-}
-
-[data-theme="dark"] .explainer-tab:hover {
-  background: color-mix(in srgb, #083344, white 12%);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .explainer-tab:hover {
-    background: color-mix(in srgb, #083344, white 12%);
-  }
-}
-
-.brand-row {
+.header-content {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--spacing-md);
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+/* Hazard tape: the construction-site signature, used exactly once. */
+.hazard-tape {
+  height: 6px;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--color-accent) 0 10px,
+    var(--color-ink) 10px 20px
+  );
 }
 
 .brand-lockup {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   min-width: 0;
   color: white;
   border-bottom: 0;
@@ -137,59 +71,89 @@ const emit = defineEmits<{ (e: 'toggle-explainer'): void }>()
   border-bottom: 0;
 }
 
-.brand-mark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  color: white;
-  font-size: 34px;
-  font-weight: var(--font-weight-bold);
-  line-height: 1;
-  transform: translateY(-4px);
-}
-
 .brand-name,
 .brand-subtitle {
   display: block;
 }
 
 .brand-name {
-  color: white;
-  font-size: 20px;
+  font-family: var(--font-family-display);
+  font-size: 26px;
   font-weight: var(--font-weight-bold);
-  line-height: 1;
-  letter-spacing: 0;
+  line-height: 0.9;
+  letter-spacing: 0.005em;
+}
+
+.brand-dot {
+  color: var(--color-accent);
 }
 
 .brand-subtitle {
-  margin-top: 3px;
-  color: rgba(255, 255, 255, 0.76);
-  font-size: 12px;
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: 0.04em;
+  margin-top: 4px;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: var(--font-family-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
-@media (max-width: 768px) {
-  .app-header {
-    padding: 10px 0;
+.header-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.85);
+  font-family: var(--font-family-mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.header-status:hover,
+.header-status:visited {
+  color: white;
+  border-color: rgba(255, 255, 255, 0.35);
+  border-bottom-color: rgba(255, 255, 255, 0.35);
+}
+
+.status-strong {
+  color: white;
+}
+
+.status-sep {
+  margin: 0 4px;
+  opacity: 0.5;
+}
+
+.status-clock {
+  padding-left: 10px;
+  border-left: 1px solid rgba(255, 255, 255, 0.16);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+@media (max-width: 640px) {
+  .status-clock {
+    display: none;
   }
 
-  .brand-mark {
-    width: 30px;
-    height: 30px;
-    font-size: 30px;
-  }
-
-  .brand-name {
-    font-size: 18px;
+  .header-status {
+    font-size: 11px;
+    padding: 5px 10px;
   }
 
   .brand-subtitle {
-    font-size: 10px;
+    display: none;
   }
+}
 
+@media (max-width: 370px) {
+  .status-strong,
+  .status-sep {
+    display: none;
+  }
 }
 </style>

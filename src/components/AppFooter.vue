@@ -7,7 +7,15 @@ import ThemeToggle from './ThemeToggle.vue'
 <template>
   <footer class="app-footer">
     <div class="container footer-content">
-      <p>Made with civic pride by Ilya Rubnich &bull; <a href="https://github.com/embeaken/gateway-tracker" target="_blank">GitHub</a></p>
+      <div class="footer-copy">
+        <p class="footer-sign">Made with civic pride by Ilya Rubnich</p>
+        <p>
+          Unofficial fan site. Photos, video and documents from the
+          <a href="https://www.gatewayprogram.org/" target="_blank" rel="noopener">Gateway Development Commission</a>;
+          live cams by EarthCam.
+          <a href="https://github.com/embeaken/gateway-tracker" target="_blank" rel="noopener">Source on GitHub</a>
+        </p>
+      </div>
       <ThemeToggle />
     </div>
   </footer>
@@ -15,9 +23,23 @@ import ThemeToggle from './ThemeToggle.vue'
 
 <style scoped>
 .app-footer {
-  margin-top: var(--spacing-sm);
-  padding: var(--spacing-md) 0;
-  background-color: var(--color-background);
+  margin-top: var(--spacing-2xl);
+  padding: var(--spacing-xl) 0;
+  background-color: var(--color-ink);
+  border-top: 6px solid var(--color-accent);
+}
+
+.footer-sign {
+  font-family: var(--font-family-display);
+  font-size: 22px !important;
+  font-weight: var(--font-weight-bold);
+  color: white !important;
+  margin-bottom: 4px !important;
+}
+
+.app-footer :deep(.theme-toggle) {
+  color: rgba(255, 255, 255, 0.7);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .footer-content {
@@ -28,18 +50,20 @@ import ThemeToggle from './ThemeToggle.vue'
 }
 
 .app-footer p {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
   margin: 0;
 }
 
-.app-footer a {
-  color: var(--color-primary);
+.app-footer a,
+.app-footer a:visited {
+  color: white;
   font-weight: var(--font-weight-medium);
 }
 
 .app-footer a:hover {
-  color: var(--color-primary-dark);
+  color: white;
+  border-bottom-color: var(--color-accent);
 }
 
 @media (max-width: 768px) {

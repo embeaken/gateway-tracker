@@ -56,7 +56,7 @@ onUnmounted(() => {
             <p>
               Gateway is visible proof that America can still build massive, inspiring public works.
               These tunnels will serve <strong>hundreds of thousands of passengers</strong> every day for generations to come.
-              Five construction sites are currently active. The first tunnel boring machines are about to start drilling through the New Jersey Palisades.
+              Five construction sites are currently active. On October 8, 2026 the first tunnel boring machine started drilling through the New Jersey Palisades.
               <strong>This is happening.</strong>
             </p>
           </div>

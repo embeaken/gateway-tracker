@@ -1,164 +1,223 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { Project } from '../types'
-import FactsList from './FactsList.vue'
 
-defineProps<{
+const props = defineProps<{
   project: Project
+  index: number
+  featured?: boolean
 }>()
+
+const factValue = (label: string) =>
+  props.project.facts.find((f) => f.label.toLowerCase() === label.toLowerCase())?.value
+
+const location = computed(() => factValue('Location'))
+const status = computed(() => factValue('Construction status'))
+const otherFacts = computed(() =>
+  props.project.facts.filter((f) => !['location', 'construction status'].includes(f.label.toLowerCase())),
+)
+const camNumber = computed(() => String(props.index + 1).padStart(2, '0'))
 </script>
 
 <template>
-  <article class="project-card">
-    <div class="project-header">
-      <div>
-        <h2 class="project-title">{{ project.name }}</h2>
-      </div>
-    </div>
-
-    <p class="project-description">{{ project.desc }}</p>
-
-    <FactsList :facts="project.facts" />
-
-    <div class="earthcam-container">
-      <div class="earthcam-placeholder" aria-hidden="true">
-        <span class="placeholder-title">Live EarthCam feed</span>
-        <span class="placeholder-subtitle">Loading construction camera</span>
+  <article :id="`cam-${project.id}`" class="cam-card" :class="{ 'cam-card--featured': featured }">
+    <div class="monitor">
+      <div class="monitor-placeholder" aria-hidden="true">
+        <span class="kicker">Cam {{ camNumber }}</span>
+        <span class="placeholder-title">Connecting to EarthCam…</span>
       </div>
       <iframe
         :src="project.earthcam"
         allow="fullscreen"
         loading="lazy"
-        class="earthcam-iframe"
+        class="monitor-iframe"
         :title="`Live EarthCam feed for ${project.name}`"
       />
+    </div>
+
+    <div class="cam-body">
+      <p class="kicker cam-meta">
+        <span class="cam-live"><span class="live-dot" aria-hidden="true"></span>Live</span>
+        <span>Cam {{ camNumber }}</span>
+        <span v-if="location" class="cam-location">{{ location }}</span>
+      </p>
+      <h3 class="cam-title">{{ project.name }}</h3>
+      <p class="cam-desc">{{ project.desc }}</p>
+      <p v-if="status" class="cam-status">
+        <span class="status-label">Status</span>
+        <span>{{ status }}</span>
+      </p>
+      <dl v-if="otherFacts.length" class="cam-facts">
+        <div v-for="fact in otherFacts" :key="fact.label">
+          <dt class="kicker">{{ fact.label }}</dt>
+          <dd>{{ fact.value }}</dd>
+        </div>
+      </dl>
     </div>
   </article>
 </template>
 
 <style scoped>
-.project-card {
+.cam-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
   background: var(--color-card-bg);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-sm);
-  margin-bottom: var(--spacing-sm);
-  transition: box-shadow var(--transition-base), border-color var(--transition-base);
-}
-
-.project-card:hover {
-  box-shadow: var(--shadow-md);
-  border-color: rgba(0, 94, 113, 0.32);
-}
-
-.project-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--spacing-sm);
-  margin-bottom: 8px;
-}
-
-.project-title {
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-  margin: 0;
-  letter-spacing: 0;
-}
-
-.project-description {
-  font-size: 15px;
-  line-height: var(--line-height-normal);
-  color: var(--color-text-primary);
-  margin: 0 0 10px 0;
-  max-width: 980px;
-}
-
-.earthcam-container {
-  position: relative;
-  width: 100%;
-  margin-top: 10px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  border-radius: var(--radius-sm);
-  background-color: #000;
+  scroll-margin-top: var(--spacing-lg);
 }
 
-.earthcam-placeholder {
+.cam-card:target {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent), transparent 70%);
+}
+
+.monitor {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: var(--color-ink);
+}
+
+.monitor-placeholder {
   position: absolute;
   inset: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
   gap: 6px;
-  padding: var(--spacing-md);
-  background:
-    linear-gradient(135deg, rgba(0, 94, 113, 0.28), rgba(0, 0, 0, 0.86)),
-    #000;
   color: white;
   text-align: center;
+  background:
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.03) 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse at center, #17303a, var(--color-ink));
   pointer-events: none;
 }
 
-.placeholder-title,
-.placeholder-subtitle {
-  display: block;
+.monitor-placeholder .kicker {
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .placeholder-title {
   font-size: 14px;
-  font-weight: var(--font-weight-bold);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.8);
 }
 
-.placeholder-subtitle {
-  color: rgba(255, 255, 255, 0.72);
-  font-size: 13px;
-}
-
-.earthcam-iframe {
-  position: relative;
+.monitor-iframe {
+  position: absolute;
+  inset: 0;
   width: 100%;
-  height: 620px;
-  border: none;
-  background-color: #000;
+  height: 100%;
+  border: 0;
   display: block;
   z-index: 1;
 }
 
-:global([data-visual-test="true"]) .earthcam-iframe {
+:global([data-visual-test="true"]) .monitor-iframe {
   opacity: 0;
 }
 
-@media (max-width: 1280px) {
-  .earthcam-iframe {
-    height: 500px;
-  }
+.cam-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: var(--spacing-sm) 18px 18px;
 }
 
-@media (max-width: 768px) {
-  .project-card {
-    padding: var(--spacing-sm);
-    margin-bottom: var(--spacing-sm);
+.cam-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  margin: 0;
+}
+
+.cam-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-live);
+}
+
+.cam-live .live-dot {
+  width: 6px;
+  height: 6px;
+}
+
+.cam-location {
+  position: relative;
+  padding-left: 12px;
+}
+
+.cam-location::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 4px;
+  height: 1px;
+  background: currentColor;
+}
+
+.cam-title {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.05;
+}
+
+.cam-desc {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.cam-status {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 6px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--color-border);
+  font-size: 14px;
+  line-height: 1.45;
+  font-weight: var(--font-weight-medium);
+}
+
+.status-label {
+  flex-shrink: 0;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--color-accent), transparent 85%);
+  color: var(--color-accent-ink);
+  font-family: var(--font-family-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.cam-facts dd {
+  margin: 2px 0 0;
+  font-size: 14px;
+}
+
+/* Featured cam: wider, title a touch bigger */
+.cam-card--featured .cam-title {
+  font-size: 30px;
+}
+
+@container cams (min-width: 1000px) {
+  .cam-card--featured {
+    display: grid;
+    grid-template-columns: minmax(0, 1.9fr) minmax(220px, 1fr);
   }
 
-  .project-title {
-    font-size: var(--font-size-sm);
-  }
-
-  .project-header {
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .project-description {
-    font-size: 14px;
-    max-width: 100%;
-  }
-
-  .earthcam-iframe {
-    height: 300px;
+  .cam-card--featured .cam-body {
+    padding: var(--spacing-md);
+    justify-content: center;
   }
 }
 </style>

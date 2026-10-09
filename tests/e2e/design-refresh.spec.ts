@@ -32,10 +32,10 @@ test.describe('design refresh smoke', () => {
   test('renders the civic overview and dashboard frame', async ({ page }, testInfo) => {
     await expect(page.getByRole('link', { name: 'hudson.tube home' })).toBeVisible()
     await expect(page.getByRole('heading', { name: /America is building a big new infrastructure project/i })).toBeVisible()
-    await expect(page.getByText('active construction sites', { exact: true })).toBeVisible()
-    await expect(page.getByText('new rail tubes', { exact: true })).toBeVisible()
+    await expect(page.getByText('new rail tubes under the Hudson', { exact: true })).toBeVisible()
     await expect(page.locator('.feature-photo')).toBeVisible()
-    await expect(page.getByText('Live construction camera').first()).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'The route' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Live from the sites' })).toBeVisible()
     await expect(visibleActivity(page).getByRole('heading', { name: /Updates from the GDC/i })).toBeVisible()
 
     await expectNoHorizontalOverflow(page)
@@ -43,11 +43,14 @@ test.describe('design refresh smoke', () => {
   })
 
   test('supports core interactions', async ({ page }, testInfo) => {
-    // The explainer is hidden until the hero CTA reveals it, then it expands
-    // in place without moving the viewport.
+    // The explainer is hidden until the hero CTA reveals it.
     await expect(page.getByRole('heading', { name: "What's going on?" })).toBeHidden()
     await page.getByRole('button', { name: /What's going on/i }).click()
     await expect(page.getByRole('heading', { name: "What's going on?" })).toBeVisible()
+
+    // Route map stops jump to their camera.
+    await page.locator('.strip, .vline').locator('a:visible').first().click()
+    await expect(page).toHaveURL(/#cam-palisades-tunnel$/)
 
     await page.getByRole('button', { name: /Switch to dark mode/i }).click()
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')

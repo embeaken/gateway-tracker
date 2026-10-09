@@ -3,47 +3,62 @@ import { ref } from 'vue'
 import AppHeader from './components/AppHeader.vue'
 import GatewayOverview from './components/GatewayOverview.vue'
 import OverviewExplainer from './components/OverviewExplainer.vue'
+import RouteMap from './components/RouteMap.vue'
 import AppFooter from './components/AppFooter.vue'
 import MainLayout from './components/MainLayout.vue'
 import ProjectCard from './components/ProjectCard.vue'
 import Sidebar from './components/Sidebar.vue'
 import ActivityTimeline from './components/ActivityTimeline.vue'
 import { projects } from './assets/data'
+import { useSiteClock } from './useSiteClock'
 
 if (import.meta.env.VITE_PLAYWRIGHT) {
   document.documentElement.dataset.visualTest = 'true'
 }
 
-// The "What's going on?" explainer is tucked under the header and pulled into
-// view by the tab on the header's bottom edge. Toggles open and closed; the
-// viewport is intentionally left where it is.
+const { time, isNight } = useSiteClock()
+
+// The "What's going on?" explainer expands in place under the hero.
 const showExplainer = ref(false)
 
 function toggleExplainer() {
   showExplainer.value = !showExplainer.value
 }
-
 </script>
 
 <template>
-  <AppHeader :explainer-open="showExplainer" @toggle-explainer="toggleExplainer" />
+  <AppHeader />
+  <GatewayOverview :explainer-open="showExplainer" @toggle-explainer="toggleExplainer" />
   <div class="explainer-collapse">
     <Transition name="explainer">
       <OverviewExplainer v-if="showExplainer" />
     </Transition>
   </div>
-  <GatewayOverview />
+  <RouteMap />
 
   <main>
     <MainLayout>
       <template #content>
-        <div id="construction-cameras" class="camera-anchor"></div>
+        <section id="cameras" class="cams" aria-labelledby="cams-title">
+          <div class="section-head">
+            <h2 id="cams-title" class="section-title">Live from the sites</h2>
+            <p class="kicker section-meta">
+              <span class="live-dot" aria-hidden="true"></span>
+              {{ projects.length }} cams · {{ time }} in New York
+              <span v-if="isNight" class="night-chip">Night shift</span>
+            </p>
+          </div>
 
-        <ProjectCard
-          v-for="project in projects"
-          :key="project.name"
-          :project="project"
-        />
+          <div class="cam-grid">
+            <ProjectCard
+              v-for="(project, i) in projects"
+              :key="project.id"
+              :project="project"
+              :index="i"
+              :featured="i === 0"
+            />
+          </div>
+        </section>
       </template>
 
       <template #sidebar>
@@ -59,8 +74,6 @@ function toggleExplainer() {
 </template>
 
 <style scoped>
-/* Simple CSS transition for the explainer: transform + opacity (animates
-   reliably). Layout shift is instant — height is not animated. */
 .explainer-enter-active,
 .explainer-leave-active {
   transition: transform 190ms ease, opacity 190ms ease;
@@ -79,7 +92,62 @@ function toggleExplainer() {
   }
 }
 
-.camera-anchor,
+.cams {
+  scroll-margin-top: var(--spacing-lg);
+  container: cams / inline-size;
+}
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
+}
+
+.section-title {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.section-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.night-chip {
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  background: var(--color-ink);
+  color: #ffd27a;
+}
+
+.cam-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-sm);
+}
+
+@container cams (min-width: 700px) {
+  .cam-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* Featured cam spans the row; so does a trailing orphan. */
+  .cam-grid > :first-child,
+  .cam-grid > :last-child:nth-child(even) {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 820px) {
+  .section-title {
+    font-size: 26px;
+  }
+}
+
 .activity-anchor {
   scroll-margin-top: var(--spacing-lg);
 }

@@ -49,6 +49,7 @@
     grid-row: 1;
     position: sticky;
     top: 20px;
+    padding-top: 50px; /* align the feed card with the camera grid below its heading */
     align-self: start;
     max-height: calc(100vh - 40px);
     display: flex;
