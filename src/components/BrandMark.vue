@@ -36,12 +36,19 @@
   width: 34px;
   height: 34px;
   flex-shrink: 0;
-  transition: transform 900ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  /* Always turning, like the real thing — slow enough to be ambient. */
+  animation: cutterhead-spin 48s linear infinite;
+}
+
+@keyframes cutterhead-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .brand-mark {
-    transition: none;
+    animation: none;
   }
 }
 </style>

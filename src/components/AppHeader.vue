@@ -1,8 +1,17 @@
 <script setup lang="ts">
 import BrandMark from './BrandMark.vue'
-import { useSiteClock } from '../useSiteClock'
+import { computed } from 'vue'
+import { PALISADES_DRIVE } from '../assets/data'
+import { useTbmProgress, formatPct, formatFt } from '../useTbmProgress'
 
-const { miningDay } = useSiteClock()
+const { lead } = useTbmProgress()
+
+const statusTitle = computed(
+  () =>
+    `${lead.value.tbm.label} (${lead.value.tbm.tube.toLowerCase()} tube): an estimated ` +
+    `${formatFt(lead.value.ft)} of ${formatFt(PALISADES_DRIVE.lengthFt)} to the Hudson County shaft, ` +
+    `assuming ~${PALISADES_DRIVE.rateFtPerDay} ft/day.`,
+)
 </script>
 
 <template>
@@ -16,10 +25,14 @@ const { miningDay } = useSiteClock()
         </span>
       </a>
 
-      <a href="#route" class="header-status">
+      <a href="#route" class="header-status" :title="statusTitle">
         <span class="status-dot" aria-hidden="true"></span>
-        <span>Tunnel boring</span>
-        <span class="status-day tabular">Day {{ miningDay }}</span>
+        <span class="status-label">Tunnel boring</span>
+        <span class="status-day tabular">Day {{ lead.day }}</span>
+        <span class="status-pct tabular" :aria-label="`about ${formatPct(lead.fraction)} complete, estimated`">
+          <span class="pct-bar" aria-hidden="true"><span :style="{ width: `${Math.max(2, lead.fraction * 100)}%` }"></span></span>
+          {{ formatPct(lead.fraction) }}
+        </span>
       </a>
     </div>
   </header>
@@ -57,11 +70,6 @@ const { miningDay } = useSiteClock()
 
 .brand-icon {
   color: var(--color-accent);
-}
-
-/* The one playful hover: the cutterhead turns a quarter. */
-.brand-lockup:hover .brand-icon {
-  transform: rotate(90deg);
 }
 
 .brand-name,
@@ -113,6 +121,31 @@ const { miningDay } = useSiteClock()
   background: #6FCF97;
 }
 
+.status-pct {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding-right: 6px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+}
+
+.pct-bar {
+  position: relative;
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.18);
+  overflow: hidden;
+}
+
+.pct-bar > span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--color-accent);
+  border-radius: 2px;
+}
+
 .status-day {
   padding: 2px 9px;
   border-radius: 999px;
@@ -152,10 +185,14 @@ const { miningDay } = useSiteClock()
   .status-day {
     padding: 2px 7px;
   }
+
+  .pct-bar {
+    display: none;
+  }
 }
 
-@media (max-width: 370px) {
-  .header-status > span:nth-child(2) {
+@media (max-width: 420px) {
+  .status-label {
     display: none;
   }
 }

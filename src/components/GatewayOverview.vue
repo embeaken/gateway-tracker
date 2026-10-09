@@ -7,7 +7,6 @@ import {
   constructionNotices,
   youtubeVideos,
 } from "../assets/activityData";
-import { PALISADES_DRIVE_FT } from "../assets/data";
 
 defineProps<{ explainerOpen: boolean }>();
 const emit = defineEmits<{ (e: "toggle-explainer"): void }>();
@@ -52,11 +51,12 @@ const heroPhotos = computed(() =>
 
 const activePhoto = computed(() => heroPhotos.value[activePhotoIndex.value]);
 
+// Scale of the machines (GDC press release, Oct 8 2026).
 const stats = [
-  { value: "1910", label: "year the tunnels it replaces opened" },
-  { value: "2", label: "new rail tubes under the Hudson" },
-  { value: PALISADES_DRIVE_FT.toLocaleString("en-US") + " ft", label: "first drive, portal to Hudson County shaft" },
-  { value: "~30 ft", label: "of tunnel per day, planned pace" },
+  { value: "28′ 8″", label: "cutterhead diameter of each tunnel boring machine" },
+  { value: "1,680+ tons", label: "weight of each machine and its trailing gear" },
+  { value: "~500 ft", label: "from cutterhead to the end of the trailing gantries" },
+  { value: "1910", label: "year the tunnels being replaced opened" },
 ];
 
 const goTo = (index: number) => {

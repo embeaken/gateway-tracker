@@ -1,12 +1,39 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import type { Project } from '../types'
 
 const props = defineProps<{
   project: Project
   index: number
-  featured?: boolean
 }>()
+
+// EarthCam's embed only renders the interactive player when the iframe is at
+// least ~600px wide; narrower, it degrades to a static "Launch Live Webcam"
+// link (or a broken layout around 510–580px). So on narrow screens we render
+// the iframe at a fixed 640px and scale it down to fit.
+const MIN_PLAYER_WIDTH = 640
+const monitor = ref<HTMLElement>()
+const monitorWidth = ref(MIN_PLAYER_WIDTH)
+let observer: ResizeObserver | undefined
+
+onMounted(() => {
+  if (!monitor.value) return
+  observer = new ResizeObserver(([entry]) => {
+    if (entry) monitorWidth.value = entry.contentRect.width
+  })
+  observer.observe(monitor.value)
+})
+onUnmounted(() => observer?.disconnect())
+
+const frameStyle = computed(() => {
+  if (monitorWidth.value >= MIN_PLAYER_WIDTH) return undefined
+  return {
+    width: `${MIN_PLAYER_WIDTH}px`,
+    height: `${(MIN_PLAYER_WIDTH * 9) / 16}px`,
+    transform: `scale(${monitorWidth.value / MIN_PLAYER_WIDTH})`,
+    transformOrigin: '0 0',
+  }
+})
 
 const factValue = (label: string) =>
   props.project.facts.find((f) => f.label.toLowerCase() === label.toLowerCase())?.value
@@ -19,8 +46,8 @@ const otherFacts = computed(() =>
 </script>
 
 <template>
-  <article :id="`cam-${project.id}`" class="cam-card" :class="{ 'cam-card--featured': featured }">
-    <div class="monitor">
+  <article :id="`cam-${project.id}`" class="cam-card">
+    <div ref="monitor" class="monitor">
       <div class="monitor-placeholder" aria-hidden="true">
         <span class="placeholder-title">Loading live view…</span>
       </div>
@@ -29,6 +56,7 @@ const otherFacts = computed(() =>
         allow="fullscreen"
         loading="lazy"
         class="monitor-iframe"
+        :style="frameStyle"
         :title="`Live EarthCam feed for ${project.name}`"
       />
     </div>
@@ -79,6 +107,7 @@ const otherFacts = computed(() =>
 .monitor {
   position: relative;
   aspect-ratio: 16 / 9;
+  overflow: hidden;
   background: var(--color-navy);
 }
 
@@ -179,20 +208,4 @@ const otherFacts = computed(() =>
   font-size: 14px;
 }
 
-/* Featured cam: wider, title a touch bigger */
-.cam-card--featured .cam-title {
-  font-size: 28px;
-}
-
-@container cams (min-width: 1000px) {
-  .cam-card--featured {
-    display: grid;
-    grid-template-columns: minmax(0, 1.9fr) minmax(220px, 1fr);
-  }
-
-  .cam-card--featured .cam-body {
-    padding: var(--spacing-md);
-    justify-content: center;
-  }
-}
 </style>

@@ -132,7 +132,44 @@ export const routeStops: RouteStop[] = [
   },
 ];
 
-/** The first TBM started mining on this date (GDC press release, Oct 8 2026). */
-export const MINING_START = "2026-10-08";
-/** Length of the Palisades Tunnel drive, portal → Hudson County shaft. */
-export const PALISADES_DRIVE_FT = 5100;
+// ---------------------------------------------------------------------------
+// Tunnel boring: the Palisades drive (portal → Hudson County shaft)
+// Source: GDC press release, Oct 8 2026
+// https://www.gatewayprogram.org/wp-content/uploads/2026/10/TBM-Start-of-Mining-Press-Release.pdf
+// ---------------------------------------------------------------------------
+
+export const PALISADES_DRIVE = {
+  lengthFt: 5100,
+  /** GDC: "roughly 30 feet of tunnel per day, including scheduled pauses for maintenance" */
+  rateFtPerDay: 30,
+  from: "portal",
+  to: "hudson-county-shaft",
+  sourceUrl:
+    "https://www.gatewayprogram.org/wp-content/uploads/2026/10/TBM-Start-of-Mining-Press-Release.pdf",
+} as const;
+
+/** Back-compat alias used by copy. */
+export const PALISADES_DRIVE_FT = PALISADES_DRIVE.lengthFt;
+
+export type Tbm = {
+  id: string;
+  label: string;
+  tube: "North" | "South";
+  /** YYYY-MM-DD the machine started mining, or null if not launched yet */
+  launched: string | null;
+  /** Shown while `launched` is null */
+  expected?: string;
+  /**
+   * Optional real progress report. When set, estimates run forward from this
+   * figure instead of from the launch date.
+   */
+  reported?: { date: string; ft: number };
+};
+
+export const tbms: Tbm[] = [
+  { id: "tbm-1", label: "TBM 1", tube: "North", launched: "2026-10-08" },
+  { id: "tbm-2", label: "TBM 2", tube: "South", launched: null, expected: "Launching later this fall" },
+];
+
+/** The first TBM started mining on this date. */
+export const MINING_START = tbms[0]!.launched!;

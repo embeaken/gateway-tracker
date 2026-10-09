@@ -50,7 +50,6 @@ function toggleExplainer() {
               :key="project.id"
               :project="project"
               :index="i"
-              :featured="i === 0"
             />
           </div>
         </section>
@@ -89,7 +88,6 @@ function toggleExplainer() {
 
 .cams {
   scroll-margin-top: var(--spacing-lg);
-  container: cams / inline-size;
 }
 
 .section-head {
@@ -112,22 +110,12 @@ function toggleExplainer() {
   color: var(--color-text-secondary);
 }
 
+/* One column: every camera full width so EarthCam serves its interactive
+   player (see ProjectCard). */
 .cam-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--spacing-sm);
-}
-
-@container cams (min-width: 700px) {
-  .cam-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  /* Featured cam spans the row; so does a trailing orphan. */
-  .cam-grid > :first-child,
-  .cam-grid > :last-child:nth-child(even) {
-    grid-column: 1 / -1;
-  }
+  gap: var(--spacing-md);
 }
 
 @media (max-width: 820px) {
