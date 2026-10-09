@@ -14,23 +14,27 @@ export type ProjectFact = {
   value: string
 }
 
-/** A named tunnel section on the route diagram. */
+/** A named construction section on the route diagram. */
 export type RouteSegment = {
   id: string
   label: string
   fromFt: number
   toFt: number
+  kind: 'surface' | 'bored' | 'casing'
+  /** Shown instead of a computed length (e.g. "~1.5 mi"); null hides the length */
+  lengthLabel?: string | null
+  /** Project id whose camera this section links to */
+  cam?: string
 }
 
 /** A stop on the west→east route diagram. */
 export type RouteStop = {
   id: string
   label: string
-  /** Distance along the new tunnel from the North Bergen portal, in feet */
+  /** Distance from the Tonnelle Ave tunnel portal, in feet (negative = west of it) */
   ft: number
   /** Project ids whose cameras live at this stop */
   cams: string[]
-  /** Label placement on the horizontal map (the Manhattan end is crowded) */
+  /** Label placement on the horizontal map */
   side: 'above' | 'below'
-  align?: 'start' | 'center' | 'end'
 }

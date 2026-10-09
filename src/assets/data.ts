@@ -81,17 +81,19 @@ export const projects: Project[] = [
 ];
 
 // ---------------------------------------------------------------------------
-// Route geometry, in feet from the North Bergen portal (west → east).
+// Route geometry, in feet from the Tonnelle Avenue tunnel portal (west → east).
 //
-// Segment lengths are GDC's published figures:
-//   Palisades Tunnel, portal → Hudson County Shaft ........ 5,100 ft
+// Lengths are GDC's published figures:
+//   NJ Surface Alignment, County Road (Secaucus) → portal ... ~1.5 mi
+//     gatewayprogram.org/nj-surface-alignment.html
+//   Palisades Tunnel, portal → Hudson County Shaft ......... 5,100 ft
 //     gatewayprogram.org/palisades-tunnel-project.html
-//   Hudson River Tunnel Section, HC Shaft → 12th Ave Shaft  ~7,250 ft
+//   Hudson River Tunnel Section, HC Shaft → 12th Ave Shaft . ~7,250 ft
 //     gatewayprogram.org/wp-content/uploads/2026/04/P1C-Contract-Award-Press-Release.pdf
-//   Manhattan Tunnel, Manhattan bulkhead → casing ........... ~700 ft
+//   Manhattan Tunnel, Manhattan bulkhead → casing ............ ~700 ft
 //     gatewayprogram.org/manhattan-tunnel-project.html
-//   Hudson Yards Concrete Casing §3, → 11th Ave ............. ~500 ft
-//   Hudson Yards Concrete Casing §1–2, 11th → 10th Ave ...... ~1 block
+//   Hudson Yards Concrete Casing §3, → 11th Ave .............. ~500 ft
+//   Hudson Yards Concrete Casing §1–2, 11th → 10th Ave ....... ~1 block
 //     gatewayprogram.org/hudson-yards-concrete-casing-section-3.html
 //
 // Positions *within* the river section (NJ shoreline, ground stabilization
@@ -100,40 +102,63 @@ export const projects: Project[] = [
 //   gatewayprogram.org/wp-content/uploads/2026/04/April-2026-Board-Meeting-Public-Presentation.pdf
 // ---------------------------------------------------------------------------
 
+const NJ_SURFACE_FT = 1.5 * 5280; // ~7,920
 const HC_SHAFT_FT = 5100;
 const TWELFTH_AVE_SHAFT_FT = HC_SHAFT_FT + 7250; // 12,350
 const MANHATTAN_BULKHEAD_FT = HC_SHAFT_FT + 6965; // 12,065 (profile)
 const CASING_START_FT = MANHATTAN_BULKHEAD_FT + 700; // 12,765
-const ELEVENTH_AVE_FT = CASING_START_FT + 500; // 13,265
-const TENTH_AVE_FT = ELEVENTH_AVE_FT + 800; // ~14,065
+const TENTH_AVE_FT = CASING_START_FT + 500 + 800; // ~14,065
 
 export const ROUTE = {
-  lengthFt: TENTH_AVE_FT + 300, // tie-in to the Penn Station approach tracks
+  /** County Road, Secaucus: new tracks leave the existing Northeast Corridor */
+  westFt: -NJ_SURFACE_FT,
+  /** Tie-in to the Penn Station approach tracks, just east of 10th Ave */
+  eastFt: TENTH_AVE_FT + 300,
   /** NJ waterfront (profile: ~1,480 ft east of the HC shaft) */
   riverFromFt: HC_SHAFT_FT + 1480,
   riverToFt: MANHATTAN_BULKHEAD_FT,
-  sourceUrl:
-    "https://www.gatewayprogram.org/wp-content/uploads/2026/04/April-2026-Board-Meeting-Public-Presentation.pdf",
 } as const;
 
-/** Tunnel-boring contracts, each bored by its own pair of TBMs. */
+/** Construction sections, west → east. */
 export const routeSegments: RouteSegment[] = [
-  { id: "palisades", label: "Palisades Tunnel", fromFt: 0, toFt: HC_SHAFT_FT },
-  { id: "hudson-river", label: "Hudson River Tunnel", fromFt: HC_SHAFT_FT, toFt: TWELFTH_AVE_SHAFT_FT },
+  {
+    id: "nj-surface",
+    label: "NJ Surface Alignment",
+    fromFt: -NJ_SURFACE_FT,
+    toFt: 0,
+    kind: "surface",
+    lengthLabel: "~1.5 mi",
+  },
+  { id: "palisades", label: "Palisades Tunnel", fromFt: 0, toFt: HC_SHAFT_FT, kind: "bored" },
+  {
+    id: "hudson-river",
+    label: "Hudson River Tunnel",
+    fromFt: HC_SHAFT_FT,
+    toFt: TWELFTH_AVE_SHAFT_FT,
+    kind: "bored",
+  },
+  {
+    id: "hudson-yards",
+    label: "Hudson Yards casing",
+    fromFt: TWELFTH_AVE_SHAFT_FT,
+    toFt: TENTH_AVE_FT + 300,
+    kind: "casing",
+    lengthLabel: null,
+    cam: "hudson-yards",
+  },
 ];
 
 export const routeStops: RouteStop[] = [
   {
     id: "portal",
-    label: "Palisades portal",
+    label: "Tonnelle Avenue",
     ft: 0,
     cams: ["palisades-tunnel", "launch-box"],
     side: "below",
-    align: "start",
   },
   {
     id: "hudson-county-shaft",
-    label: "Hudson County shaft",
+    label: "Access shaft",
     ft: HC_SHAFT_FT,
     cams: ["hudson-county-shaft"],
     side: "above",
@@ -145,22 +170,13 @@ export const routeStops: RouteStop[] = [
     ft: HC_SHAFT_FT + 5735,
     cams: ["river"],
     side: "below",
-    align: "end",
   },
   {
     id: "manhattan-shaft",
-    label: "12th Ave shaft",
+    label: "Access shaft",
     ft: TWELFTH_AVE_SHAFT_FT,
     cams: ["manhattan-shaft"],
     side: "above",
-  },
-  {
-    id: "hudson-yards",
-    label: "Hudson Yards\ncasing",
-    ft: (CASING_START_FT + ELEVENTH_AVE_FT) / 2,
-    cams: ["hudson-yards"],
-    side: "below",
-    align: "start",
   },
 ];
 

@@ -3,34 +3,38 @@ import { computed } from "vue";
 import { routeStops, routeSegments, PALISADES_DRIVE, ROUTE } from "../assets/data";
 import { useTbmProgress, formatFt, formatPct, formatMonth } from "../useTbmProgress";
 
-// Drawn to scale: feet along the tunnel → percent of the track width, with a
-// small inset at each end for the terminal capsules.
-const INSET = 3;
-const pos = (ft: number) => INSET + ((100 - 2 * INSET) * ft) / ROUTE.lengthFt;
+// Drawn to scale: feet along the route → percent of the track width. The left
+// inset leaves room for the existing Northeast Corridor before the junction;
+// on the right the tunnel runs off the edge into Penn Station.
+const LEFT_INSET = 4;
+const SPAN = ROUTE.eastFt - ROUTE.westFt;
+const pos = (ft: number) => LEFT_INSET + ((100 - LEFT_INSET) * (ft - ROUTE.westFt)) / SPAN;
 
+const JUNCTION = pos(ROUTE.westFt);
+const PORTAL = pos(0);
 const RIVER_FROM = pos(ROUTE.riverFromFt);
 const RIVER_TO = pos(ROUTE.riverToFt);
-const DRIVE_TO = pos(PALISADES_DRIVE.lengthFt);
 
 const MILE = 5280;
-const miles = (ft: number) => (ft === 0 ? "0" : (ft / MILE).toFixed(1));
+const miles = (ft: number) => ((ft - ROUTE.westFt) / MILE).toFixed(1);
 
 const segments = routeSegments.map((seg) => ({
   ...seg,
   left: pos(seg.fromFt),
   width: pos(seg.toFt) - pos(seg.fromFt),
-  length: formatFt(seg.toFt - seg.fromFt),
+  length: seg.lengthLabel === undefined ? formatFt(seg.toFt - seg.fromFt) : seg.lengthLabel,
+  href: seg.cam ? `#cam-${seg.cam}` : undefined,
 }));
 
-const { progress } = useTbmProgress();
+const drive = segments.find((seg) => seg.id === "palisades")!;
+const casing = segments.find((seg) => seg.kind === "casing")!;
 
-/** Map a 0–1 drive fraction onto the route position (percent). */
-const driveAt = (fraction: number) => pos(fraction * PALISADES_DRIVE.lengthFt);
+const { progress } = useTbmProgress();
 
 const markers = computed(() =>
   progress.value.map((p) => ({
     ...p,
-    at: driveAt(p.fraction),
+    at: pos(p.fraction * PALISADES_DRIVE.lengthFt),
     lane: p.tbm.tube === "North" ? "north" : "south",
   })),
 );
@@ -38,11 +42,8 @@ const markers = computed(() =>
 const camHref = (stop: (typeof routeStops)[number]) =>
   stop.cams.length ? `#cam-${stop.cams[0]}` : undefined;
 
-const EAST_PORTAL = pos(ROUTE.lengthFt);
-
-/** Segment that begins at a stop (for the mobile list). */
-const segmentAfter = (stop: (typeof routeStops)[number]) =>
-  segments.find((seg) => seg.fromFt === stop.ft);
+/** Section that begins at a given point (for the mobile list). */
+const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && seg.kind !== "casing");
 </script>
 
 <template>
@@ -51,7 +52,7 @@ const segmentAfter = (stop: (typeof routeStops)[number]) =>
       <div class="route-head">
         <h2 id="route-title" class="route-title">The route</h2>
         <p class="route-note">
-          Two tubes, west to east, drawn to scale · select a stop to see its camera
+          Two new tracks, west to east, drawn to scale · select a site to see its camera
         </p>
       </div>
 
@@ -72,16 +73,29 @@ const segmentAfter = (stop: (typeof routeStops)[number]) =>
           <div class="river-band" aria-hidden="true"></div>
 
           <div class="track" aria-hidden="true">
-            <!-- First drive highlight -->
-            <div class="drive" :style="{ left: `${INSET}%`, width: `${DRIVE_TO - INSET}%` }"></div>
+            <!-- Section highlights: the active TBM drive, and the Hudson Yards casing -->
+            <div class="drive" :style="{ left: `${drive.left}%`, width: `${drive.width}%` }"></div>
 
-            <!-- Twin tubes: underground (dashed), plus surface track beyond each portal (solid) -->
-            <div class="tube tube--north"></div>
-            <div class="tube tube--south"></div>
-            <div class="surface surface--west tube--north"></div>
-            <div class="surface surface--west tube--south"></div>
-            <div class="surface surface--east tube--north"></div>
-            <div class="surface surface--east tube--south"></div>
+            <!-- Existing Northeast Corridor from Newark; at County Road it peels off
+                 toward the 1910 North River Tunnel and the new tracks carry on. -->
+            <div class="nec tube--north" :style="{ width: `calc(${JUNCTION}% + 16px)` }"></div>
+            <div class="nec tube--south" :style="{ width: `calc(${JUNCTION}% + 16px)` }"></div>
+            <svg class="nec-branch" :style="{ left: `${JUNCTION}%` }" viewBox="0 -60 140 70">
+              <defs>
+                <linearGradient id="nec-fade" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0.35" stop-color="currentColor" />
+                  <stop offset="1" stop-color="currentColor" stop-opacity="0" />
+                </linearGradient>
+              </defs>
+              <path d="M0 -7 C40 -7 70 -14 130 -52 M0 7 C48 7 82 -2 138 -40" stroke="url(#nec-fade)" />
+            </svg>
+            <span class="nec-label" :style="{ left: `${JUNCTION}%` }">Existing Northeast Corridor</span>
+
+            <!-- New tracks: on the surface to the portal (solid), then in tunnel (dashed) -->
+            <div class="surface tube--north" :style="{ left: `${JUNCTION}%`, width: `${PORTAL - JUNCTION}%` }"></div>
+            <div class="surface tube--south" :style="{ left: `${JUNCTION}%`, width: `${PORTAL - JUNCTION}%` }"></div>
+            <div class="tube tube--north" :style="{ left: `${PORTAL}%` }"></div>
+            <div class="tube tube--south" :style="{ left: `${PORTAL}%` }"></div>
 
             <!-- Bored so far (estimated) + machine position -->
             <template v-for="m in markers" :key="m.tbm.id">
@@ -89,7 +103,7 @@ const segmentAfter = (stop: (typeof routeStops)[number]) =>
                 v-if="m.status !== 'upcoming'"
                 class="bored"
                 :class="`bored--${m.lane}`"
-                :style="{ left: `${INSET}%`, width: `${m.at - INSET}%` }"
+                :style="{ left: `${PORTAL}%`, width: `${m.at - PORTAL}%` }"
               ></div>
               <div
                 class="tbm"
@@ -109,7 +123,7 @@ const segmentAfter = (stop: (typeof routeStops)[number]) =>
               v-for="stop in routeStops"
               :key="stop.id"
               class="stop"
-              :class="[`stop--${stop.side}`, `stop--align-${stop.align ?? 'center'}`]"
+              :class="`stop--${stop.side}`"
               :style="{ left: `${pos(stop.ft)}%` }"
             >
               <component :is="camHref(stop) ? 'a' : 'div'" :href="camHref(stop)" class="stop-link">
@@ -123,26 +137,29 @@ const segmentAfter = (stop: (typeof routeStops)[number]) =>
                 </span>
               </component>
             </li>
-            <!-- East end: the tunnel surfaces east of 10th Ave and joins the Penn Station tracks -->
-            <li class="stop" :style="{ left: `${EAST_PORTAL}%` }" aria-hidden="true">
-              <span class="stop-link">
-                <svg class="portal portal--east" viewBox="-12 -26 24 52">
-                  <path d="M0 -11 V-19 L-8 -26 M0 11 V19 L-8 26" />
-                </svg>
-              </span>
-            </li>
           </ol>
 
-          <!-- Tunnel-boring sections, dimensioned like an engineering drawing -->
+          <!-- Hudson Yards casing: a cut-and-cover box, shown as a band you can click -->
+          <a
+            class="casing"
+            :href="casing.href"
+            :style="{ left: `calc(16px + (100% - 32px) * ${casing.left / 100})` }"
+            :aria-label="`${casing.label} camera`"
+          ></a>
+
+          <!-- Construction sections, dimensioned like an engineering drawing -->
           <ol class="dims">
             <li
               v-for="seg in segments"
               :key="seg.id"
               class="dim"
+              :class="`dim--${seg.kind}`"
               :style="{ left: `${seg.left}%`, width: `${seg.width}%` }"
             >
-              <span class="dim-label">{{ seg.label }}</span>
-              <span class="dim-length tabular">{{ seg.length }}</span>
+              <span class="dim-text">
+                <component :is="seg.href ? 'a' : 'span'" :href="seg.href" class="dim-label">{{ seg.label }}</component>
+                <span v-if="seg.length" class="dim-length tabular">{{ seg.length }}</span>
+              </span>
             </li>
           </ol>
         </div>
@@ -151,6 +168,17 @@ const segmentAfter = (stop: (typeof routeStops)[number]) =>
         <ol class="vline">
           <li class="vstop vterm vterm--west" aria-hidden="true">
             <span class="vterm-text">↑ To Newark</span>
+          </li>
+          <li class="vstop vjunction">
+            <span class="vjunction-text">New tracks leave the existing Northeast Corridor at County Road</span>
+            <span class="vstop-mile tabular">mile 0</span>
+          </li>
+          <li class="vstop vseg vseg--surface">
+            <span class="vseg-text">
+              <span class="vseg-label">
+                {{ segments[0]!.label }} <span class="vseg-length tabular">· {{ segments[0]!.length }}</span>
+              </span>
+            </span>
           </li>
           <template v-for="stop in routeStops" :key="stop.id">
             <li
@@ -163,12 +191,12 @@ const segmentAfter = (stop: (typeof routeStops)[number]) =>
                 </svg>
                 <span v-else class="vstop-dot" aria-hidden="true"></span>
                 <span class="vstop-text">
-                  <span class="stop-label">{{ stop.label.replace("\n", " ") }}</span>
+                  <span class="stop-label">{{ stop.label }}</span>
                 </span>
                 <span class="vstop-mile tabular">mile {{ miles(stop.ft) }}</span>
               </component>
             </li>
-            <li v-if="segmentAfter(stop)" class="vstop vseg" :class="`vseg--${segmentAfter(stop)!.id}`">
+            <li v-if="segmentFrom(stop.ft)" class="vstop vseg" :class="`vseg--${segmentFrom(stop.ft)!.id}`">
               <template v-if="stop.ft === 0">
                 <span
                   v-for="m in markers"
@@ -181,8 +209,8 @@ const segmentAfter = (stop: (typeof routeStops)[number]) =>
               </template>
               <span class="vseg-text">
                 <span class="vseg-label">
-                  {{ segmentAfter(stop)!.label }}
-                  <span class="vseg-length tabular">· {{ segmentAfter(stop)!.length }}</span>
+                  {{ segmentFrom(stop.ft)!.label }}
+                  <span class="vseg-length tabular">· {{ segmentFrom(stop.ft)!.length }}</span>
                 </span>
                 <template v-if="stop.ft === 0">
                   <span v-for="m in markers" :key="m.tbm.id" class="vseg-tbm">
@@ -193,10 +221,14 @@ const segmentAfter = (stop: (typeof routeStops)[number]) =>
               </span>
             </li>
           </template>
-          <li class="vstop vstop--portal-east vterm" aria-hidden="true">
-            <svg class="vportal vportal--east" viewBox="-20 -12 40 24">
-              <path d="M-8 0 H-13 L-19 -7 M8 0 H13 L19 -7" />
-            </svg>
+          <li class="vstop vcasing">
+            <a :href="casing.href" class="vstop-link">
+              <span class="vstop-text">
+                <span class="stop-label">{{ casing.label }}</span>
+              </span>
+            </a>
+          </li>
+          <li class="vstop vterm" aria-hidden="true">
             <span class="vterm-text">To Penn Station ↓</span>
           </li>
         </ol>
@@ -282,9 +314,9 @@ const segmentAfter = (stop: (typeof routeStops)[number]) =>
 .strip {
   --track-y: 104px;
   --tube-gap: 7px; /* half the distance between tube centrelines */
-  --dims-y: 190px;
+  --dims-y: 180px;
   position: relative;
-  height: 236px;
+  height: 234px;
   border-bottom: 1px solid var(--color-border);
 }
 
@@ -300,6 +332,7 @@ const segmentAfter = (stop: (typeof routeStops)[number]) =>
 
 .zone-labels {
   position: absolute;
+  z-index: 2;
   inset: 12px 16px auto 16px;
   height: 14px;
 }
@@ -330,10 +363,12 @@ const segmentAfter = (stop: (typeof routeStops)[number]) =>
 
 .track {
   position: absolute;
+  z-index: 1;
   left: 16px;
   right: 16px;
   top: var(--track-y);
   height: 0;
+  pointer-events: none;
 }
 
 .tube,
@@ -345,8 +380,7 @@ const segmentAfter = (stop: (typeof routeStops)[number]) =>
 }
 
 .tube {
-  left: 3%; /* = INSET */
-  right: 3%;
+  right: -16px; /* runs off the card edge into Penn Station */
   background: repeating-linear-gradient(
     90deg,
     var(--color-map-line) 0 12px,
@@ -365,21 +399,42 @@ const segmentAfter = (stop: (typeof routeStops)[number]) =>
   top: calc(var(--tube-gap) - 2px);
 }
 
-/* Surface track beyond each portal: solid, from the card edge to the portal */
+/* New surface track, County Road → portal */
 .surface {
   background: var(--color-map-line);
   opacity: 0.75;
 }
 
-.surface--west {
-  left: 0;
-  width: 3%; /* = INSET */
+/* Existing Northeast Corridor: lighter, thinner */
+.nec {
+  position: absolute;
+  left: -16px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--color-text-secondary);
+  opacity: 0.45;
 }
 
-.surface--east {
-  left: auto;
-  right: 0;
-  width: 3%;
+.nec-branch {
+  position: absolute;
+  top: -60px;
+  width: 140px;
+  height: 70px;
+  overflow: visible;
+  color: var(--color-text-secondary);
+  opacity: 0.45;
+  fill: none;
+  stroke-width: 3;
+}
+
+.nec-label {
+  position: absolute;
+  top: -66px;
+  margin-left: 146px;
+  font-size: 11.5px;
+  font-style: italic;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
 }
 
 .bored {
@@ -394,6 +449,21 @@ const segmentAfter = (stop: (typeof routeStops)[number]) =>
   height: 34px;
   border-radius: 17px;
   background: var(--color-accent-muted);
+}
+
+/* Hudson Yards casing: a clickable band from the 12th Ave shaft into Penn */
+.casing {
+  position: absolute;
+  top: calc(var(--track-y) - 17px);
+  right: 0;
+  height: 34px;
+  border-radius: 17px 0 0 17px;
+  background: color-mix(in srgb, var(--color-map-line), transparent 86%);
+  transition: background var(--transition-fast);
+}
+
+.casing:hover {
+  background: color-mix(in srgb, var(--color-primary), transparent 72%);
 }
 
 .tbm {
@@ -457,8 +527,10 @@ const segmentAfter = (stop: (typeof routeStops)[number]) =>
 
 .stops {
   position: absolute;
+  z-index: 2;
   inset: 0 16px;
   list-style: none;
+  pointer-events: none; /* let clicks reach the casing band underneath */
 }
 
 .stop {
@@ -472,6 +544,7 @@ const segmentAfter = (stop: (typeof routeStops)[number]) =>
    The capsule spans both tubes. */
 .stop-link {
   position: absolute;
+  pointer-events: auto;
   left: -11px;
   top: -18px;
   width: 22px;
@@ -523,10 +596,6 @@ a.vstop-link:hover .vstop-dot {
   height: 52px;
 }
 
-.portal--east {
-  transform: scaleX(-1);
-}
-
 a.stop-link:hover .portal,
 a.vstop-link:hover .vportal {
   stroke: var(--color-primary);
@@ -553,22 +622,6 @@ a.vstop-link:hover .vportal {
 .stop--above .stop-text {
   bottom: 60px;
   flex-direction: column-reverse;
-}
-
-/* Crowded stops hang their labels to one side of the capsule. */
-.stop--align-start .stop-text {
-  transform: none;
-  left: 0;
-  align-items: flex-start;
-  text-align: left;
-}
-
-.stop--align-end .stop-text {
-  transform: none;
-  left: auto;
-  right: 0;
-  align-items: flex-end;
-  text-align: right;
 }
 
 .stop:first-child.stop--below .stop-text {
@@ -601,15 +654,38 @@ a.vstop-link:hover .stop-label {
 .dim {
   position: absolute;
   top: 0;
+  height: 36px;
   display: flex;
+  align-items: flex-end;
   justify-content: center;
-  align-items: baseline;
-  gap: 6px;
-  padding: 0 10px 6px;
+  padding: 0 6px 6px;
   border-bottom: 1px solid var(--color-text-secondary);
   font-size: 12.5px;
   line-height: 1.2;
-  white-space: nowrap;
+}
+
+/* Wraps onto two lines when the section is narrow */
+.dim-text {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  column-gap: 6px;
+  text-align: center;
+}
+
+.dim--casing {
+  /* Runs off the card edge into Penn, like the tubes */
+  margin-right: -16px;
+  padding: 0 0 6px 4px;
+  border-bottom-style: dashed;
+}
+
+.dim--casing::after {
+  display: none;
+}
+
+a.dim-label:hover {
+  color: var(--color-primary);
 }
 
 /* End ticks */
@@ -700,10 +776,6 @@ a.vstop-link:hover .stop-label {
   height: 24px;
 }
 
-.vportal--east {
-  transform: scaleY(-1);
-}
-
 .vstop--river {
   background: var(--river-waves) 0 0 / 40px 20px, var(--color-river);
 }
@@ -787,7 +859,40 @@ a.vstop-link:visited {
 
 .vterm--west::before,
 .vterm--west::after {
+  background: var(--color-text-secondary);
+  opacity: 0.45;
+}
+
+/* County Road: existing NEC above, new surface track below */
+.vjunction {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+}
+
+.vjunction::before,
+.vjunction::after {
+  background:
+    linear-gradient(transparent 0 50%, var(--color-map-line) 50%),
+    linear-gradient(color-mix(in srgb, var(--color-text-secondary), transparent 55%) 0 50%, transparent 50%);
+  opacity: 1;
+}
+
+.vjunction-text {
+  flex: 1;
+  padding: 8px 12px 8px 0;
+  font-size: 13px;
+  line-height: 1.35;
+  color: var(--color-text-secondary);
+}
+
+.vseg--surface::before,
+.vseg--surface::after {
   background: var(--color-map-line);
+}
+
+.vcasing {
+  background: color-mix(in srgb, var(--color-map-line), transparent 88%);
 }
 
 .vterm-text {
@@ -962,7 +1067,8 @@ a.vstop-link:visited {
   }
 }
 
-@media (max-width: 960px) {
+/* Below this the to-scale Manhattan end gets too crowded for labels. */
+@media (max-width: 1080px) {
   .strip {
     display: none;
   }
