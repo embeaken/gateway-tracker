@@ -39,9 +39,6 @@ function toggleExplainer() {
         <section id="cameras" class="cams" aria-labelledby="cams-title">
           <div class="section-head">
             <h2 id="cams-title" class="section-title">Live from the sites</h2>
-            <p class="section-meta">
-              {{ projects.length }} live views, west to east, via EarthCam
-            </p>
           </div>
 
           <div class="cam-grid">
@@ -102,12 +99,6 @@ function toggleExplainer() {
 .section-title {
   font-size: 32px;
   line-height: 1.1;
-}
-
-.section-meta {
-  margin: 0;
-  font-size: 13px;
-  color: var(--color-text-secondary);
 }
 
 /* One column: every camera full width so EarthCam serves its interactive

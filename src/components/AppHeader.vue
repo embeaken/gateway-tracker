@@ -5,11 +5,10 @@ import BrandMark from './BrandMark.vue'
 <template>
   <header class="app-header">
     <div class="container header-content">
-      <a href="#" class="brand-lockup" aria-label="hudson.tube home">
+      <a href="/" class="brand-lockup" aria-label="hudson.tube home">
         <BrandMark class="brand-icon" />
         <span>
           <span class="brand-name">hudson.tube</span>
-          <span class="brand-subtitle">Hudson River Tunnel tracker</span>
         </span>
       </a>
 
@@ -51,8 +50,7 @@ import BrandMark from './BrandMark.vue'
   color: var(--color-accent);
 }
 
-.brand-name,
-.brand-subtitle {
+.brand-name {
   display: block;
 }
 
@@ -61,14 +59,6 @@ import BrandMark from './BrandMark.vue'
   font-size: 23px;
   font-weight: var(--font-weight-semibold);
   line-height: 1;
-}
-
-.brand-subtitle {
-  margin-top: 4px;
-  color: rgba(255, 255, 255, 0.68);
-  font-size: 12px;
-  font-weight: var(--font-weight-medium);
-  letter-spacing: 0.02em;
 }
 
 @media (max-width: 640px) {
@@ -88,10 +78,5 @@ import BrandMark from './BrandMark.vue'
   .brand-name {
     font-size: 20px;
   }
-
-  .brand-subtitle {
-    display: none;
-  }
-
 }
 </style>

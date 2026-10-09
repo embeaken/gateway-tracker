@@ -253,7 +253,6 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
       <h2 class="timeline-title">
         Updates from the <abbr class="tooltip" title="Gateway Development Commission">GDC</abbr>
       </h2>
-      <p class="kicker">Photos · posts · press · notices</p>
     </div>
 
     <!-- Timeline feed grouped by date -->

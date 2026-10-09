@@ -182,7 +182,7 @@ const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && 
               <div class="tbm" :class="[`tbm--${m.lane}`, `tbm--${m.status}`]" :style="{ left: m.x }">
                 <span class="tbm-body"></span>
                 <span class="tbm-label">
-                  {{ m.tbm.label }}<template v-if="m.status === 'upcoming'"> · soon</template>
+                  {{ m.tbm.label }}
                 </span>
               </div>
             </template>
