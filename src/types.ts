@@ -20,8 +20,8 @@ export type RouteSegment = {
   label: string
   fromFt: number
   toFt: number
-  kind: 'surface' | 'bored' | 'casing'
-  /** Shown instead of a computed length (e.g. "~1.5 mi"); null hides the length */
+  kind: 'bored' | 'casing'
+  /** Shown instead of the computed length; null hides it */
   lengthLabel?: string | null
   /** Project id whose camera this section links to */
   cam?: string

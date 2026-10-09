@@ -1,20 +1,14 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { routeStops, routeSegments, PALISADES_DRIVE, ROUTE } from "../assets/data";
 import { useTbmProgress, formatFt, formatPct, formatMonth } from "../useTbmProgress";
 
-// Feet along the route → percent of the track width. Tunnel (portal → Penn) is
-// drawn to scale; the NJ Surface Alignment west of the portal is compressed
-// into a fixed slice so the tunnel gets the room.
-const STUB = 2; // track running in from the card edge
-const NJ_SLICE = 15;
-const pos = (ft: number) =>
-  ft <= 0
-    ? STUB + (NJ_SLICE * (ft - ROUTE.westFt)) / -ROUTE.westFt
-    : STUB + NJ_SLICE + ((100 - STUB - NJ_SLICE) * ft) / ROUTE.eastFt;
+// Feet along the tunnel → percent of the track width, drawn to scale. A short
+// stub of surface track runs in from the left edge to the portal.
+const STUB = 9;
+const pos = (ft: number) => STUB + ((100 - STUB) * ft) / ROUTE.eastFt;
 
 const PORTAL = pos(0);
-const SCALE_BREAK = pos(ROUTE.westFt / 2);
 const RIVER_FROM = pos(ROUTE.riverFromFt);
 const RIVER_TO = pos(ROUTE.riverToFt);
 
@@ -32,6 +26,44 @@ const segments = routeSegments.map((seg) => ({
 const drive = segments.find((seg) => seg.id === "palisades")!;
 const casing = segments.find((seg) => seg.kind === "casing")!;
 const dimSegments = segments.filter((seg) => seg.kind !== "casing");
+
+// --- Hit areas -------------------------------------------------------------
+// Every site gets a full-height column centred on its marker, up to HALF px
+// each side, but never past the midpoint to its neighbour. The casing's anchor
+// is the middle of its band (12th Ave shaft → card edge).
+type Anchor = { pct: number; px: number };
+const HALF = 130;
+const at = (a: Anchor) => `calc(${a.pct}% + ${a.px}px)`;
+const mid = (a: Anchor, b: Anchor): Anchor => ({ pct: (a.pct + b.pct) / 2, px: (a.px + b.px) / 2 });
+
+const sites = [
+  ...routeStops.map((stop) => ({
+    id: stop.id,
+    label: stop.label,
+    href: stop.cams.length ? `#cam-${stop.cams[0]}` : undefined,
+    anchor: { pct: pos(stop.ft), px: 0 } as Anchor,
+  })),
+  {
+    id: casing.id,
+    label: casing.label,
+    href: casing.href,
+    anchor: { pct: (casing.left + 100) / 2, px: 8 } as Anchor,
+  },
+];
+
+const hits = sites.map((site, i) => {
+  const prev = sites[i - 1];
+  const next = sites[i + 1];
+  const left = prev
+    ? `max(${at(mid(prev.anchor, site.anchor))}, calc(${site.anchor.pct}% - ${HALF - site.anchor.px}px))`
+    : `max(-16px, calc(${site.anchor.pct}% - ${HALF}px))`;
+  const right = next
+    ? `min(${at(mid(site.anchor, next.anchor))}, calc(${site.anchor.pct}% + ${HALF + site.anchor.px}px))`
+    : "calc(100% + 16px)";
+  return { ...site, left, width: `calc(${right} - ${left})` };
+});
+
+const hovered = ref<string | null>(null);
 
 const { progress } = useTbmProgress();
 
@@ -62,10 +94,7 @@ const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && 
   <section id="route" class="route" aria-labelledby="route-title">
     <div class="container">
       <div class="route-head">
-        <h2 id="route-title" class="route-title">The route</h2>
-        <p class="route-note">
-          Two new tracks, west to east · tunnel drawn to scale · select a site to see its camera
-        </p>
+        <h2 id="route-title" class="route-title">Construction map</h2>
       </div>
 
       <div class="route-card">
@@ -93,8 +122,7 @@ const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && 
             <!-- New tracks: on the surface to the portal (solid), then in tunnel (dashed) -->
             <div class="surface tube--north" :style="{ width: `calc(${PORTAL}% + 16px)` }"></div>
             <div class="surface tube--south" :style="{ width: `calc(${PORTAL}% + 16px)` }"></div>
-            <div class="scale-break" :style="{ left: `${SCALE_BREAK}%` }"></div>
-            <div class="tube tube--north" :style="{ left: `${PORTAL}%` }"></div>
+                        <div class="tube tube--north" :style="{ left: `${PORTAL}%` }"></div>
             <div class="tube tube--south" :style="{ left: `${PORTAL}%` }"></div>
 
             <!-- Bored so far (estimated) + machine position -->
@@ -114,33 +142,53 @@ const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && 
             </template>
           </div>
 
-          <!-- Sites. Each link is one padded box around its marker and label. -->
-          <ol class="stops">
+          <!-- Sites: markers and labels (visual only; the hit columns below are the links) -->
+          <ol class="stops" aria-hidden="true">
             <li
               v-for="stop in routeStops"
               :key="stop.id"
               class="stop"
-              :class="`stop--${stop.side}`"
+              :class="[`stop--${stop.side}`, hovered === stop.id && 'stop--hover']"
               :style="{ left: `${pos(stop.ft)}%` }"
             >
-              <component :is="camHref(stop) ? 'a' : 'div'" :href="camHref(stop)" class="stop-link">
+              <span class="stop-box">
                 <span class="stop-label">{{ stop.label }}</span>
-                <span class="stop-marker" aria-hidden="true">
+                <span class="stop-marker">
                   <!-- Tunnel portal: wing walls splay toward the open-air side -->
                   <svg v-if="stop.ft === 0" class="portal" viewBox="-12 -26 24 52">
                     <path d="M0 -11 V-19 L-8 -26 M0 11 V19 L-8 26" />
                   </svg>
                   <span v-else class="stop-dot"></span>
                 </span>
-              </component>
+              </span>
             </li>
-            <li class="stop stop--below stop--casing" :style="{ left: `${casing.left}%` }">
-              <a :href="casing.href" class="stop-link">
+            <li
+              class="stop stop--below stop--casing"
+              :class="hovered === casing.id && 'stop--hover'"
+              :style="{ left: `${casing.left}%` }"
+            >
+              <span class="stop-box">
                 <span class="stop-label">{{ casing.label }}</span>
-                <span class="stop-marker" aria-hidden="true"></span>
-              </a>
+                <span class="stop-marker"></span>
+              </span>
             </li>
           </ol>
+
+          <!-- Hit columns: one full-height link per site -->
+          <div class="hits">
+            <a
+              v-for="hit in hits"
+              :key="hit.id"
+              class="hit"
+              :href="hit.href"
+              :aria-label="`${hit.label} camera`"
+              :style="{ left: hit.left, width: hit.width }"
+              @mouseenter="hovered = hit.id"
+              @mouseleave="hovered = null"
+              @focus="hovered = hit.id"
+              @blur="hovered = null"
+            ></a>
+          </div>
 
           <!-- Construction sections, dimensioned like an engineering drawing -->
           <ol class="dims">
@@ -163,13 +211,6 @@ const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && 
         <ol class="vline">
           <li class="vstop vterm vterm--west" aria-hidden="true">
             <span class="vterm-text">↑ To Washington, DC</span>
-          </li>
-          <li class="vstop vseg vseg--surface">
-            <span class="vseg-text">
-              <span class="vseg-label">
-                {{ segments[0]!.label }} <span class="vseg-length tabular">· {{ segments[0]!.length }}</span>
-              </span>
-            </span>
           </li>
           <template v-for="stop in routeStops" :key="stop.id">
             <li
@@ -287,12 +328,6 @@ const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && 
   line-height: 1.1;
 }
 
-.route-note {
-  margin: 0;
-  font-size: 13px;
-  color: var(--color-text-secondary);
-}
-
 .route-card {
   border-radius: var(--radius-lg);
   background: var(--color-card-bg);
@@ -394,19 +429,6 @@ const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && 
 .surface {
   left: -16px;
   background: var(--color-map-line);
-  opacity: 0.75;
-}
-
-/* "Not to scale" break across the compressed NJ Surface Alignment */
-.scale-break {
-  position: absolute;
-  top: -15px;
-  width: 8px;
-  height: 30px;
-  margin-left: -4px;
-  background: var(--color-card-bg);
-  border-inline: 2px solid var(--color-map-line);
-  transform: skewX(-24deg);
   opacity: 0.75;
 }
 
@@ -513,9 +535,9 @@ const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && 
   height: 0;
 }
 
-/* One padded box per site: marker + label. The marker is centred on the track,
-   the label sits above or below, clear of the TBM tags. */
-.stop-link {
+/* Marker + label. The marker is centred on the track; the label sits above or
+   below, clear of the TBM tags. */
+.stop-box {
   position: absolute;
   left: 0;
   transform: translateX(-50%);
@@ -524,34 +546,37 @@ const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && 
   align-items: center;
   gap: 22px;
   padding: 8px 12px;
-  border-radius: 10px;
   color: var(--color-text-primary);
-  pointer-events: auto;
-  transition: background var(--transition-fast);
 }
 
-.stop--above .stop-link {
+.stop--above .stop-box {
   bottom: -26px;
 }
 
-.stop--below .stop-link {
+.stop--below .stop-box {
   top: -26px;
   flex-direction: column-reverse;
 }
 
-a.stop-link:hover,
-a.stop-link:visited {
-  color: var(--color-text-primary);
-  text-decoration: none;
+/* Full-height click/hover columns, one per site */
+.hits {
+  position: absolute;
+  z-index: 3;
+  inset: 0 16px;
+  pointer-events: none;
 }
 
-a.stop-link:hover {
-  background: color-mix(in srgb, var(--color-primary), transparent 91%);
+/* Invisible: hovering a column lights up its label and marker instead. */
+.hit {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  pointer-events: auto;
 }
 
-a.stop-link:focus-visible {
+.hit:focus-visible {
   outline: 2px solid var(--color-primary);
-  outline-offset: 0;
+  outline-offset: -2px;
 }
 
 .stop-marker {
@@ -575,7 +600,7 @@ a.stop-link:focus-visible {
   width: auto;
 }
 
-.stop--casing .stop-link {
+.stop--casing .stop-box {
   right: 0;
   transform: none;
   padding-inline: 6px;
@@ -594,7 +619,7 @@ a.stop-link:focus-visible {
   text-align: center;
 }
 
-a.stop-link:hover .stop-dot,
+.stop--hover .stop-dot,
 a.vstop-link:hover .vstop-dot {
   background: var(--color-primary);
 }
@@ -618,7 +643,7 @@ a.vstop-link:hover .vstop-dot {
   height: 52px;
 }
 
-a.stop-link:hover .portal,
+.stop--hover .portal,
 a.vstop-link:hover .vportal {
   stroke: var(--color-primary);
 }
@@ -631,7 +656,7 @@ a.vstop-link:hover .vportal {
   white-space: nowrap;
 }
 
-a.stop-link:hover .stop-label,
+.stop--hover .stop-label,
 a.vstop-link:hover .stop-label {
   color: var(--color-primary);
   text-decoration: underline;
@@ -842,11 +867,6 @@ a.vstop-link:visited {
 
 .vterm--west::before,
 .vterm--west::after {
-  background: var(--color-map-line);
-}
-
-.vseg--surface::before,
-.vseg--surface::after {
   background: var(--color-map-line);
 }
 

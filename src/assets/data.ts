@@ -84,8 +84,6 @@ export const projects: Project[] = [
 // Route geometry, in feet from the Tonnelle Avenue tunnel portal (west → east).
 //
 // Lengths are GDC's published figures:
-//   NJ Surface Alignment, County Road (Secaucus) → portal ... ~1.5 mi
-//     gatewayprogram.org/nj-surface-alignment.html
 //   Palisades Tunnel, portal → Hudson County Shaft ......... 5,100 ft
 //     gatewayprogram.org/palisades-tunnel-project.html
 //   Hudson River Tunnel Section, HC Shaft → 12th Ave Shaft . ~7,250 ft
@@ -102,7 +100,6 @@ export const projects: Project[] = [
 //   gatewayprogram.org/wp-content/uploads/2026/04/April-2026-Board-Meeting-Public-Presentation.pdf
 // ---------------------------------------------------------------------------
 
-const NJ_SURFACE_FT = 1.5 * 5280; // ~7,920
 const HC_SHAFT_FT = 5100;
 const TWELFTH_AVE_SHAFT_FT = HC_SHAFT_FT + 7250; // 12,350
 const MANHATTAN_BULKHEAD_FT = HC_SHAFT_FT + 6965; // 12,065 (profile)
@@ -110,8 +107,6 @@ const CASING_START_FT = MANHATTAN_BULKHEAD_FT + 700; // 12,765
 const TENTH_AVE_FT = CASING_START_FT + 500 + 800; // ~14,065
 
 export const ROUTE = {
-  /** County Road, Secaucus: west end of the NJ Surface Alignment (the NEC widens from 2 to 4 tracks) */
-  westFt: -NJ_SURFACE_FT,
   /** Tie-in to the Penn Station approach tracks, just east of 10th Ave */
   eastFt: TENTH_AVE_FT + 300,
   /** NJ waterfront (profile: ~1,480 ft east of the HC shaft) */
@@ -121,14 +116,6 @@ export const ROUTE = {
 
 /** Construction sections, west → east. */
 export const routeSegments: RouteSegment[] = [
-  {
-    id: "nj-surface",
-    label: "NJ Surface Alignment",
-    fromFt: -NJ_SURFACE_FT,
-    toFt: 0,
-    kind: "surface",
-    lengthLabel: "~1.5 mi",
-  },
   { id: "palisades", label: "Palisades Tunnel", fromFt: 0, toFt: HC_SHAFT_FT, kind: "bored" },
   {
     id: "hudson-river",
