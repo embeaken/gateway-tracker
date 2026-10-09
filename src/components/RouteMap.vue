@@ -1,19 +1,29 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { routeStops, PALISADES_DRIVE } from "../assets/data";
+import { routeStops, PALISADES_DRIVE, ROUTE } from "../assets/data";
 import { useTbmProgress, formatFt, formatPct, formatMonth } from "../useTbmProgress";
 
-// Schematic, not to scale. Zones are percentages of the route width.
-const RIVER_FROM = 44;
-const RIVER_TO = 64;
+// Drawn to scale: feet along the tunnel → percent of the track width, with a
+// small inset at each end for the terminal capsules.
+const INSET = 3;
+const pos = (ft: number) => INSET + ((100 - 2 * INSET) * ft) / ROUTE.lengthFt;
 
-const portal = routeStops.find((s) => s.id === PALISADES_DRIVE.from)!;
-const shaft = routeStops.find((s) => s.id === PALISADES_DRIVE.to)!;
+const RIVER_FROM = pos(ROUTE.riverFromFt);
+const RIVER_TO = pos(ROUTE.riverToFt);
+const DRIVE_TO = pos(PALISADES_DRIVE.lengthFt);
+
+const MILE = 5280;
+const mileTicks = Array.from({ length: Math.floor(ROUTE.lengthFt / MILE) + 1 }, (_, i) => ({
+  label: i === 0 ? "0" : i === 1 ? "1 mile" : `${i} miles`,
+  at: pos(i * MILE),
+}));
+
+const miles = (ft: number) => (ft === 0 ? "0" : (ft / MILE).toFixed(1));
 
 const { progress } = useTbmProgress();
 
-/** Map a 0–1 drive fraction onto the schematic route position (percent). */
-const driveAt = (fraction: number) => portal.at + (shaft.at - portal.at) * fraction;
+/** Map a 0–1 drive fraction onto the route position (percent). */
+const driveAt = (fraction: number) => pos(fraction * PALISADES_DRIVE.lengthFt);
 
 const markers = computed(() =>
   progress.value.map((p) => ({
@@ -35,13 +45,13 @@ const camLabel = (n: number) => (n === 1 ? "1 camera" : `${n} cameras`);
       <div class="route-head">
         <h2 id="route-title" class="route-title">The route</h2>
         <p class="route-note">
-          Two tubes, west to east · schematic, not to scale · select a stop to see its camera
+          Two tubes, west to east, drawn to scale · select a stop to see its camera
         </p>
       </div>
 
       <div class="route-card">
         <!-- Horizontal strip map (tablet / desktop) -->
-        <div class="strip" :style="{ '--river-from': `${RIVER_FROM}%`, '--river-to': `${RIVER_TO}%` }">
+        <div class="strip" :style="{ '--river-from': RIVER_FROM / 100, '--river-to': RIVER_TO / 100 }">
           <div class="zone-labels" aria-hidden="true">
             <span class="zone" :style="{ left: '0%' }">New Jersey</span>
             <span
@@ -50,14 +60,14 @@ const camLabel = (n: number) => (n === 1 ? "1 camera" : `${n} cameras`);
             >
               Hudson River
             </span>
-            <span class="zone" :style="{ left: `${RIVER_TO + 1}%` }">Manhattan</span>
+            <span class="zone zone--end">Manhattan</span>
           </div>
 
           <div class="river-band" aria-hidden="true"></div>
 
           <div class="track" aria-hidden="true">
             <!-- First drive highlight -->
-            <div class="drive" :style="{ left: `${portal.at}%`, width: `${shaft.at - portal.at}%` }"></div>
+            <div class="drive" :style="{ left: `${INSET}%`, width: `${DRIVE_TO - INSET}%` }"></div>
 
             <!-- Twin tubes: planned (dashed) -->
             <div class="tube tube--north"></div>
@@ -69,7 +79,7 @@ const camLabel = (n: number) => (n === 1 ? "1 camera" : `${n} cameras`);
                 v-if="m.status !== 'upcoming'"
                 class="bored"
                 :class="`bored--${m.lane}`"
-                :style="{ left: `${portal.at}%`, width: `${m.at - portal.at}%` }"
+                :style="{ left: `${INSET}%`, width: `${m.at - INSET}%` }"
               ></div>
               <div
                 class="tbm"
@@ -86,11 +96,11 @@ const camLabel = (n: number) => (n === 1 ? "1 camera" : `${n} cameras`);
 
           <ol class="stops">
             <li
-              v-for="(stop, i) in routeStops"
+              v-for="stop in routeStops"
               :key="stop.id"
               class="stop"
-              :class="[`stop--${stop.state}`, i % 2 ? 'stop--above' : 'stop--below']"
-              :style="{ left: `${stop.at}%` }"
+              :class="[`stop--${stop.state}`, `stop--${stop.side}`, `stop--align-${stop.align ?? 'center'}`]"
+              :style="{ left: `${pos(stop.ft)}%` }"
             >
               <component :is="camHref(stop) ? 'a' : 'div'" :href="camHref(stop)" class="stop-link">
                 <span class="stop-dot" aria-hidden="true"></span>
@@ -100,6 +110,12 @@ const camLabel = (n: number) => (n === 1 ? "1 camera" : `${n} cameras`);
                   <span v-if="stop.cams.length" class="stop-cams">{{ camLabel(stop.cams.length) }}</span>
                 </span>
               </component>
+            </li>
+          </ol>
+
+          <ol class="scale" aria-hidden="true">
+            <li v-for="tick in mileTicks" :key="tick.label" :style="{ left: `${tick.at}%` }">
+              {{ tick.label }}
             </li>
           </ol>
         </div>
@@ -117,11 +133,14 @@ const camLabel = (n: number) => (n === 1 ? "1 camera" : `${n} cameras`);
                   <span class="stop-label">{{ stop.label }}</span>
                   <span class="stop-sub">{{ stop.sublabel }}</span>
                 </span>
-                <span v-if="stop.cams.length" class="stop-cams">{{ camLabel(stop.cams.length) }}</span>
+                <span class="vstop-meta">
+                  <span class="vstop-mile tabular">mile {{ miles(stop.ft) }}</span>
+                  <span v-if="stop.cams.length" class="stop-cams">{{ camLabel(stop.cams.length) }}</span>
+                </span>
               </component>
             </li>
             <!-- The first drive, with machine positions -->
-            <li v-if="stop.id === PALISADES_DRIVE.from" class="vstop vdrive" aria-hidden="true">
+            <li v-if="stop.id === 'portal'" class="vstop vdrive" aria-hidden="true">
               <span
                 v-for="m in markers"
                 :key="m.tbm.id"
@@ -221,7 +240,7 @@ const camLabel = (n: number) => (n === 1 ? "1 camera" : `${n} cameras`);
   --track-y: 136px;
   --tube-gap: 7px; /* half the distance between tube centrelines */
   position: relative;
-  height: 274px;
+  height: 296px;
   border-bottom: 1px solid var(--color-border);
 }
 
@@ -229,8 +248,9 @@ const camLabel = (n: number) => (n === 1 ? "1 camera" : `${n} cameras`);
   position: absolute;
   top: 0;
   bottom: 0;
-  left: var(--river-from);
-  right: calc(100% - var(--river-to));
+  /* Same coordinate frame as .track (16px inset each side) */
+  left: calc(16px + (100% - 32px) * var(--river-from));
+  right: calc(16px + (100% - 32px) * (1 - var(--river-to)));
   background:
     repeating-linear-gradient(
       0deg,
@@ -262,6 +282,10 @@ const camLabel = (n: number) => (n === 1 ? "1 camera" : `${n} cameras`);
   color: var(--color-primary);
 }
 
+.zone--end {
+  right: 0;
+}
+
 .track {
   position: absolute;
   left: 16px;
@@ -278,7 +302,7 @@ const camLabel = (n: number) => (n === 1 ? "1 camera" : `${n} cameras`);
 }
 
 .tube {
-  left: 3%;
+  left: 3%; /* = INSET */
   right: 3%;
   background: repeating-linear-gradient(
     90deg,
@@ -424,7 +448,8 @@ a.vstop-link:hover .vstop-dot {
 .stop-text {
   position: absolute;
   left: 11px;
-  width: 190px;
+  width: max-content;
+  max-width: 210px;
   transform: translateX(-50%);
   display: flex;
   flex-direction: column;
@@ -443,15 +468,15 @@ a.vstop-link:hover .vstop-dot {
   flex-direction: column-reverse;
 }
 
-/* Endpoints hug the edges so labels don't clip */
-.stop:first-child .stop-text {
+/* Crowded stops hang their labels to one side of the capsule. */
+.stop--align-start .stop-text {
   transform: none;
   left: 0;
   align-items: flex-start;
   text-align: left;
 }
 
-.stop:last-child .stop-text {
+.stop--align-end .stop-text {
   transform: none;
   left: auto;
   right: 0;
@@ -488,6 +513,28 @@ a.vstop-link:hover .stop-label {
   font-size: 12px;
   font-weight: var(--font-weight-semibold);
   color: var(--color-primary);
+  white-space: nowrap;
+}
+
+.scale {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 10px;
+  height: 16px;
+  list-style: none;
+  border-top: 1px solid var(--color-border);
+}
+
+.scale li {
+  position: absolute;
+  top: 0;
+  padding: 3px 0 0 5px;
+  border-left: 1px solid var(--color-text-secondary);
+  height: 14px;
+  font-size: 10.5px;
+  line-height: 1;
+  color: var(--color-text-secondary);
   white-space: nowrap;
 }
 
@@ -628,6 +675,22 @@ a.vstop-link:visited {
   color: var(--color-accent-ink);
 }
 
+.vstop-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.vstop-mile {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+.vstop-meta .stop-cams {
+  margin: 0;
+}
+
 .vstop .stop-label {
   font-size: 18px;
   white-space: normal;
@@ -753,7 +816,7 @@ a.vstop-link:visited {
   }
 }
 
-@media (max-width: 820px) {
+@media (max-width: 960px) {
   .strip {
     display: none;
   }

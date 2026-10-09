@@ -80,55 +80,102 @@ export const projects: Project[] = [
   },
 ];
 
-// West → east. Positions are schematic, not to scale.
+// ---------------------------------------------------------------------------
+// Route geometry, in feet from the North Bergen portal (west → east).
+//
+// Segment lengths are GDC's published figures:
+//   Palisades Tunnel, portal → Hudson County Shaft ........ 5,100 ft
+//     gatewayprogram.org/palisades-tunnel-project.html
+//   Hudson River Tunnel Section, HC Shaft → 12th Ave Shaft  ~7,250 ft
+//     gatewayprogram.org/wp-content/uploads/2026/04/P1C-Contract-Award-Press-Release.pdf
+//   Manhattan Tunnel, Manhattan bulkhead → casing ........... ~700 ft
+//     gatewayprogram.org/manhattan-tunnel-project.html
+//   Hudson Yards Concrete Casing §3, → 11th Ave ............. ~500 ft
+//   Hudson Yards Concrete Casing §1–2, 11th → 10th Ave ...... ~1 block
+//     gatewayprogram.org/hudson-yards-concrete-casing-section-3.html
+//
+// Positions *within* the river section (NJ shoreline, ground stabilization
+// zone, Manhattan bulkhead) are measured off GDC's "Tunneling Under the Hudson
+// River" profile, April 2026 board presentation, slide 14:
+//   gatewayprogram.org/wp-content/uploads/2026/04/April-2026-Board-Meeting-Public-Presentation.pdf
+// ---------------------------------------------------------------------------
+
+const HC_SHAFT_FT = 5100;
+const TWELFTH_AVE_SHAFT_FT = HC_SHAFT_FT + 7250; // 12,350
+const MANHATTAN_BULKHEAD_FT = HC_SHAFT_FT + 6965; // 12,065 (profile)
+const CASING_START_FT = MANHATTAN_BULKHEAD_FT + 700; // 12,765
+const ELEVENTH_AVE_FT = CASING_START_FT + 500; // 13,265
+const TENTH_AVE_FT = ELEVENTH_AVE_FT + 800; // ~14,065
+
+export const ROUTE = {
+  lengthFt: TENTH_AVE_FT + 300, // tie-in to the Penn Station approach tracks
+  /** NJ waterfront (profile: ~1,480 ft east of the HC shaft) */
+  riverFromFt: HC_SHAFT_FT + 1480,
+  riverToFt: MANHATTAN_BULKHEAD_FT,
+  sourceUrl:
+    "https://www.gatewayprogram.org/wp-content/uploads/2026/04/April-2026-Board-Meeting-Public-Presentation.pdf",
+} as const;
+
 export const routeStops: RouteStop[] = [
   {
     id: "portal",
     label: "Palisades portal",
     sublabel: "North Bergen, NJ",
-    at: 3,
+    ft: 0,
     cams: ["palisades-tunnel", "launch-box"],
     state: "active",
+    side: "below",
+    align: "start",
   },
   {
     id: "hudson-county-shaft",
     label: "Hudson County shaft",
     sublabel: "Weehawken / Hoboken",
-    at: 36,
+    ft: HC_SHAFT_FT,
     cams: ["hudson-county-shaft"],
     state: "active",
+    side: "above",
   },
   {
     id: "river",
     label: "Under the Hudson",
     sublabel: "Ground stabilization",
-    at: 54,
+    // Midpoint of the Hudson River Ground Stabilization zone (profile)
+    ft: HC_SHAFT_FT + 5735,
     cams: ["river"],
     state: "active",
+    side: "below",
+    align: "end",
   },
   {
     id: "manhattan-shaft",
-    label: "Manhattan shaft",
-    sublabel: "12th Ave & 30th St",
-    at: 72,
+    label: "12th Ave shaft",
+    sublabel: "W 30th St",
+    ft: TWELFTH_AVE_SHAFT_FT,
     cams: ["manhattan-shaft"],
     state: "active",
+    side: "above",
+    align: "end",
   },
   {
     id: "hudson-yards",
-    label: "Hudson Yards casing",
-    sublabel: "11th–12th Aves",
-    at: 85,
+    label: "Hudson Yards",
+    sublabel: "Concrete casing",
+    ft: (CASING_START_FT + ELEVENTH_AVE_FT) / 2,
     cams: ["hudson-yards"],
     state: "active",
+    side: "below",
+    align: "start",
   },
   {
     id: "penn",
     label: "Penn Station",
-    sublabel: "Midtown Manhattan",
-    at: 97,
+    sublabel: "Tracks tie in",
+    ft: ROUTE.lengthFt,
     cams: [],
     state: "endpoint",
+    side: "above",
+    align: "end",
   },
 ];
 
@@ -142,8 +189,6 @@ export const PALISADES_DRIVE = {
   lengthFt: 5100,
   /** GDC: "roughly 30 feet of tunnel per day, including scheduled pauses for maintenance" */
   rateFtPerDay: 30,
-  from: "portal",
-  to: "hudson-county-shaft",
   sourceUrl:
     "https://www.gatewayprogram.org/wp-content/uploads/2026/10/TBM-Start-of-Mining-Press-Release.pdf",
 } as const;

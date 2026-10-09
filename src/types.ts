@@ -19,10 +19,13 @@ export type RouteStop = {
   id: string
   label: string
   sublabel: string
-  /** Position along the route, 0–100 */
-  at: number
+  /** Distance along the new tunnel from the North Bergen portal, in feet */
+  ft: number
   /** Project ids whose cameras live at this stop */
   cams: string[]
   /** Visual state of the stop */
   state: 'active' | 'endpoint'
+  /** Label placement on the horizontal map (the Manhattan end is crowded) */
+  side: 'above' | 'below'
+  align?: 'start' | 'center' | 'end'
 }

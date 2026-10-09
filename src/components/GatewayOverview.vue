@@ -1,12 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from "vue";
-import {
-  images,
-  blueskyPosts,
-  pressReleases,
-  constructionNotices,
-  youtubeVideos,
-} from "../assets/activityData";
+import { images } from "../assets/activityData";
 
 defineProps<{ explainerOpen: boolean }>();
 const emit = defineEmits<{ (e: "toggle-explainer"): void }>();
@@ -38,26 +32,11 @@ const transformImage = (url: string, width: number) => {
   return `/.netlify/images?${params.toString()}`;
 };
 
-// Most recent item across every source: a "last updated" trust signal.
-const lastUpdated = formatDate(
-  [...images, ...blueskyPosts, ...pressReleases, ...constructionNotices, ...youtubeVideos]
-    .map((item) => item.date)
-    .reduce((latest, d) => (parseDate(d) > parseDate(latest) ? d : latest)),
-);
-
 const heroPhotos = computed(() =>
   [...images].sort((a, b) => parseDate(b.date).getTime() - parseDate(a.date).getTime()).slice(0, 5),
 );
 
 const activePhoto = computed(() => heroPhotos.value[activePhotoIndex.value]);
-
-// Scale of the machines (GDC press release, Oct 8 2026).
-const stats = [
-  { value: "28′ 8″", label: "cutterhead diameter of each tunnel boring machine" },
-  { value: "1,680+ tons", label: "weight of each machine and its trailing gear" },
-  { value: "~500 ft", label: "from cutterhead to the end of the trailing gantries" },
-  { value: "1910", label: "year the tunnels being replaced opened" },
-];
 
 const goTo = (index: number) => {
   activePhotoIndex.value = index;
@@ -83,10 +62,6 @@ onUnmounted(() => {
   <section class="overview">
     <div class="container overview-grid">
       <div class="overview-copy">
-        <p class="kicker eyebrow">
-          Hudson Tunnel Project <span aria-hidden="true">·</span> Updated {{ lastUpdated }}
-        </p>
-
         <h1>America is building a big new infrastructure project. <em>Yes, really.</em></h1>
 
         <p class="lede">
@@ -96,21 +71,18 @@ onUnmounted(() => {
           everything is terrible.
         </p>
 
-        <div class="cta-row">
-          <a href="#cameras" class="cta cta-primary">Watch the live cameras</a>
-          <button
-            type="button"
-            class="cta cta-secondary"
-            :aria-expanded="explainerOpen"
-            aria-controls="overview-explainer"
-            @click="emit('toggle-explainer')"
-          >
-            {{ explainerOpen ? "Hide the backstory" : "What's going on?" }}
-            <svg class="cta-chevron" :class="{ open: explainerOpen }" viewBox="0 0 10 6" aria-hidden="true">
-              <path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-          </button>
-        </div>
+        <button
+          type="button"
+          class="disclosure"
+          :aria-expanded="explainerOpen"
+          aria-controls="overview-explainer"
+          @click="emit('toggle-explainer')"
+        >
+          {{ explainerOpen ? "Hide the backstory" : "What's going on?" }}
+          <svg class="disclosure-chevron" :class="{ open: explainerOpen }" viewBox="0 0 10 6" aria-hidden="true">
+            <path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
       </div>
 
       <figure
@@ -152,20 +124,12 @@ onUnmounted(() => {
       </figure>
     </div>
 
-    <div class="container">
-      <dl class="stats">
-        <div v-for="stat in stats" :key="stat.label" class="stat">
-          <dt class="stat-value tabular">{{ stat.value }}</dt>
-          <dd class="stat-label">{{ stat.label }}</dd>
-        </div>
-      </dl>
-    </div>
   </section>
 </template>
 
 <style scoped>
 .overview {
-  padding-bottom: var(--spacing-lg);
+  padding-bottom: 0;
 }
 
 .overview-grid {
@@ -174,17 +138,12 @@ onUnmounted(() => {
   grid-template-columns: minmax(0, 1fr) minmax(440px, 1fr);
   gap: clamp(var(--spacing-lg), 4vw, var(--spacing-3xl));
   padding-top: var(--spacing-2xl);
-  padding-bottom: var(--spacing-xl);
+  padding-bottom: var(--spacing-lg);
 }
 
 .overview-copy {
   min-width: 0;
   max-width: 660px;
-}
-
-.eyebrow {
-  margin: 0 0 var(--spacing-sm);
-  color: var(--color-accent-ink);
 }
 
 .overview h1 {
@@ -212,81 +171,40 @@ onUnmounted(() => {
   text-wrap: pretty;
 }
 
-.cta-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: var(--spacing-lg);
-}
-
-.cta {
+/* A quiet disclosure, not a call to action. */
+.disclosure {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  min-height: 46px;
-  padding: 0 20px;
-  border-radius: var(--radius-md);
-  font-family: inherit;
-  font-size: 15px;
+  gap: 8px;
+  margin-top: var(--spacing-md);
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  color: var(--color-primary);
+  font: inherit;
+  font-size: 16px;
   font-weight: var(--font-weight-semibold);
   cursor: pointer;
-  transition:
-    background var(--transition-base),
-    border-color var(--transition-base),
-    color var(--transition-base);
 }
 
-/* Inverts with the theme: ink-on-concrete in light, white-on-ink in dark. */
-.cta-primary,
-.cta-primary:visited {
-  border: 1px solid var(--color-primary);
-  background: var(--color-primary);
-  color: white;
+.disclosure:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
-.cta-primary:hover {
-  color: white;
-  text-decoration: none;
-  border-color: var(--color-primary-dark);
-  background: var(--color-primary-dark);
-}
-
-/* Dark: the light-blue primary needs dark text. */
-[data-theme="dark"] .cta-primary,
-[data-theme="dark"] .cta-primary:hover {
-  color: var(--color-navy);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .cta-primary,
-  :root:not([data-theme="light"]) .cta-primary:hover {
-    color: var(--color-navy);
-  }
-}
-
-.cta-secondary {
-  border: 1px solid color-mix(in srgb, var(--color-text-primary), transparent 75%);
-  background: transparent;
-  color: var(--color-text-primary);
-}
-
-.cta-secondary:hover {
-  border-color: var(--color-primary);
-  background: var(--color-primary-muted);
-}
-
-.cta:focus-visible {
+.disclosure:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
+  border-radius: 2px;
 }
 
-.cta-chevron {
+.disclosure-chevron {
   width: 10px;
   height: 6px;
   transition: transform var(--transition-base);
 }
 
-.cta-chevron.open {
+.disclosure-chevron.open {
   transform: rotate(180deg);
 }
 
@@ -388,48 +306,6 @@ onUnmounted(() => {
   background: white;
 }
 
-/* --- Stats --- */
-
-.stats {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  border-top: 3px solid var(--color-accent);
-}
-
-.stat {
-  padding: 14px var(--spacing-md) 0 0;
-}
-
-.stat + .stat {
-  padding-left: var(--spacing-md);
-  border-left: 1px solid var(--color-border);
-}
-
-.stat-value {
-  font-family: var(--font-family-display);
-  font-size: 44px;
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-navy);
-  line-height: 1;
-}
-
-[data-theme="dark"] .stat-value {
-  color: var(--color-text-primary);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .stat-value {
-    color: var(--color-text-primary);
-  }
-}
-
-.stat-label {
-  margin-top: 6px;
-  font-size: 14px;
-  line-height: 1.35;
-  color: var(--color-text-secondary);
-}
-
 @media (max-width: 1100px) {
   .overview-grid {
     grid-template-columns: 1fr;
@@ -452,20 +328,6 @@ onUnmounted(() => {
 
   .lede {
     font-size: 16px;
-  }
-
-  .stats {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    row-gap: var(--spacing-md);
-  }
-
-  .stat:nth-child(3) {
-    padding-left: 0;
-    border-left: 0;
-  }
-
-  .stat-value {
-    font-size: 32px;
   }
 }
 
