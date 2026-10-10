@@ -1,14 +1,11 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { routeStops, routeSegments, PALISADES_DRIVE, ROUTE } from "../assets/data";
+import { formatMonthYear } from "../dates";
 import { useTbmProgress, formatFt, formatPct } from "../useTbmProgress";
 
-// ---------------------------------------------------------------------------
-// Side-view profile of the route, west → east. Horizontal is to scale (feet
-// along the tunnel); vertical is stylised and heavily exaggerated. Everything
-// is laid out in real pixels so the SVG drawing and the HTML labels share one
-// coordinate system.
-// ---------------------------------------------------------------------------
+// Side view of the route, west → east. Horizontal is to scale; vertical is
+// stylised. The SVG and the HTML labels share one pixel coordinate system.
 
 const strip = ref<HTMLElement | null>(null);
 const W = ref(1200);
@@ -29,25 +26,30 @@ const SURF = 148;
 /** Half the distance between the two tube centrelines */
 const GAP = 7;
 
-/** Width of open-air track left of the portal */
+const drive = routeSegments.find((seg) => seg.id === "palisades")!;
+const river = routeSegments.find((seg) => seg.id === "hudson-river")!;
+const casing = routeSegments.find((seg) => seg.kind === "casing")!;
+const portal = routeStops.find((stop) => stop.ft === 0)!;
+const stabilization = routeStops.find((stop) => stop.id === "river")!;
+const shafts = routeStops.filter((stop) => stop.id.endsWith("shaft"));
+
+/** x0 leaves room for open-air track west of the portal */
 const x0 = computed(() => Math.max(36, W.value * 0.03));
 const x = (ft: number) => x0.value + ((W.value - x0.value) * ft) / ROUTE.eastFt;
 
 type Pt = [ft: number, y: number];
 
-// Tunnel centreline depth: enters the Palisades just below grade, descends to
-// the Hudson County shaft, bottoms out under the river, climbs to Manhattan.
+// Tunnel centreline: just below grade at the portal, bottoming out under the river.
 const TUNNEL: Pt[] = [
   [0, SURF - 10],
-  [PALISADES_DRIVE.lengthFt, SURF + 46],
+  [drive.toFt, SURF + 46],
   [ROUTE.riverFromFt, SURF + 58],
   [9600, SURF + 82],
-  [routeSegments[2]!.fromFt, SURF + 52],
+  [casing.fromFt, SURF + 52],
   [ROUTE.eastFt, SURF + 30],
 ];
 
-// Monotone cubic (Fritsch–Carlson) through the points: a smooth line with no
-// overshoot, so the low point under the river stays where it's put.
+// Monotone cubic (Fritsch–Carlson) tangents: smooth, with no overshoot.
 const tangents = (() => {
   const n = TUNNEL.length;
   const d = TUNNEL.slice(1).map(([f, y], i) => (y - TUNNEL[i]![1]) / (f - TUNNEL[i]![0]));
@@ -72,6 +74,7 @@ const tangents = (() => {
   return m;
 })();
 
+/** Tunnel centreline y at a distance along the route */
 const cy = (ft: number) => {
   if (ft <= TUNNEL[0]![0]) return TUNNEL[0]![1];
   for (let i = 1; i < TUNNEL.length; i++) {
@@ -93,13 +96,13 @@ const cy = (ft: number) => {
   return TUNNEL[TUNNEL.length - 1]![1];
 };
 
-/** Slope of the tunnel at a point, in degrees (screen space) */
+/** Slope of the tunnel in screen space, degrees */
 const slope = (ft: number) => {
   const d = 50;
   return (Math.atan2(cy(ft + d) - cy(ft - d), x(ft + d) - x(ft - d)) * 180) / Math.PI;
 };
 
-/** Polyline along the tunnel between two points, offset vertically by dy */
+/** Polyline points along the tunnel between two distances, offset by dy */
 const STEP_FT = 100;
 const along = (from: number, to: number, dy = 0) => {
   const fts = [from];
@@ -108,8 +111,7 @@ const along = (from: number, to: number, dy = 0) => {
   return fts.map((f) => `${x(f).toFixed(1)},${(cy(f) + dy).toFixed(1)}`).join(" L");
 };
 
-// Ground surface: flat Meadowlands, the Palisades ridge (cliff faces on both
-// sides), low ground to the shoreline, a lumpy riverbed, flat Manhattan.
+// Ground: the Palisades ridge, then low ground to the shore and the riverbed.
 const R0 = ROUTE.riverFromFt;
 const R1 = ROUTE.riverToFt;
 const PORTAL_FACE = SURF - 26;
@@ -127,8 +129,6 @@ const RIDGE: Pt[] = [
   [4880, SURF - 10],
   [5000, SURF - 1],
 ];
-// Deepest (and widest) where the river label sits; shallower toward the
-// state line and the Manhattan side.
 const RIVERBED: Pt[] = [
   [R0, SURF],
   [R0 + 160, SURF + 34],
@@ -142,8 +142,8 @@ const RIVERBED: Pt[] = [
 ];
 const WATER_DEPTH = 52;
 
-// The water's surface is the top row of the wave pattern: same 32px period,
-// tiles anchored to x = 0 and y = SURF, so the edge and the waves line up.
+// The water's surface traces the top row of the wave pattern (same period and
+// origin), so the edge and the waves line up.
 const WAVE = 32;
 const water = computed(() => {
   const from = x(R0);
@@ -159,28 +159,24 @@ const water = computed(() => {
   return { from, to, surface, body: `${surface} L${end},${bottom} L${start},${bottom} Z` };
 });
 
-
 const groundPath = computed(() => {
-  const pts = [...RIDGE, [PALISADES_DRIVE.lengthFt, SURF] as Pt, ...RIVERBED];
+  const pts = [...RIDGE, [drive.toFt, SURF] as Pt, ...RIVERBED];
   const p = (pt: Pt) => `${x(pt[0]).toFixed(1)},${pt[1]}`;
   return `M-2,${H + 2} L-2,${SURF} L${(x(0) - 3).toFixed(1)},${SURF} L${pts.map(p).join(" L")} L${W.value + 2},${SURF} L${W.value + 2},${H + 2} Z`;
 });
 
-const casing = routeSegments.find((seg) => seg.kind === "casing")!;
-const drive = routeSegments.find((seg) => seg.id === "palisades")!;
-const river = routeSegments.find((seg) => seg.id === "hudson-river")!;
-const shafts = routeStops.filter((stop) => stop.id.endsWith("shaft"));
-const portal = routeStops.find((stop) => stop.ft === 0)!;
-const stabilization = routeStops.find((stop) => stop.id === "river")!;
+const stateLineX = computed(() => (x(R0) + x(R1)) / 2 + 30);
 
-// Sites with a construction camera get a hover highlight (no link).
-const hasCam = (cams: string[] | string | undefined) => (Array.isArray(cams) ? cams.length > 0 : !!cams);
+// --- TBMs ---
 
-// --- TBMs ------------------------------------------------------------------
+const progress = useTbmProgress();
 
-const { progress } = useTbmProgress();
+const leadArrival = computed(() => {
+  const lead = progress.value.find((p) => p.status === "mining");
+  return lead?.arrival && { label: lead.tbm.label, month: formatMonthYear(lead.arrival) };
+});
 
-/** A machine at 0 ft still sits just inside the portal */
+/** Keep a machine at 0 ft visibly inside the portal */
 const MIN_INSIDE_PX = 22;
 
 const markers = computed(() => {
@@ -196,30 +192,23 @@ const markers = computed(() => {
       y: cy(ft) + dy,
       angle: slope(ft),
       bored: p.status === "upcoming" ? "" : `M${along(0, ft, dy)}`,
-      tag:
-        p.status === "upcoming"
-          ? "not started"
-          : p.status === "arrived"
-            ? "arrived"
-            : formatPct(p.fraction),
+      tag: p.status === "mining" ? formatPct(p.fraction) : p.status === "upcoming" ? "not started" : "arrived",
     };
   });
 });
 
-// --- Floating labels -------------------------------------------------------
-// Sites float in the sky with a pin down to what they name. Two tiers keep the
-// crowded Manhattan end readable.
+// --- Floating site labels, with a pin down to what they name ---
+// Two tiers keep the crowded Manhattan end readable.
 const TIER = { a: 58, b: 112 } as const;
-type Align = "center" | "start" | "end";
 type FloatLabel = {
   id: string;
   label: string;
   x: number;
   tier: keyof typeof TIER;
-  align: Align;
+  align: "center" | "start" | "end";
   /** y the pin runs down to */
   to: number;
-  /** Wrap onto two balanced lines at this width */
+  /** Wrap onto balanced lines at this width */
   wrapAt?: number;
 };
 
@@ -236,62 +225,55 @@ onMounted(() => {
 watch(W, () => nextTick(measureLabels));
 
 const labels = computed(() => {
-  const shaftTop = SURF - 4;
-  const list: FloatLabel[] = [
-    { id: portal.id, label: portal.label, x: x(0), tier: "a", align: "start" as Align, to: PORTAL_FACE },
-    ...shafts.map((s) => ({
-      id: s.id,
-      label: s.label,
-      x: x(s.ft),
-      tier: s.ft === PALISADES_DRIVE.lengthFt ? ("a" as const) : ("b" as const),
-      align: "center" as Align,
-      to: shaftTop,
-      // The Manhattan end is crowded: stack its name on two lines
-      wrapAt: s.ft === PALISADES_DRIVE.lengthFt ? undefined : 130,
-    })),
-    {
-      id: stabilization.id,
-      label: stabilization.label,
-      x: x(stabilization.ft),
-      tier: "a",
-      align: "center" as Align,
-      to: cy(stabilization.ft) - GAP - 12,
-    },
-    {
-      id: casing.id,
-      label: casing.label,
-      x: W.value - 28,
-      tier: "a",
-      align: "end" as Align,
-      to: cy(ROUTE.eastFt - 300) - 18,
-      wrapAt: 150,
-    },
-  ];
+  const portalLabel: FloatLabel = { id: portal.id, label: portal.label, x: x(0), tier: "a", align: "start", to: PORTAL_FACE };
+  const shaftLabels = shafts.map((s): FloatLabel => {
+    const nj = s.ft === drive.toFt;
+    return { id: s.id, label: s.label, x: x(s.ft), tier: nj ? "a" : "b", align: "center", to: SURF - 4, wrapAt: nj ? undefined : 130 };
+  });
+  const gs: FloatLabel = {
+    id: stabilization.id,
+    label: stabilization.label,
+    x: x(stabilization.ft),
+    tier: "a",
+    align: "center",
+    to: cy(stabilization.ft) - GAP - 12,
+  };
+  const cs: FloatLabel = {
+    id: casing.id,
+    label: casing.label,
+    x: W.value - 28,
+    tier: "a",
+    align: "end",
+    to: cy(ROUTE.eastFt - 300) - 18,
+    wrapAt: 150,
+  };
+
   // Ground stabilization shares a tier with the casing label: slide it left
-  // (over the open river) only as far as needed to keep a gap between them,
-  // and never so far that its pin leaves the label.
-  const gs = list.find((l) => l.id === stabilization.id)!;
-  const cs = list.find((l) => l.id === casing.id)!;
+  // just enough to clear it, but never so far its pin leaves the label.
+  let gsNudge = 0;
   const gsW = labelWidths.value[gs.id];
   const csW = labelWidths.value[cs.id];
-  const nudges: Record<string, number> = {};
   if (gsW && csW) {
-    const limit = cs.x + 12 - csW - 20;
-    const overlap = gs.x + gsW / 2 - limit;
-    if (overlap > 0) nudges[gs.id] = -Math.min(overlap, gsW / 2 - 16);
+    const overlap = gs.x + gsW / 2 - (cs.x + 12 - csW - 20);
+    if (overlap > 0) gsNudge = -Math.min(overlap, gsW / 2 - 16);
   }
-  return list.map((l) => ({ ...l, base: TIER[l.tier], nudge: nudges[l.id] ?? 0 }));
+
+  return [portalLabel, ...shaftLabels, gs, cs].map((l) => ({
+    ...l,
+    base: TIER[l.tier],
+    nudge: l === gs ? gsNudge : 0,
+  }));
 });
 
-// --- Hit areas -------------------------------------------------------------
-// Every site gets a full-height column centred on it, up to HALF px each side,
-// never past the midpoint to its neighbour.
+// --- Hover columns ---
+// Each site with a camera gets a full-height hover column, up to HALF px each
+// side and never past the midpoint to its neighbour.
 const HALF = 130;
 const hits = computed(() => {
   const sites = [
-    ...routeStops.map((stop) => ({ id: stop.id, cam: hasCam(stop.cams), at: x(stop.ft) })),
-    { id: drive.id, cam: hasCam(drive.cam), at: (x(drive.fromFt) + x(drive.toFt)) / 2 },
-    { id: casing.id, cam: hasCam(casing.cam), at: (x(casing.fromFt) + W.value) / 2 + 8 },
+    ...routeStops.map((stop) => ({ id: stop.id, cam: stop.cam, at: x(stop.ft) })),
+    { id: drive.id, cam: drive.cam, at: (x(drive.fromFt) + x(drive.toFt)) / 2 },
+    { id: casing.id, cam: casing.cam, at: (x(casing.fromFt) + W.value) / 2 + 8 },
   ]
     .filter((site) => site.cam)
     .sort((a, b) => a.at - b.at);
@@ -299,9 +281,9 @@ const hits = computed(() => {
   return sites.map((site, i) => {
     const prev = sites[i - 1];
     const next = sites[i + 1];
-    const left = Math.max(prev ? (prev.at + site.at) / 2 : 0, site.at - HALF);
-    const right = Math.min(next ? (site.at + next.at) / 2 : W.value, site.at + HALF);
-    return { ...site, left: i === 0 ? 0 : left, width: (i === sites.length - 1 ? W.value : right) - (i === 0 ? 0 : left) };
+    const left = prev ? Math.max((prev.at + site.at) / 2, site.at - HALF) : 0;
+    const right = next ? Math.min((site.at + next.at) / 2, site.at + HALF) : W.value;
+    return { id: site.id, left, width: right - left };
   });
 });
 
@@ -312,22 +294,19 @@ const glows = computed(() => [
   { id: casing.id, from: x(casing.fromFt) + 6, to: W.value + 4 },
 ]);
 
-// --- Mobile list -----------------------------------------------------------
-const segmentFrom = (ft: number) => routeSegments.find((seg) => seg.fromFt === ft && seg.kind !== "casing");
+// --- Mobile list: each stop, followed by the bored section that starts there ---
+const vrows = routeStops.map((stop) => ({
+  stop,
+  seg: routeSegments.find((seg) => seg.fromFt === stop.ft && seg.kind === "bored"),
+}));
 </script>
 
 <template>
   <section id="route" class="route" aria-labelledby="route-title">
+    <h2 id="route-title" class="sr-only">Construction map</h2>
     <div class="container">
-      <div class="route-head">
-        <!-- The page can swap in a live status headline (must keep id="route-title") -->
-        <slot name="head">
-          <h2 id="route-title" class="route-title">Construction map</h2>
-        </slot>
-      </div>
-
       <div class="route-card">
-        <!-- Side-view profile (tablet / desktop) -->
+        <!-- Side view (desktop) -->
         <div ref="strip" class="strip" :style="{ height: `${H}px` }">
           <svg class="profile" :width="W" :height="H" :viewBox="`0 0 ${W} ${H}`" aria-hidden="true">
             <defs>
@@ -350,7 +329,7 @@ const segmentFrom = (ft: number) => routeSegments.find((seg) => seg.fromFt === f
               </clipPath>
             </defs>
 
-            <!-- Water, then the ground over it (the riverbed shapes its bottom) -->
+            <!-- Water, then the ground over it (the riverbed shapes the water's bottom) -->
             <g clip-path="url(#rm-river)">
               <path class="water" :d="water.body" />
               <path class="water-waves" :d="water.body" />
@@ -358,7 +337,7 @@ const segmentFrom = (ft: number) => routeSegments.find((seg) => seg.fromFt === f
             </g>
             <path class="ground" :d="groundPath" />
 
-            <!-- Hudson River Ground Stabilization: treated soil around the tunnel line -->
+            <!-- Treated soil around the tunnel line -->
             <rect
               class="treated"
               :class="hovered === stabilization.id && 'treated--hover'"
@@ -370,14 +349,13 @@ const segmentFrom = (ft: number) => routeSegments.find((seg) => seg.fromFt === f
               rx="3"
             />
 
-            <!-- State line, mid-river -->
             <g class="state-line">
-              <line :x1="(x(R0) + x(R1)) / 2 + 30" :x2="(x(R0) + x(R1)) / 2 + 30" :y1="SURF - 10" :y2="SURF + 28" />
-              <text :x="(x(R0) + x(R1)) / 2 + 24" :y="SURF - 4" text-anchor="end">NJ</text>
-              <text :x="(x(R0) + x(R1)) / 2 + 36" :y="SURF - 4">NY</text>
+              <line :x1="stateLineX" :x2="stateLineX" :y1="SURF - 10" :y2="SURF + 28" />
+              <text :x="stateLineX - 6" :y="SURF - 4" text-anchor="end">NJ</text>
+              <text :x="stateLineX + 6" :y="SURF - 4">NY</text>
             </g>
 
-            <!-- Active work: the TBM drive and the Hudson Yards casing -->
+            <!-- Active work bands: the TBM drive and the casing -->
             <g clip-path="url(#rm-ground)">
               <path class="band" clip-path="url(#rm-inside)" :d="`M${along(drive.fromFt, drive.toFt)}`" />
             </g>
@@ -387,8 +365,7 @@ const segmentFrom = (ft: number) => routeSegments.find((seg) => seg.fromFt === f
             <g v-for="dy in [-GAP, GAP]" :key="dy">
               <path class="surface" :d="`M-4,${cy(0) + dy} L${x(0)},${cy(0) + dy}`" />
               <path class="tube" :d="`M${along(0, ROUTE.eastFt, dy)}`" />
-              <!-- Hover glow on sections with a camera: the whole tube, clipped to
-                   the section, so its dashes sit exactly on the tube's own -->
+              <!-- Hover glow: the whole tube clipped to the section, so its dashes line up -->
               <path
                 v-for="g in glows"
                 :key="g.id"
@@ -402,7 +379,6 @@ const segmentFrom = (ft: number) => routeSegments.find((seg) => seg.fromFt === f
             <!-- Bored so far (estimated) -->
             <path v-for="m in markers" :key="`b-${m.tbm.id}`" class="bored" :d="m.bored" />
 
-            <!-- Shafts: surface down to the tunnel -->
             <rect
               v-for="s in shafts"
               :key="s.id"
@@ -415,7 +391,7 @@ const segmentFrom = (ft: number) => routeSegments.find((seg) => seg.fromFt === f
               rx="2"
             />
 
-            <!-- TBMs: machine-shaped pills riding their tube, leading edge at the estimate -->
+            <!-- TBMs, leading edge at the estimated position -->
             <g
               v-for="m in markers"
               :key="m.tbm.id"
@@ -426,7 +402,6 @@ const segmentFrom = (ft: number) => routeSegments.find((seg) => seg.fromFt === f
               <rect x="-18" y="-5" width="18" height="10" rx="5" />
             </g>
 
-            <!-- Terrain and section names, set in the ground -->
             <text class="terrain-label" :x="x(2600)" :y="SURF - 36" text-anchor="middle">The Palisades</text>
             <text class="terrain-label terrain-label--water" :x="x(R0 + 1550)" :y="SURF + 28" text-anchor="middle">
               Hudson River
@@ -446,7 +421,6 @@ const segmentFrom = (ft: number) => routeSegments.find((seg) => seg.fromFt === f
             <text class="section-label section-label--end" :x="W - 16" :y="SURF + 86" text-anchor="end">Penn Station →</text>
           </svg>
 
-          <!-- Floating site labels with pins -->
           <div class="labels" aria-hidden="true">
             <template v-for="l in labels" :key="l.id">
               <span
@@ -465,7 +439,6 @@ const segmentFrom = (ft: number) => routeSegments.find((seg) => seg.fromFt === f
             </template>
           </div>
 
-          <!-- Hover columns: one full-height area per site -->
           <div class="hits" aria-hidden="true">
             <div
               v-for="hit in hits"
@@ -477,7 +450,6 @@ const segmentFrom = (ft: number) => routeSegments.find((seg) => seg.fromFt === f
             ></div>
           </div>
 
-          <!-- TBM tags -->
           <div
             v-for="m in markers"
             :key="`t-${m.tbm.id}`"
@@ -494,12 +466,12 @@ const segmentFrom = (ft: number) => routeSegments.find((seg) => seg.fromFt === f
 
         <!-- Vertical line diagram (mobile) -->
         <ol class="vline">
-          <template v-for="stop in routeStops" :key="stop.id">
+          <template v-for="{ stop, seg } in vrows" :key="stop.id">
             <li
               class="vstop"
               :class="[stop.id === 'river' && 'vstop--river', stop.ft === 0 && 'vstop--portal-west']"
             >
-              <div class="vstop-link" :class="hasCam(stop.cams) && 'is-hoverable'">
+              <div class="vstop-link" :class="stop.cam && 'is-hoverable'">
                 <svg v-if="stop.ft === 0" class="vportal" viewBox="-20 -12 40 24" aria-hidden="true">
                   <path d="M-8 0 H-13 L-19 -7 M8 0 H13 L19 -7" />
                 </svg>
@@ -509,7 +481,7 @@ const segmentFrom = (ft: number) => routeSegments.find((seg) => seg.fromFt === f
                 </span>
               </div>
             </li>
-            <li v-if="segmentFrom(stop.ft)" class="vstop vseg" :class="`vseg--${segmentFrom(stop.ft)!.id}`">
+            <li v-if="seg" class="vstop vseg" :class="`vseg--${seg.id}`">
               <template v-if="stop.ft === 0">
                 <span
                   v-for="m in markers"
@@ -520,19 +492,19 @@ const segmentFrom = (ft: number) => routeSegments.find((seg) => seg.fromFt === f
                   aria-hidden="true"
                 ></span>
               </template>
-              <span class="vseg-text" :class="hasCam(segmentFrom(stop.ft)!.cam) && 'is-hoverable'">
-                <span class="vseg-label">{{ segmentFrom(stop.ft)!.label }}</span>
+              <span class="vseg-text" :class="seg.cam && 'is-hoverable'">
+                <span class="vseg-label">{{ seg.label }}</span>
                 <template v-if="stop.ft === 0">
                   <span v-for="m in markers" :key="m.tbm.id" class="vseg-tbm">
                     <strong>{{ m.tbm.label }}</strong> ·
-                    {{ m.status === "upcoming" ? m.tbm.expected : `${formatPct(m.fraction)} done` }}
+                    {{ m.status === "upcoming" ? `Launching in ${m.tbm.expected}` : `${formatPct(m.fraction)} done` }}
                   </span>
                 </template>
               </span>
             </li>
           </template>
           <li class="vstop vcasing">
-            <div class="vstop-link" :class="hasCam(casing.cam) && 'is-hoverable'">
+            <div class="vstop-link" :class="casing.cam && 'is-hoverable'">
               <span class="vstop-text">
                 <span class="stop-label">{{ casing.label }}</span>
               </span>
@@ -543,15 +515,13 @@ const segmentFrom = (ft: number) => routeSegments.find((seg) => seg.fromFt === f
           </li>
         </ol>
 
-        <!-- How the TBM positions are estimated -->
         <details class="estimate">
           <summary>About this graphic</summary>
           <p>
-            This is not to scale. TBM positions are a "best estimate", not an official figure. They assume
-            GDC's claimed average of
-            {{ PALISADES_DRIVE.rateFtPerDay }} feet of progress per day is accurate. GDC's estimate for boring the
-            {{ formatFt(PALISADES_DRIVE.lengthFt) }}-long Palisades Tunnel is "a year", which
-            gives an estimated completion date of <strong>October 2027</strong>.
+            This is to scale horizontally but not vertically. TBM positions are a best estimate, not an
+            official figure. GDC expects the machines to bore the {{ formatFt(PALISADES_DRIVE.lengthFt) }}
+            Palisades Tunnel in about a year.
+            GDC also quotes a rate of {{ PALISADES_DRIVE.quotedFtPerDay }} feet per day while the machines are running.
             <a :href="PALISADES_DRIVE.sourceUrl" target="_blank" rel="noopener">Source</a>
           </p>
         </details>
@@ -561,23 +531,18 @@ const segmentFrom = (ft: number) => routeSegments.find((seg) => seg.fromFt === f
 </template>
 
 <style scoped>
+/* Overlaps the hero photo (App sets a negative margin-top) */
 .route {
-  padding: var(--spacing-lg) 0 var(--spacing-xl);
-}
-
-.route-head {
-  margin-bottom: var(--spacing-sm);
-}
-
-.route-title {
-  font-size: 32px;
-  line-height: 1.1;
+  position: relative;
+  z-index: 2;
+  padding-bottom: var(--spacing-xl);
 }
 
 .route-card {
   border-radius: var(--radius-lg);
   background: var(--color-card-bg);
   border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-lg);
   overflow: hidden;
 }
 
@@ -1095,10 +1060,6 @@ const segmentFrom = (ft: number) => routeSegments.find((seg) => seg.fromFt === f
 
   .vline {
     display: block;
-  }
-
-  .route-title {
-    font-size: 26px;
   }
 
   .estimate {

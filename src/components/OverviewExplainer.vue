@@ -1,40 +1,18 @@
 <script setup lang="ts">
-import { nextTick, onBeforeUnmount, ref, watch } from "vue";
+import { ref } from "vue";
+import { tbms } from "../assets/data";
+import { formatLongDate, parseDate } from "../dates";
+import { useModal } from "../useModal";
 
 // "What is this?": a slide-out drawer with the backstory and overview video.
 const props = defineProps<{ open: boolean }>();
 const emit = defineEmits<{ (e: "close"): void }>();
 
 const VIDEO_URL = "https://www.youtube.com/embed/slP5zyoLpk4";
+const firstLaunch = tbms[0]?.launched;
 
 const closeBtn = ref<HTMLButtonElement | null>(null);
-let returnFocusTo: HTMLElement | null = null;
-
-const onKeydown = (e: KeyboardEvent) => {
-  if (e.key === "Escape") emit("close");
-};
-
-watch(
-  () => props.open,
-  async (open) => {
-    if (open) {
-      returnFocusTo = document.activeElement as HTMLElement | null;
-      document.documentElement.style.overflow = "hidden";
-      document.addEventListener("keydown", onKeydown);
-      await nextTick();
-      closeBtn.value?.focus();
-    } else {
-      document.documentElement.style.overflow = "";
-      document.removeEventListener("keydown", onKeydown);
-      returnFocusTo?.focus();
-    }
-  },
-);
-
-onBeforeUnmount(() => {
-  document.documentElement.style.overflow = "";
-  document.removeEventListener("keydown", onKeydown);
-});
+useModal(() => props.open, closeBtn, () => emit("close"));
 </script>
 
 <template>
@@ -84,8 +62,9 @@ onBeforeUnmount(() => {
               <p>
                 Gateway is visible proof that America can still build massive, inspiring public works. These
                 tunnels will serve hundreds of thousands of passengers every day for generations to come. Five
-                construction sites are currently active, and on October 8, 2026 the first tunnel boring machine
-                started drilling through the New Jersey Palisades.
+                construction sites are currently active<template v-if="firstLaunch">, and on
+                {{ formatLongDate(parseDate(firstLaunch)) }} the first tunnel boring machine started drilling
+                through the New Jersey Palisades</template>.
               </p>
             </div>
           </div>

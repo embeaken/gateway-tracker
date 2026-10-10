@@ -62,10 +62,6 @@ const emit = defineEmits<{ (e: 'open-explainer'): void }>()
 }
 
 .brand-name {
-  display: block;
-}
-
-.brand-name {
   font-family: var(--font-family-display);
   font-size: 23px;
   font-weight: var(--font-weight-semibold);
@@ -105,15 +101,6 @@ const emit = defineEmits<{ (e: 'open-explainer'): void }>()
 
   .brand-lockup {
     flex: 1;
-  }
-
-  .tagline {
-    order: 3;
-    flex-basis: 100%;
-    margin: 0;
-    padding-left: 0;
-    border-left: 0;
-    font-size: 13px;
   }
 }
 

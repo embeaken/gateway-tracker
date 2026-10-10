@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import ThemeToggle from './ThemeToggle.vue'
-
-// Gateway Tracker Footer
 </script>
 
 <template>
@@ -28,12 +26,12 @@ import ThemeToggle from './ThemeToggle.vue'
   border-top: 3px solid var(--color-accent);
 }
 
-.footer-sign {
+.app-footer .footer-sign {
   font-family: var(--font-family-display);
-  font-size: 21px !important;
+  font-size: 21px;
   font-weight: var(--font-weight-semibold);
-  color: white !important;
-  margin-bottom: 4px !important;
+  color: white;
+  margin-bottom: 4px;
 }
 
 .app-footer :deep(.theme-toggle) {

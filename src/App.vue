@@ -15,11 +15,9 @@ if (import.meta.env.VITE_PLAYWRIGHT) {
   document.documentElement.dataset.visualTest = 'true'
 }
 
-// "What's going on?" opens a slide-out drawer from the header.
 const showExplainer = ref(false)
 
-// Hero: full-bleed photo; the map card overlaps its
-// bottom edge by this much.
+/** How far the map card rides up over the bottom of the hero photo, px */
 const OVERLAP = 72
 </script>
 
@@ -28,34 +26,25 @@ const OVERLAP = 72
   <OverviewExplainer :open="showExplainer" @close="showExplainer = false" />
 
   <HeroPhotos :overlap="OVERLAP" />
-  <RouteMap class="route--overlap" :style="{ '--overlap': `${OVERLAP}px` }">
-    <template #head>
-      <h2 id="route-title" class="sr-only">Construction map</h2>
-    </template>
-  </RouteMap>
+  <RouteMap :style="{ marginTop: `-${OVERLAP}px` }" />
 
   <main>
     <MainLayout>
       <template #content>
         <section id="cameras" class="cams" aria-labelledby="cams-title">
-          <div class="section-head">
-            <h2 id="cams-title" class="section-title">Construction cameras</h2>
-          </div>
-
+          <h2 id="cams-title" class="section-title">Construction cameras</h2>
+          <!-- One column so every camera is wide enough for EarthCam's interactive player -->
           <div class="cam-grid">
-            <ProjectCard
-              v-for="(project, i) in projects"
-              :key="project.id"
-              :project="project"
-              :index="i"
-            />
+            <ProjectCard v-for="project in projects" :key="project.id" :project="project" />
           </div>
         </section>
       </template>
 
       <template #sidebar>
-        <div id="activity" class="activity-anchor"></div>
-        <Sidebar data-testid="activity">
+        <h2 id="activity" class="section-title">
+          Updates from the <abbr title="Gateway Development Commission">GDC</abbr>
+        </h2>
+        <Sidebar>
           <ActivityTimeline />
         </Sidebar>
       </template>
@@ -66,45 +55,25 @@ const OVERLAP = 72
 </template>
 
 <style scoped>
-/* The map card rides up over the bottom of the photo */
-.route--overlap {
-  position: relative;
-  z-index: 2;
-  margin-top: calc(-1 * var(--overlap));
-  padding-top: 0;
-}
-
-.route--overlap :deep(.route-head) {
-  margin: 0;
-}
-
-.route--overlap :deep(.route-card) {
-  box-shadow: var(--shadow-lg);
-}
-
-.cams {
+.cams,
+#activity {
   scroll-margin-top: var(--spacing-lg);
 }
 
-.section-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 4px var(--spacing-md);
-  margin-bottom: var(--spacing-sm);
-}
-
 .section-title {
+  margin-bottom: var(--spacing-sm);
   font-size: 32px;
   line-height: 1.1;
 }
 
-/* One column: every camera full width so EarthCam serves its interactive
-   player (see ProjectCard). */
+.section-title abbr {
+  text-decoration: underline dotted 2px;
+  text-underline-offset: 3px;
+  cursor: help;
+}
+
 .cam-grid {
   display: grid;
-  grid-template-columns: 1fr;
   gap: var(--spacing-md);
 }
 
@@ -112,9 +81,5 @@ const OVERLAP = 72
   .section-title {
     font-size: 26px;
   }
-}
-
-.activity-anchor {
-  scroll-margin-top: var(--spacing-lg);
 }
 </style>

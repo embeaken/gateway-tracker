@@ -2,15 +2,10 @@
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import type { Project } from '../types'
 
-const props = defineProps<{
-  project: Project
-  index: number
-}>()
+defineProps<{ project: Project }>()
 
-// EarthCam's embed only renders the interactive player when the iframe is at
-// least ~600px wide; narrower, it degrades to a static "Launch Live Webcam"
-// link (or a broken layout around 510–580px). So on narrow screens we render
-// the iframe at a fixed 640px and scale it down to fit.
+// EarthCam only serves its interactive player to iframes at least ~600px wide,
+// so on narrow screens render it at 640px and scale it down to fit.
 const MIN_PLAYER_WIDTH = 640
 const monitor = ref<HTMLElement>()
 const monitorWidth = ref(MIN_PLAYER_WIDTH)
@@ -34,23 +29,12 @@ const frameStyle = computed(() => {
     transformOrigin: '0 0',
   }
 })
-
-const factValue = (label: string) =>
-  props.project.facts.find((f) => f.label.toLowerCase() === label.toLowerCase())?.value
-
-const location = computed(() => factValue('Location'))
-const status = computed(() => factValue('Construction status'))
-const otherFacts = computed(() =>
-  props.project.facts.filter((f) => !['location', 'construction status'].includes(f.label.toLowerCase())),
-)
 </script>
 
 <template>
   <article :id="`cam-${project.id}`" class="cam-card">
     <div ref="monitor" class="monitor">
-      <div class="monitor-placeholder" aria-hidden="true">
-        <span class="placeholder-title">Loading live view…</span>
-      </div>
+      <div class="monitor-placeholder" aria-hidden="true">Loading live view…</div>
       <iframe
         :src="project.earthcam"
         allow="fullscreen"
@@ -62,20 +46,10 @@ const otherFacts = computed(() =>
     </div>
 
     <div class="cam-body">
-      <p class="kicker cam-meta">
-        <template v-if="location">
-          <span>{{ location }}</span>
-        </template>
-      </p>
+      <p class="kicker">{{ project.location }}</p>
       <h3 class="cam-title">{{ project.name }}</h3>
       <p class="cam-desc">{{ project.desc }}</p>
-      <p v-if="status" class="cam-status"><strong>Status:</strong> {{ status }}</p>
-      <dl v-if="otherFacts.length" class="cam-facts">
-        <div v-for="fact in otherFacts" :key="fact.label">
-          <dt class="kicker">{{ fact.label }}</dt>
-          <dd>{{ fact.value }}</dd>
-        </div>
-      </dl>
+      <p class="cam-status"><strong>Status:</strong> {{ project.status }}</p>
     </div>
   </article>
 </template>
@@ -107,21 +81,11 @@ const otherFacts = computed(() =>
 .monitor-placeholder {
   position: absolute;
   inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  color: white;
-  text-align: center;
-  background:
-    radial-gradient(ellipse at center, #1C3A63, var(--color-navy));
-  pointer-events: none;
-}
-
-.placeholder-title {
-  font-size: 14px;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(ellipse at center, #1C3A63, var(--color-navy));
   color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
 }
 
 .monitor-iframe {
@@ -143,14 +107,6 @@ const otherFacts = computed(() =>
   flex-direction: column;
   gap: 6px;
   padding: var(--spacing-sm) 18px 18px;
-}
-
-.cam-meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 4px 8px;
-  margin: 0;
 }
 
 .cam-title {
@@ -176,10 +132,4 @@ const otherFacts = computed(() =>
 .cam-status strong {
   font-weight: var(--font-weight-semibold);
 }
-
-.cam-facts dd {
-  margin: 2px 0 0;
-  font-size: 14px;
-}
-
 </style>

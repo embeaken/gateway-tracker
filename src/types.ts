@@ -1,36 +1,27 @@
 export type Project = {
-  /** URL-safe id, used for #cam-{id} anchors */
+  /** Used for #cam-{id} anchors */
   id: string
   name: string
-  /** Short label used on the route map */
-  short: string
   desc: string
   earthcam: string
-  facts: ProjectFact[]
+  status: string
+  location: string
 }
 
-export type ProjectFact = {
-  label: string
-  value: string
-}
+/** Project id of the construction camera at a route section or stop */
+type Cam = { cam?: string }
 
-/** A named construction section on the route diagram. */
-export type RouteSegment = {
+export type RouteSegment = Cam & {
   id: string
   label: string
   fromFt: number
   toFt: number
   kind: 'bored' | 'casing'
-  /** Project id whose camera this section links to */
-  cam?: string
 }
 
-/** A stop on the west→east route diagram. */
-export type RouteStop = {
+export type RouteStop = Cam & {
   id: string
   label: string
-  /** Distance from the Tonnelle Ave tunnel portal, in feet (negative = west of it) */
+  /** Feet east of the Tonnelle Ave portal */
   ft: number
-  /** Project ids whose cameras live at this stop */
-  cams: string[]
 }

@@ -7,7 +7,9 @@ import {
   constructionNotices,
   youtubeVideos,
 } from "../assets/activityData";
+import { formatShortDate, parseDate } from "../dates";
 import { cdnImage, cdnSrcset } from "../imageCdn";
+import { useModal } from "../useModal";
 
 type TimelineItemType = "photo" | "bluesky" | "press" | "construction" | "video";
 
@@ -23,29 +25,20 @@ type TimelineItem = {
   videoId?: string;
 };
 
-const DATE_ONLY_RE = /^\d{4}-\d{2}-\d{2}$/;
-
-const parseDate = (dateStr: string): Date =>
-  DATE_ONLY_RE.test(dateStr) ? new Date(`${dateStr}T12:00:00`) : new Date(dateStr);
-
 const FEED_LIMIT = 100;
-// Below the sidebar breakpoint the feed sits under the cameras, so keep it short.
-const INITIAL_VISIBLE_ITEMS =
-  typeof window !== "undefined" && window.matchMedia("(max-width: 1199px)").matches ? 10 : 30;
+// Below the sidebar breakpoint the feed sits under the cameras, so start short.
+const INITIAL_VISIBLE_ITEMS = window.matchMedia("(max-width: 1199px)").matches ? 10 : 30;
 const PAGE_SIZE = 20;
-
-const formatDate = (date: Date, includeTime = false): string => {
-  const d = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear() % 100}`;
-  if (!includeTime) return d;
-  const h = date.getHours();
-  const m = date.getMinutes().toString().padStart(2, "0");
-  return `${d} ${h % 12 || 12}:${m}${h >= 12 ? "pm" : "am"}`;
-};
 
 const formatTime = (date: Date): string => {
   const h = date.getHours();
   const m = date.getMinutes().toString().padStart(2, "0");
   return `${h % 12 || 12}:${m}${h >= 12 ? "pm" : "am"}`;
+};
+
+const formatDate = (date: Date, includeTime = false): string => {
+  const d = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear() % 100}`;
+  return includeTime ? `${d} ${formatTime(date)}` : d;
 };
 
 const timelineItems = computed<TimelineItem[]>(() => {
@@ -155,11 +148,6 @@ const toBlocks = (items: TimelineItem[]): Block[] => {
 const getDateKey = (date: Date) =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 
-const formatGroupDate = (date: Date) =>
-  date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-// Note: groupedItems passes `key + 'T12:00:00'` (local noon) to formatGroupDate
-// to prevent UTC midnight being parsed as the prior day in western timezones
-
 const groupedItems = computed<DateGroup[]>(() => {
   const map = new Map<string, TimelineItem[]>();
   for (const item of visibleItems.value) {
@@ -169,7 +157,7 @@ const groupedItems = computed<DateGroup[]>(() => {
   }
   return Array.from(map.entries()).map(([key, items]) => ({
     dateKey: key,
-    dateLabel: formatGroupDate(new Date(key + "T12:00:00")),
+    dateLabel: formatShortDate(parseDate(key)),
     blocks: toBlocks(items),
   }));
 });
@@ -201,11 +189,8 @@ const badgeLabel = (type: TimelineItemType): string =>
     }) satisfies Record<TimelineItemType, string>
   )[type];
 
-// --- Image handling ---
-// Photos go through the image CDN (see imageCdn.ts); Bluesky images are already
-// served at a sensible size by Bluesky's own CDN.
-
-// Lightbox can step through the photo set it was opened from.
+// --- Lightbox: steps through the photo set it was opened from ---
+// (Bluesky images skip the image CDN; Bluesky already serves them small.)
 const lightboxSet = ref<TimelineItem[]>([]);
 const lightboxIndex = ref(0);
 const selectedImage = computed(() => lightboxSet.value[lightboxIndex.value] ?? null);
@@ -225,9 +210,11 @@ const step = (delta: number) => {
   if (n > 1) lightboxIndex.value = (lightboxIndex.value + delta + n) % n;
 };
 
+const closeBtn = ref<HTMLButtonElement | null>(null);
+useModal(() => !!selectedImage.value, closeBtn, closeImage);
+
 const onKeydown = (e: KeyboardEvent) => {
   if (!selectedImage.value) return;
-  if (e.key === "Escape") closeImage();
   if (e.key === "ArrowRight") step(1);
   if (e.key === "ArrowLeft") step(-1);
 };
@@ -238,12 +225,6 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
 
 <template>
   <div class="activity-timeline">
-    <!-- Header -->
-    <div class="timeline-header">
-      <h2 class="timeline-title">
-        Updates from the <abbr class="tooltip" title="Gateway Development Commission">GDC</abbr>
-      </h2>
-    </div>
 
     <!-- Timeline feed grouped by date -->
     <div class="timeline">
@@ -377,8 +358,8 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
     <Teleport to="body">
       <!-- Lightbox -->
       <div v-if="selectedImage" class="lightbox" @click="closeImage">
-        <div class="lightbox-content" @click.stop>
-          <button type="button" class="close-button" aria-label="Close" @click="closeImage">×</button>
+        <div class="lightbox-content" role="dialog" aria-modal="true" aria-label="Photo" @click.stop>
+          <button ref="closeBtn" type="button" class="close-button" aria-label="Close" @click="closeImage">×</button>
           <img
             :src="cdnImage(selectedImage.imageUrl!, 1920)"
             :srcset="cdnSrcset(selectedImage.imageUrl!, [960, 1440, 1920, 2560])"
@@ -403,45 +384,6 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
 </template>
 
 <style scoped>
-/* =============================================
-   Container
-   ============================================= */
-
-.activity-timeline {
-  width: 100%;
-}
-
-/* =============================================
-   Header
-   ============================================= */
-
-.timeline-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--spacing-sm);
-  margin-bottom: 12px;
-}
-
-.timeline-header {
-  flex-direction: column;
-  gap: 4px;
-}
-
-.timeline-title {
-  font-size: 26px;
-  line-height: 1.1;
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-  margin: 0;
-}
-
-.timeline-title .tooltip {
-  text-decoration: underline dotted 2px;
-  text-underline-offset: 3px;
-  cursor: help;
-}
-
 /* =============================================
    Timeline list
    ============================================= */
@@ -528,8 +470,7 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
   box-shadow: none;
 }
 
-/* Whole-row links: the row's "View →" link stretches over the row, so the
-   tint means "this entire row is clickable". */
+/* Whole-row links: the row's link stretches over the whole row */
 .timeline-item--compact,
 .timeline-item--thumb {
   position: relative;
@@ -644,7 +585,7 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
 }
 
 /* =============================================
-   Mode C — video card (full embed)
+   Mode D — video card (full embed)
    ============================================= */
 
 .timeline-item--video-card {
@@ -965,10 +906,6 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
    ============================================= */
 
 @media (max-width: 768px) {
-  .timeline-title {
-    font-size: var(--font-size-base);
-  }
-
   .thumb-image {
     width: 72px;
     height: 54px;
