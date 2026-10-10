@@ -31,14 +31,54 @@ const onLoad = (i: number) => {
   loaded.value = new Set([...loaded.value, i]);
 };
 
+const count = heroPhotos.length;
+const wrap = (i: number) => (i + count) % count;
+
 let timer: number | undefined;
-onMounted(() => {
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || heroPhotos.length <= 1) return;
+let autoRotate = false;
+const startTimer = () => {
+  window.clearInterval(timer);
+  if (!autoRotate) return;
   timer = window.setInterval(() => {
-    if (!paused.value) activeIndex.value = (activeIndex.value + 1) % heroPhotos.length;
+    if (!paused.value) activeIndex.value = wrap(activeIndex.value + 1);
   }, 8000);
+};
+onMounted(() => {
+  autoRotate = !window.matchMedia("(prefers-reduced-motion: reduce)").matches && count > 1;
+  startTimer();
 });
 onUnmounted(() => window.clearInterval(timer));
+
+// Manual navigation restarts the rotation clock so a fresh pick isn't skipped.
+const goTo = (i: number) => {
+  activeIndex.value = wrap(i);
+  startTimer();
+};
+
+// Horizontal swipe on touch devices. Vertical drags fall through to page
+// scroll (touch-action: pan-y).
+const SWIPE_MIN = 40;
+let touchStart: { x: number; y: number } | null = null;
+const onTouchStart = (e: TouchEvent) => {
+  if (count <= 1 || e.touches.length !== 1) return;
+  const t = e.touches[0]!;
+  touchStart = { x: t.clientX, y: t.clientY };
+  // Warm up both neighbours so the swiped-to photo is ready to fade in.
+  const i = activeIndex.value;
+  mounted.value = new Set([...mounted.value, wrap(i - 1), wrap(i + 1)]);
+};
+const onTouchCancel = () => {
+  touchStart = null;
+};
+const onTouchEnd = (e: TouchEvent) => {
+  if (!touchStart) return;
+  const t = e.changedTouches[0]!;
+  const dx = t.clientX - touchStart.x;
+  const dy = t.clientY - touchStart.y;
+  touchStart = null;
+  if (Math.abs(dx) < SWIPE_MIN || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+  goTo(activeIndex.value + (dx < 0 ? 1 : -1));
+};
 </script>
 
 <template>
@@ -54,6 +94,9 @@ onUnmounted(() => window.clearInterval(timer));
       @mouseleave="paused = false"
       @focusin="paused = true"
       @focusout="paused = false"
+      @touchstart.passive="onTouchStart"
+      @touchend.passive="onTouchEnd"
+      @touchcancel.passive="onTouchCancel"
     >
       <a class="feature-photo-link" :href="cdnFullImage(activePhoto.url)" target="_blank" rel="noopener" tabindex="-1">
         <template v-for="(photo, index) in heroPhotos" :key="photo.url">
@@ -87,7 +130,7 @@ onUnmounted(() => window.clearInterval(timer));
               :class="{ 'photo-dot--active': index === activeIndex }"
               :aria-label="`Photo ${index + 1} of ${heroPhotos.length}`"
               :aria-current="index === activeIndex"
-              @click="activeIndex = index"
+              @click="goTo(index)"
             ></button>
           </div>
         </div>
@@ -104,6 +147,7 @@ onUnmounted(() => window.clearInterval(timer));
   overflow: hidden;
   background: var(--color-navy);
   color: white;
+  touch-action: pan-y;
 }
 
 .feature-photo-link {

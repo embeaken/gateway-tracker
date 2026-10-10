@@ -1,7 +1,8 @@
 // GDC's originals can be 40MB+, so every photo goes through Netlify Image CDN
 // (allowed sources: [images] in netlify.toml). Local servers have no CDN, so
-// they borrow production's.
-const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname)
+// they borrow production's. DEV covers phones hitting the dev server by LAN IP.
+const isLocal =
+  import.meta.env.DEV || ['localhost', '127.0.0.1'].includes(window.location.hostname)
 const ENDPOINT = isLocal ? 'https://hudson.tube/.netlify/images' : '/.netlify/images'
 
 export const cdnImage = (url: string, width: number) =>
