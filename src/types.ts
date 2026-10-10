@@ -21,8 +21,6 @@ export type RouteSegment = {
   fromFt: number
   toFt: number
   kind: 'bored' | 'casing'
-  /** Shown instead of the computed length; null hides it */
-  lengthLabel?: string | null
   /** Project id whose camera this section links to */
   cam?: string
 }
@@ -35,6 +33,4 @@ export type RouteStop = {
   ft: number
   /** Project ids whose cameras live at this stop */
   cams: string[]
-  /** Label placement on the horizontal map */
-  side: 'above' | 'below'
 }

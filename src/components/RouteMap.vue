@@ -1,114 +1,330 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { routeStops, routeSegments, PALISADES_DRIVE, ROUTE } from "../assets/data";
 import { useTbmProgress, formatFt, formatPct, formatMonth } from "../useTbmProgress";
 
-// Feet along the tunnel → percent of the track width, drawn to scale. A short
-// stub of surface track runs in from the left edge to the portal.
-const STUB = 9;
-const pos = (ft: number) => STUB + ((100 - STUB) * ft) / ROUTE.eastFt;
+// ---------------------------------------------------------------------------
+// Side-view profile of the route, west → east. Horizontal is to scale (feet
+// along the tunnel); vertical is stylised and heavily exaggerated. Everything
+// is laid out in real pixels so the SVG drawing and the HTML labels share one
+// coordinate system.
+// ---------------------------------------------------------------------------
 
-const PORTAL = pos(0);
-const RIVER_FROM = pos(ROUTE.riverFromFt);
-// The Palisades: the diabase ridge the first drive bores through, portal → HC shaft
-const ROCK_FROM = PORTAL;
-const ROCK_TO = pos(PALISADES_DRIVE.lengthFt);
-const RIVER_TO = pos(ROUTE.riverToFt);
+const strip = ref<HTMLElement | null>(null);
+const W = ref(1200);
+let observer: ResizeObserver | undefined;
+onMounted(() => {
+  if (!strip.value) return;
+  W.value = strip.value.clientWidth;
+  observer = new ResizeObserver(([entry]) => {
+    if (entry) W.value = entry.contentRect.width;
+  });
+  observer.observe(strip.value);
+});
+onBeforeUnmount(() => observer?.disconnect());
 
-const MILE = 5280;
-const miles = (ft: number) => (ft === 0 ? "0" : (ft / MILE).toFixed(1));
+/** Strip height and ground level, px */
+const H = 270;
+const SURF = 148;
+/** Half the distance between the two tube centrelines */
+const GAP = 7;
 
-const segments = routeSegments.map((seg) => ({
-  ...seg,
-  left: pos(seg.fromFt),
-  width: pos(seg.toFt) - pos(seg.fromFt),
-  length: seg.lengthLabel === undefined ? formatFt(seg.toFt - seg.fromFt) : seg.lengthLabel,
-  href: seg.cam ? `#cam-${seg.cam}` : undefined,
-}));
+/** Width of open-air track left of the portal */
+const x0 = computed(() => Math.max(36, W.value * 0.03));
+const x = (ft: number) => x0.value + ((W.value - x0.value) * ft) / ROUTE.eastFt;
 
-const drive = segments.find((seg) => seg.id === "palisades")!;
-const casing = segments.find((seg) => seg.kind === "casing")!;
-const dimSegments = segments.filter((seg) => seg.kind !== "casing");
+type Pt = [ft: number, y: number];
+
+// Tunnel centreline depth: enters the Palisades just below grade, descends to
+// the Hudson County shaft, bottoms out under the river, climbs to Manhattan.
+const TUNNEL: Pt[] = [
+  [0, SURF - 10],
+  [PALISADES_DRIVE.lengthFt, SURF + 46],
+  [ROUTE.riverFromFt, SURF + 58],
+  [9600, SURF + 82],
+  [routeSegments[2]!.fromFt, SURF + 52],
+  [ROUTE.eastFt, SURF + 30],
+];
+
+// Monotone cubic (Fritsch–Carlson) through the points: a smooth line with no
+// overshoot, so the low point under the river stays where it's put.
+const tangents = (() => {
+  const n = TUNNEL.length;
+  const d = TUNNEL.slice(1).map(([f, y], i) => (y - TUNNEL[i]![1]) / (f - TUNNEL[i]![0]));
+  const m = TUNNEL.map((_, i) => {
+    if (i === 0) return d[0]!;
+    if (i === n - 1) return d[n - 2]!;
+    return d[i - 1]! * d[i]! <= 0 ? 0 : (d[i - 1]! + d[i]!) / 2;
+  });
+  d.forEach((dk, k) => {
+    if (dk === 0) {
+      m[k] = m[k + 1] = 0;
+      return;
+    }
+    const a = m[k]! / dk;
+    const b = m[k + 1]! / dk;
+    const s = a * a + b * b;
+    if (s > 9) {
+      m[k] = (3 * a * dk) / Math.sqrt(s);
+      m[k + 1] = (3 * b * dk) / Math.sqrt(s);
+    }
+  });
+  return m;
+})();
+
+const cy = (ft: number) => {
+  if (ft <= TUNNEL[0]![0]) return TUNNEL[0]![1];
+  for (let i = 1; i < TUNNEL.length; i++) {
+    const [f1, y1] = TUNNEL[i]!;
+    const [f0, y0] = TUNNEL[i - 1]!;
+    if (ft <= f1) {
+      const h = f1 - f0;
+      const t = (ft - f0) / h;
+      const t2 = t * t;
+      const t3 = t2 * t;
+      return (
+        (2 * t3 - 3 * t2 + 1) * y0 +
+        (t3 - 2 * t2 + t) * h * tangents[i - 1]! +
+        (-2 * t3 + 3 * t2) * y1 +
+        (t3 - t2) * h * tangents[i]!
+      );
+    }
+  }
+  return TUNNEL[TUNNEL.length - 1]![1];
+};
+
+/** Slope of the tunnel at a point, in degrees (screen space) */
+const slope = (ft: number) => {
+  const d = 50;
+  return (Math.atan2(cy(ft + d) - cy(ft - d), x(ft + d) - x(ft - d)) * 180) / Math.PI;
+};
+
+/** Polyline along the tunnel between two points, offset vertically by dy */
+const STEP_FT = 100;
+const along = (from: number, to: number, dy = 0) => {
+  const fts = [from];
+  for (let f = Math.ceil(from / STEP_FT) * STEP_FT; f < to; f += STEP_FT) if (f > from) fts.push(f);
+  fts.push(to);
+  return fts.map((f) => `${x(f).toFixed(1)},${(cy(f) + dy).toFixed(1)}`).join(" L");
+};
+
+// Ground surface: flat Meadowlands, the Palisades ridge (cliff faces on both
+// sides), low ground to the shoreline, a lumpy riverbed, flat Manhattan.
+const R0 = ROUTE.riverFromFt;
+const R1 = ROUTE.riverToFt;
+const PORTAL_FACE = SURF - 26;
+const RIDGE: Pt[] = [
+  [0, PORTAL_FACE],
+  [250, SURF - 34],
+  [550, SURF - 50],
+  [850, SURF - 58],
+  [1600, SURF - 63],
+  [2500, SURF - 66],
+  [3500, SURF - 74],
+  [4100, SURF - 70],
+  [4520, SURF - 61],
+  [4700, SURF - 40],
+  [4880, SURF - 10],
+  [5000, SURF - 1],
+];
+// Deepest (and widest) where the river label sits; shallower toward the
+// state line and the Manhattan side.
+const RIVERBED: Pt[] = [
+  [R0, SURF],
+  [R0 + 160, SURF + 34],
+  [R0 + 700, SURF + 44],
+  [R0 + 1600, SURF + 48],
+  [R0 + 2500, SURF + 46],
+  [R0 + 3500, SURF + 40],
+  [R0 + 4500, SURF + 36],
+  [R1 - 260, SURF + 28],
+  [R1, SURF],
+];
+const WATER_DEPTH = 52;
+
+// The water's surface is the top row of the wave pattern: same 32px period,
+// tiles anchored to x = 0 and y = SURF, so the edge and the waves line up.
+const WAVE = 32;
+const water = computed(() => {
+  const from = x(R0);
+  const to = x(R1);
+  const start = Math.floor(from / WAVE) * WAVE;
+  let surface = `M${start},${SURF + 4} Q${start + 8},${SURF} ${start + 16},${SURF + 4}`;
+  let end = start + 16;
+  while (end < to) {
+    end += 16;
+    surface += ` T${end},${SURF + 4}`;
+  }
+  const bottom = SURF + WATER_DEPTH;
+  return { from, to, surface, body: `${surface} L${end},${bottom} L${start},${bottom} Z` };
+});
+
+
+const groundPath = computed(() => {
+  const pts = [...RIDGE, [PALISADES_DRIVE.lengthFt, SURF] as Pt, ...RIVERBED];
+  const p = (pt: Pt) => `${x(pt[0]).toFixed(1)},${pt[1]}`;
+  return `M-2,${H + 2} L-2,${SURF} L${(x(0) - 3).toFixed(1)},${SURF} L${pts.map(p).join(" L")} L${W.value + 2},${SURF} L${W.value + 2},${H + 2} Z`;
+});
+
+const casing = routeSegments.find((seg) => seg.kind === "casing")!;
+const drive = routeSegments.find((seg) => seg.id === "palisades")!;
+const river = routeSegments.find((seg) => seg.id === "hudson-river")!;
+const shafts = routeStops.filter((stop) => stop.id.endsWith("shaft"));
+const portal = routeStops.find((stop) => stop.ft === 0)!;
+const stabilization = routeStops.find((stop) => stop.id === "river")!;
+
+const camHref = (cams: string[] | string | undefined) => {
+  const cam = Array.isArray(cams) ? cams[0] : cams;
+  return cam ? `#cam-${cam}` : undefined;
+};
+
+// --- TBMs ------------------------------------------------------------------
+
+const { progress, lead } = useTbmProgress();
+
+/** A machine at 0 ft still sits just inside the portal */
+const MIN_INSIDE_PX = 22;
+
+const markers = computed(() => {
+  const minFt = (MIN_INSIDE_PX / (W.value - x0.value)) * ROUTE.eastFt;
+  return progress.value.map((p) => {
+    const lane = p.tbm.tube === "North" ? "north" : "south";
+    const dy = lane === "north" ? -GAP : GAP;
+    const ft = Math.max(minFt, p.ft);
+    return {
+      ...p,
+      lane,
+      x: x(ft),
+      y: cy(ft) + dy,
+      angle: slope(ft),
+      bored: p.status === "upcoming" ? "" : `M${along(0, ft, dy)}`,
+      tag:
+        p.status === "upcoming"
+          ? "not started"
+          : p.status === "arrived"
+            ? "arrived"
+            : formatPct(p.fraction),
+    };
+  });
+});
+
+const leadEta = computed(() => {
+  const m = lead.value;
+  if (m.status === "mining" && m.arrival) return `${m.tbm.label} due ~${formatMonth(m.arrival)}`;
+  if (m.status === "arrived") return `${m.tbm.label} has arrived (est.)`;
+  return undefined;
+});
+
+// --- Floating labels -------------------------------------------------------
+// Sites float in the sky with a pin down to what they name. Two tiers keep the
+// crowded Manhattan end readable.
+const TIER = { a: 58, b: 112 } as const;
+type Align = "center" | "start" | "end";
+type FloatLabel = {
+  id: string;
+  label: string;
+  sub?: string;
+  x: number;
+  tier: keyof typeof TIER;
+  align: Align;
+  /** y the pin runs down to */
+  to: number;
+  /** Wrap onto two balanced lines at this width */
+  wrapAt?: number;
+};
+
+// Rendered label widths, for collision checks
+const labelEls: Record<string, HTMLElement> = {};
+const labelWidths = ref<Record<string, number>>({});
+const measureLabels = () => {
+  labelWidths.value = Object.fromEntries(Object.entries(labelEls).map(([id, el]) => [id, el.offsetWidth]));
+};
+onMounted(() => {
+  measureLabels();
+  document.fonts?.ready.then(measureLabels);
+});
+watch(W, () => nextTick(measureLabels));
+
+const labels = computed(() => {
+  const shaftTop = SURF - 4;
+  const list: FloatLabel[] = [
+    { id: portal.id, label: portal.label, x: x(0), tier: "a", align: "start" as Align, to: PORTAL_FACE },
+    ...shafts.map((s) => ({
+      id: s.id,
+      label: s.label,
+      sub: s.ft === PALISADES_DRIVE.lengthFt ? leadEta.value : undefined,
+      x: x(s.ft),
+      tier: s.ft === PALISADES_DRIVE.lengthFt ? ("a" as const) : ("b" as const),
+      align: "center" as Align,
+      to: shaftTop,
+      // The Manhattan end is crowded: stack its name on two lines
+      wrapAt: s.ft === PALISADES_DRIVE.lengthFt ? undefined : 130,
+    })),
+    {
+      id: stabilization.id,
+      label: stabilization.label,
+      x: x(stabilization.ft),
+      tier: "a",
+      align: "center" as Align,
+      to: cy(stabilization.ft) - GAP - 12,
+    },
+    {
+      id: casing.id,
+      label: casing.label,
+      x: W.value - 28,
+      tier: "a",
+      align: "end" as Align,
+      to: cy(ROUTE.eastFt - 300) - 18,
+      wrapAt: 150,
+    },
+  ];
+  // Ground stabilization shares a tier with the casing label: slide it left
+  // (over the open river) only as far as needed to keep a gap between them,
+  // and never so far that its pin leaves the label.
+  const gs = list.find((l) => l.id === stabilization.id)!;
+  const cs = list.find((l) => l.id === casing.id)!;
+  const gsW = labelWidths.value[gs.id];
+  const csW = labelWidths.value[cs.id];
+  const nudges: Record<string, number> = {};
+  if (gsW && csW) {
+    const limit = cs.x + 12 - csW - 20;
+    const overlap = gs.x + gsW / 2 - limit;
+    if (overlap > 0) nudges[gs.id] = -Math.min(overlap, gsW / 2 - 16);
+  }
+  return list.map((l) => ({ ...l, base: TIER[l.tier], nudge: nudges[l.id] ?? 0 }));
+});
 
 // --- Hit areas -------------------------------------------------------------
-// Every site gets a full-height column centred on its marker, up to HALF px
-// each side, but never past the midpoint to its neighbour. The casing's anchor
-// is the middle of its band (12th Ave shaft → card edge).
-type Anchor = { pct: number; px: number };
+// Every site gets a full-height column centred on it, up to HALF px each side,
+// never past the midpoint to its neighbour.
 const HALF = 130;
-const at = (a: Anchor) => `calc(${a.pct}% + ${a.px}px)`;
-const mid = (a: Anchor, b: Anchor): Anchor => ({ pct: (a.pct + b.pct) / 2, px: (a.px + b.px) / 2 });
+const hits = computed(() => {
+  const sites = [
+    ...routeStops.map((stop) => ({ id: stop.id, label: stop.label, href: camHref(stop.cams), at: x(stop.ft) })),
+    { id: drive.id, label: drive.label, href: camHref(drive.cam), at: (x(drive.fromFt) + x(drive.toFt)) / 2 },
+    { id: casing.id, label: casing.label, href: camHref(casing.cam), at: (x(casing.fromFt) + W.value) / 2 + 8 },
+  ]
+    .filter((site) => site.href)
+    .sort((a, b) => a.at - b.at);
 
-const sites = [
-  ...routeStops.map((stop) => ({
-    id: stop.id,
-    label: stop.label,
-    href: stop.cams.length ? `#cam-${stop.cams[0]}` : undefined,
-    anchor: { pct: pos(stop.ft), px: 0 } as Anchor,
-  })),
-  // Sections with a camera are sites too, anchored mid-band
-  ...segments
-    .filter((seg) => seg.href)
-    .map((seg) => ({
-      id: seg.id,
-      label: seg.label,
-      href: seg.href,
-      anchor:
-        seg.kind === "casing"
-          ? ({ pct: (seg.left + 100) / 2, px: 8 } as Anchor) // band runs to the card edge
-          : ({ pct: seg.left + seg.width / 2, px: 0 } as Anchor),
-    })),
-].sort((a, b) => a.anchor.pct - b.anchor.pct);
-
-const hits = sites.map((site, i) => {
-  const prev = sites[i - 1];
-  const next = sites[i + 1];
-  const left = prev
-    ? `max(${at(mid(prev.anchor, site.anchor))}, calc(${site.anchor.pct}% - ${HALF - site.anchor.px}px))`
-    : `max(-16px, calc(${site.anchor.pct}% - ${HALF}px))`;
-  const right = next
-    ? `min(${at(mid(site.anchor, next.anchor))}, calc(${site.anchor.pct}% + ${HALF + site.anchor.px}px))`
-    : "calc(100% + 16px)";
-  return { ...site, left, width: `calc(${right} - ${left})` };
+  return sites.map((site, i) => {
+    const prev = sites[i - 1];
+    const next = sites[i + 1];
+    const left = Math.max(prev ? (prev.at + site.at) / 2 : 0, site.at - HALF);
+    const right = Math.min(next ? (site.at + next.at) / 2 : W.value, site.at + HALF);
+    return { ...site, left: i === 0 ? 0 : left, width: (i === sites.length - 1 ? W.value : right) - (i === 0 ? 0 : left) };
+  });
 });
 
 const hovered = ref<string | null>(null);
 
-// Hover glow for sections. The glow layer is the track plus the 16px run-off to
-// the card edge, so a track percentage p sits at calc(p% - 0.16p px) inside it.
-const tp = (p: number) => `calc(${p}% - ${(p * 0.16).toFixed(2)}px)`;
-const glows = segments
-  .filter((seg) => seg.href)
-  .map((seg) => {
-    const from = tp(seg.left);
-    const to = seg.kind === "casing" ? "100%" : tp(seg.left + seg.width);
-    const mask = `linear-gradient(to right, transparent ${from}, #000 ${from}, #000 ${to}, transparent ${to})`;
-    return { id: seg.id, style: { maskImage: mask, WebkitMaskImage: mask } };
-  });
+const glows = computed(() => [
+  { id: drive.id, from: x(drive.fromFt), to: x(drive.toFt) },
+  { id: casing.id, from: x(casing.fromFt) + 6, to: W.value + 4 },
+]);
 
-const { progress } = useTbmProgress();
-
-// A machine at 0 ft still sits just inside the portal, clear of the wing walls.
-const MIN_INSIDE_PX = 22;
-
-const markers = computed(() =>
-  progress.value.map((p) => {
-    const run = pos(p.fraction * PALISADES_DRIVE.lengthFt) - PORTAL;
-    return {
-      ...p,
-      lane: p.tbm.tube === "North" ? "north" : "south",
-      /** Leading edge of the machine, in track coordinates */
-      x: `calc(${PORTAL}% + max(${MIN_INSIDE_PX}px, ${run}%))`,
-      run: `max(${MIN_INSIDE_PX}px, ${run}%)`,
-    };
-  }),
-);
-
-const camHref = (stop: (typeof routeStops)[number]) =>
-  stop.cams.length ? `#cam-${stop.cams[0]}` : undefined;
-
-/** Section that begins at a given point (for the mobile list). */
-const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && seg.kind !== "casing");
+// --- Mobile list -----------------------------------------------------------
+const segmentFrom = (ft: number) => routeSegments.find((seg) => seg.fromFt === ft && seg.kind !== "casing");
 </script>
 
 <template>
@@ -119,106 +335,144 @@ const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && 
       </div>
 
       <div class="route-card">
-        <!-- Horizontal strip map (tablet / desktop) -->
-        <div class="strip">
-          <div class="zone-labels" aria-hidden="true">
-            <span class="zone zone--dir" :style="{ left: '0%' }">← To Washington, DC</span>
-            <span
-              class="zone zone--rock"
-              :style="{ left: `${ROCK_FROM}%`, width: `${ROCK_TO - ROCK_FROM}%` }"
+        <!-- Side-view profile (tablet / desktop) -->
+        <div ref="strip" class="strip" :style="{ height: `${H}px` }">
+          <svg class="profile" :width="W" :height="H" :viewBox="`0 0 ${W} ${H}`" aria-hidden="true">
+            <defs>
+              <pattern id="rm-waves" x="0" :y="SURF" :width="WAVE" height="16" patternUnits="userSpaceOnUse">
+                <path class="wave" d="M0 4 Q8 0 16 4 T32 4" />
+                <path class="wave" d="M-8 12 Q0 8 8 12 T24 12 T40 12" />
+              </pattern>
+              <clipPath v-for="g in glows" :id="`rm-clip-${g.id}`" :key="g.id">
+                <rect :x="g.from" y="0" :width="g.to - g.from" :height="H" />
+              </clipPath>
+              <clipPath id="rm-river">
+                <rect :x="water.from" :y="SURF - 4" :width="water.to - water.from" :height="WATER_DEPTH + 4" />
+              </clipPath>
+              <!-- East of the portal: the tunnel proper -->
+              <clipPath id="rm-inside">
+                <rect :x="x(0)" y="0" :width="W" :height="H" />
+              </clipPath>
+              <clipPath id="rm-ground">
+                <path :d="groundPath" />
+              </clipPath>
+            </defs>
+
+            <!-- Water, then the ground over it (the riverbed shapes its bottom) -->
+            <g clip-path="url(#rm-river)">
+              <path class="water" :d="water.body" />
+              <path class="water-waves" :d="water.body" />
+              <path class="water-surface" :d="water.surface" />
+            </g>
+            <path class="ground" :d="groundPath" />
+
+            <!-- Hudson River Ground Stabilization: treated soil around the tunnel line -->
+            <rect
+              class="treated"
+              :class="hovered === stabilization.id && 'treated--hover'"
+              clip-path="url(#rm-ground)"
+              :x="x(ROUTE.stabilizedFromFt)"
+              :y="SURF"
+              :width="x(ROUTE.stabilizedToFt) - x(ROUTE.stabilizedFromFt)"
+              :height="cy(stabilization.ft) + 22 - SURF"
+              rx="3"
+            />
+
+            <!-- State line, mid-river -->
+            <g class="state-line">
+              <line :x1="(x(R0) + x(R1)) / 2 + 30" :x2="(x(R0) + x(R1)) / 2 + 30" :y1="SURF - 10" :y2="SURF + 28" />
+              <text :x="(x(R0) + x(R1)) / 2 + 24" :y="SURF - 4" text-anchor="end">NJ</text>
+              <text :x="(x(R0) + x(R1)) / 2 + 36" :y="SURF - 4">NY</text>
+            </g>
+
+            <!-- Active work: the TBM drive and the Hudson Yards casing -->
+            <g clip-path="url(#rm-ground)">
+              <path class="band" clip-path="url(#rm-inside)" :d="`M${along(drive.fromFt, drive.toFt)}`" />
+            </g>
+            <path class="band band--casing" :d="`M${along(casing.fromFt + 40, ROUTE.eastFt + 400)}`" />
+
+            <!-- Twin tubes: surface track to the portal, then tunnel -->
+            <g v-for="dy in [-GAP, GAP]" :key="dy">
+              <path class="surface" :d="`M-4,${cy(0) + dy} L${x(0)},${cy(0) + dy}`" />
+              <path class="tube" :d="`M${along(0, ROUTE.eastFt, dy)}`" />
+              <!-- Hover glow on sections with a camera: the whole tube, clipped to
+                   the section, so its dashes sit exactly on the tube's own -->
+              <path
+                v-for="g in glows"
+                :key="g.id"
+                class="glow"
+                :class="hovered === g.id && 'glow--on'"
+                :clip-path="`url(#rm-clip-${g.id})`"
+                :d="`M${along(0, ROUTE.eastFt, dy)}`"
+              />
+            </g>
+
+            <!-- Bored so far (estimated) -->
+            <path v-for="m in markers" :key="`b-${m.tbm.id}`" class="bored" :d="m.bored" />
+
+            <!-- Shafts: surface down to the tunnel -->
+            <rect
+              v-for="s in shafts"
+              :key="s.id"
+              class="shaft"
+              :class="hovered === s.id && 'shaft--hover'"
+              :x="x(s.ft) - 6"
+              :y="SURF - 4"
+              width="12"
+              :height="cy(s.ft) + GAP + 8 - (SURF - 4)"
+              rx="2"
+            />
+
+            <!-- TBMs: machine-shaped pills riding their tube, leading edge at the estimate -->
+            <g
+              v-for="m in markers"
+              :key="m.tbm.id"
+              class="tbm"
+              :class="`tbm--${m.status}`"
+              :transform="`translate(${m.x.toFixed(1)} ${m.y.toFixed(1)}) rotate(${m.angle.toFixed(2)})`"
             >
-              Palisades
-            </span>
-            <span
-              class="zone zone--river"
-              :style="{ left: `${RIVER_FROM}%`, width: `${RIVER_TO - RIVER_FROM}%` }"
-            >
+              <rect x="-18" y="-5" width="18" height="10" rx="5" />
+            </g>
+
+            <!-- Terrain and section names, set in the ground -->
+            <text class="terrain-label" :x="x(2600)" :y="SURF - 36" text-anchor="middle">The Palisades</text>
+            <text class="terrain-label terrain-label--water" :x="x(R0 + 1550)" :y="SURF + 28" text-anchor="middle">
               Hudson River
-            </span>
-            <span class="zone zone--dir zone--end">To Boston →</span>
-          </div>
-
-          <div class="terrain terrain--rock" :style="{ '--from': ROCK_FROM / 100, '--to': ROCK_TO / 100 }" aria-hidden="true"></div>
-          <div class="terrain terrain--river" :style="{ '--from': RIVER_FROM / 100, '--to': RIVER_TO / 100 }" aria-hidden="true"></div>
-
-          <div class="track" aria-hidden="true">
-            <!-- The active TBM drive -->
-            <div
-              class="band drive"
-              :style="{ left: `${drive.left}%`, width: `${drive.width}%` }"
-            ></div>
-            <!-- Hudson Yards casing: cut-and-cover box from the 12th Ave shaft into Penn -->
-            <div
-              class="band casing-band"
-              :style="{ left: `${casing.left}%` }"
-            ></div>
-
-            <!-- New tracks: on the surface to the portal (solid), then in tunnel (dashed) -->
-            <div class="surface tube--north" :style="{ width: `calc(${PORTAL}% + 16px)` }"></div>
-            <div class="surface tube--south" :style="{ width: `calc(${PORTAL}% + 16px)` }"></div>
-                        <div class="tube tube--north" :style="{ left: `${PORTAL}%` }"></div>
-            <div class="tube tube--south" :style="{ left: `${PORTAL}%` }"></div>
-
-            <!-- Hover glow: the section's own dashed line lights up -->
-            <div
-              v-for="glow in glows"
-              :key="glow.id"
-              class="glow"
-              :class="hovered === glow.id && 'glow--on'"
-              :style="glow.style"
+            </text>
+            <text
+              class="section-label"
+              :class="hovered === drive.id && 'section-label--hover'"
+              :x="(x(drive.fromFt) + x(drive.toFt)) / 2"
+              :y="SURF + 76"
+              text-anchor="middle"
             >
-              <div class="glow-tube tube--north" :style="{ left: tp(PORTAL) }"></div>
-              <div class="glow-tube tube--south" :style="{ left: tp(PORTAL) }"></div>
-            </div>
+              {{ drive.label }}
+            </text>
+            <text class="section-label" :x="(x(river.fromFt) * 2 + x(river.toFt)) / 3" :y="SURF + 108" text-anchor="middle">
+              {{ river.label }}
+            </text>
+            <text class="section-label section-label--end" :x="W - 16" :y="SURF + 86" text-anchor="end">Penn Station →</text>
+          </svg>
 
-            <!-- Bored so far (estimated) + machine position -->
-            <template v-for="m in markers" :key="m.tbm.id">
-              <div
-                v-if="m.status !== 'upcoming'"
-                class="bored"
-                :class="`bored--${m.lane}`"
-                :style="{ left: `${PORTAL}%`, width: m.run }"
-              ></div>
-              <div class="tbm" :class="[`tbm--${m.lane}`, `tbm--${m.status}`]" :style="{ left: m.x }">
-                <span class="tbm-body"></span>
-                <span class="tbm-label">
-                  {{ m.tbm.label }}
-                </span>
-              </div>
+          <!-- Floating site labels with pins -->
+          <div class="labels" aria-hidden="true">
+            <template v-for="l in labels" :key="l.id">
+              <span
+                class="pin"
+                :class="hovered === l.id && 'pin--hover'"
+                :style="{ left: `${l.x}px`, top: `${l.base + 6}px`, height: `${Math.max(0, l.to - l.base - 6)}px` }"
+              ></span>
+              <span
+                class="flabel"
+                :class="[`flabel--${l.align}`, hovered === l.id && 'flabel--hover', l.wrapAt && 'flabel--wrap']"
+                :ref="(el) => el && (labelEls[l.id] = el as HTMLElement)"
+                :style="{ left: `${l.x + l.nudge}px`, bottom: `${H - l.base}px`, maxWidth: l.wrapAt && `${l.wrapAt}px` }"
+              >
+                <span class="flabel-name">{{ l.label }}</span>
+                <span v-if="l.sub" class="flabel-sub">{{ l.sub }}</span>
+              </span>
             </template>
           </div>
-
-          <!-- Sites: markers and labels (visual only; the hit columns below are the links) -->
-          <ol class="stops" aria-hidden="true">
-            <li
-              v-for="stop in routeStops"
-              :key="stop.id"
-              class="stop"
-              :class="[`stop--${stop.side}`, hovered === stop.id && 'stop--hover']"
-              :style="{ left: `${pos(stop.ft)}%` }"
-            >
-              <span class="stop-box">
-                <span class="stop-label">{{ stop.label }}</span>
-                <span class="stop-marker">
-                  <!-- Tunnel portal: wing walls splay toward the open-air side -->
-                  <svg v-if="stop.ft === 0" class="portal" viewBox="-12 -26 24 52">
-                    <path d="M0 -11 V-19 L-8 -26 M0 11 V19 L-8 26" />
-                  </svg>
-                  <span v-else class="stop-dot"></span>
-                </span>
-              </span>
-            </li>
-            <li
-              class="stop stop--below stop--casing"
-              :class="hovered === casing.id && 'stop--hover'"
-              :style="{ left: `${casing.left}%` }"
-            >
-              <span class="stop-box">
-                <span class="stop-label">{{ casing.label }}</span>
-                <span class="stop-marker"></span>
-              </span>
-            </li>
-          </ol>
 
           <!-- Hit columns: one full-height link per site -->
           <div class="hits">
@@ -228,7 +482,7 @@ const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && 
               class="hit"
               :href="hit.href"
               :aria-label="`${hit.label} camera`"
-              :style="{ left: hit.left, width: hit.width }"
+              :style="{ left: `${hit.left}px`, width: `${hit.width}px` }"
               @mouseenter="hovered = hit.id"
               @mouseleave="hovered = null"
               @focus="hovered = hit.id"
@@ -236,42 +490,37 @@ const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && 
             ></a>
           </div>
 
-          <!-- Construction sections, dimensioned like an engineering drawing -->
-          <ol class="dims">
-            <li
-              v-for="seg in dimSegments"
-              :key="seg.id"
-              class="dim"
-              :class="`dim--${seg.kind}`"
-              :style="{ left: `${seg.left}%`, width: `${seg.width}%` }"
-            >
-              <span class="dim-text">
-                <span class="dim-label">{{ seg.label }}</span>
-                <span v-if="seg.length" class="dim-length tabular">{{ seg.length }}</span>
-              </span>
-            </li>
-          </ol>
+          <!-- TBM tags -->
+          <div
+            v-for="m in markers"
+            :key="`t-${m.tbm.id}`"
+            class="tbm-tag"
+            :class="[`tbm-tag--${m.lane}`, `tbm-tag--${m.status}`]"
+            :style="{ left: `${m.x - 18}px`, top: `${m.y}px` }"
+            aria-hidden="true"
+          >
+            <span class="tbm-tag-text">
+              <strong>{{ m.tbm.label }}</strong> · {{ m.tag }}
+            </span>
+          </div>
         </div>
 
         <!-- Vertical line diagram (mobile) -->
         <ol class="vline">
-          <li class="vstop vterm vterm--west" aria-hidden="true">
-            <span class="vterm-text">↑ To Washington, DC</span>
-          </li>
           <template v-for="stop in routeStops" :key="stop.id">
             <li
               class="vstop"
               :class="[stop.id === 'river' && 'vstop--river', stop.ft === 0 && 'vstop--portal-west']"
             >
-              <component :is="camHref(stop) ? 'a' : 'div'" :href="camHref(stop)" class="vstop-link">
+              <component :is="camHref(stop.cams) ? 'a' : 'div'" :href="camHref(stop.cams)" class="vstop-link">
                 <svg v-if="stop.ft === 0" class="vportal" viewBox="-20 -12 40 24" aria-hidden="true">
                   <path d="M-8 0 H-13 L-19 -7 M8 0 H13 L19 -7" />
                 </svg>
                 <span v-else class="vstop-dot" aria-hidden="true"></span>
                 <span class="vstop-text">
                   <span class="stop-label">{{ stop.label }}</span>
+                  <span v-if="stop.ft === PALISADES_DRIVE.lengthFt && leadEta" class="vstop-sub">{{ leadEta }}</span>
                 </span>
-                <span class="vstop-mile tabular">mile {{ miles(stop.ft) }}</span>
               </component>
             </li>
             <li v-if="segmentFrom(stop.ft)" class="vstop vseg" :class="`vseg--${segmentFrom(stop.ft)!.id}`">
@@ -281,79 +530,49 @@ const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && 
                   :key="m.tbm.id"
                   class="vfill"
                   :class="[`vfill--${m.lane}`, `vfill--${m.status}`]"
-                  :style="{ height: `max(26px, ${m.fraction * 100}%)` }"
+                  :style="{ height: m.status === 'upcoming' ? '12px' : `max(26px, ${m.fraction * 100}%)` }"
                   aria-hidden="true"
                 ></span>
               </template>
               <component
-                :is="segmentFrom(stop.ft)!.href ? 'a' : 'span'"
-                :href="segmentFrom(stop.ft)!.href"
+                :is="camHref(segmentFrom(stop.ft)!.cam) ? 'a' : 'span'"
+                :href="camHref(segmentFrom(stop.ft)!.cam)"
                 class="vseg-text"
               >
-                <span class="vseg-label">
-                  {{ segmentFrom(stop.ft)!.label }}
-                  <span class="vseg-length tabular">· {{ segmentFrom(stop.ft)!.length }}</span>
-                </span>
+                <span class="vseg-label">{{ segmentFrom(stop.ft)!.label }}</span>
                 <template v-if="stop.ft === 0">
                   <span v-for="m in markers" :key="m.tbm.id" class="vseg-tbm">
                     <strong>{{ m.tbm.label }}</strong> ·
-                    {{ m.status === "upcoming" ? "launching soon" : `${formatPct(m.fraction)} of the way (est.)` }}
+                    {{ m.status === "upcoming" ? m.tbm.expected : `${formatPct(m.fraction)} of the way (est.)` }}
                   </span>
                 </template>
               </component>
             </li>
           </template>
           <li class="vstop vcasing">
-            <a :href="casing.href" class="vstop-link">
+            <a :href="camHref(casing.cam)" class="vstop-link">
               <span class="vstop-text">
                 <span class="stop-label">{{ casing.label }}</span>
               </span>
             </a>
           </li>
           <li class="vstop vterm" aria-hidden="true">
-            <span class="vterm-text">To Boston ↓</span>
+            <span class="vterm-text">Penn Station ↓</span>
           </li>
         </ol>
 
-        <!-- Progress table -->
-        <div class="progress">
-          <h3 class="progress-title">
-            Palisades Tunnel progress <span class="progress-est">estimated</span>
-          </h3>
-          <ul class="progress-rows">
-            <li v-for="m in markers" :key="m.tbm.id" class="progress-row">
-              <span class="pr-name">
-                <strong>{{ m.tbm.label }}</strong>
-                <span>{{ m.tbm.tube }} tube</span>
-              </span>
-              <span class="pr-bar" aria-hidden="true">
-                <span :style="{ width: `${m.fraction * 100}%` }"></span>
-              </span>
-              <template v-if="m.status === 'upcoming'">
-                <span class="pr-figure pr-muted">{{ m.tbm.expected }}</span>
-                <span class="pr-eta pr-muted">Not started</span>
-              </template>
-              <template v-else>
-                <span class="pr-figure tabular">
-                  ~{{ formatFt(m.ft) }} of {{ formatFt(PALISADES_DRIVE.lengthFt) }}
-                  <span class="pr-muted">· {{ formatPct(m.fraction) }} · day {{ m.day }}</span>
-                </span>
-                <span class="pr-eta tabular">
-                  <template v-if="m.status === 'arrived'">Est. at shaft</template>
-                  <template v-else>Est. arrival {{ formatMonth(m.arrival!) }}</template>
-                </span>
-              </template>
-            </li>
-          </ul>
-          <p class="progress-foot">
+        <!-- How the TBM positions are estimated -->
+        <details class="estimate">
+          <summary>TBM positions are estimates</summary>
+          <p>
             Our estimate, not an official figure. It assumes GDC's stated average of about
             {{ PALISADES_DRIVE.rateFtPerDay }} ft per day, including maintenance pauses, over the
-            {{ formatFt(PALISADES_DRIVE.lengthFt) }} first drive from the North Bergen portal to the
+            {{ formatFt(PALISADES_DRIVE.lengthFt) }} first drive from the Tonnelle Avenue portal to the
             Hudson County shaft. GDC's own schedule for this section, both tubes, is about a year, so
             treat these arrival dates as optimistic. We'll correct them as real figures are published.
             <a :href="PALISADES_DRIVE.sourceUrl" target="_blank" rel="noopener">Source</a>
           </p>
-        </div>
+        </details>
       </div>
     </div>
   </section>
@@ -365,11 +584,6 @@ const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && 
 }
 
 .route-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 4px var(--spacing-md);
   margin-bottom: var(--spacing-sm);
 }
 
@@ -385,122 +599,103 @@ const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && 
   overflow: hidden;
 }
 
-/* =========== Horizontal strip =========== */
+/* =========== Profile strip =========== */
 
 .strip {
-  --track-y: 104px;
-  --tube-gap: 7px; /* half the distance between tube centrelines */
-  --dims-y: 180px;
   position: relative;
-  height: 234px;
-  border-bottom: 1px solid var(--color-border);
 }
 
-/* Background terrain bands: rock under the Palisades, water over the river */
-.terrain {
+.profile {
   position: absolute;
-  top: 0;
-  bottom: 0;
-  /* Same coordinate frame as .track (16px inset each side) */
-  left: calc(16px + (100% - 32px) * var(--from));
-  right: calc(16px + (100% - 32px) * (1 - var(--to)));
+  inset: 0;
+  display: block;
 }
 
-.terrain--river {
-  background: var(--river-waves) 0 0 / 40px 20px, var(--color-river);
+.water {
+  fill: var(--color-river);
 }
 
-.terrain--rock {
-  background: var(--rock-pattern) 0 0 / 40px 32px, var(--color-rock);
+.water-waves {
+  fill: url(#rm-waves);
 }
 
-.zone-labels {
-  position: absolute;
-  z-index: 2;
-  inset: 12px 16px auto 16px;
-  height: 14px;
+.water-surface {
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-opacity: 0.35;
+  stroke-width: 1.2;
 }
 
-.zone {
-  position: absolute;
-  top: 0;
-  font-size: 11px;
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--color-text-secondary);
-  white-space: nowrap;
+.wave {
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-opacity: 0.16;
+  stroke-width: 1.1;
 }
 
-.zone--river,
-.zone--rock {
-  text-align: center;
+.ground {
+  fill: var(--color-ground);
+  stroke: var(--color-ground-edge);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
 }
 
-.zone--river {
-  color: var(--color-primary);
+.treated {
+  fill: color-mix(in srgb, var(--color-ground-edge) 60%, var(--color-ground));
+  transition: fill var(--transition-fast);
 }
 
-.zone--end {
-  right: 0;
+.treated--hover {
+  fill: color-mix(in srgb, var(--color-primary) 30%, var(--color-ground));
 }
 
-.zone--dir {
-  letter-spacing: 0.06em;
+.state-line line {
+  stroke: var(--color-primary);
+  stroke-opacity: 0.45;
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
 }
 
-.track {
-  position: absolute;
-  z-index: 1;
-  left: 16px;
-  right: 16px;
-  top: var(--track-y);
-  height: 0;
-  pointer-events: none;
+.state-line text {
+  font-size: 10px;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.08em;
+  fill: var(--color-primary);
+  fill-opacity: 0.7;
 }
 
-.tube,
+.band {
+  fill: none;
+  stroke: var(--color-band);
+  stroke-width: 34;
+  stroke-linejoin: round;
+}
+
 .surface,
+.tube,
+.glow,
 .bored {
-  position: absolute;
-  height: 4px;
-  border-radius: 2px;
+  fill: none;
+  stroke-width: 4;
+  stroke-linejoin: round;
+}
+
+.surface {
+  stroke: var(--color-map-line);
+  stroke-opacity: 0.75;
 }
 
 .tube {
-  right: -16px; /* runs off the card edge into Penn Station */
-  background: repeating-linear-gradient(
-    90deg,
-    var(--color-map-line) 0 12px,
-    transparent 12px 19px
-  );
-  opacity: 0.75;
-}
-
-.tube--north,
-.bored--north {
-  top: calc(-1 * var(--tube-gap) - 2px);
-}
-
-.tube--south,
-.bored--south {
-  top: calc(var(--tube-gap) - 2px);
-}
-
-/* New surface track, from the card edge to the portal */
-.surface {
-  left: -16px;
-  background: var(--color-map-line);
-  opacity: 0.75;
+  stroke: var(--color-map-line);
+  stroke-opacity: 0.75;
+  stroke-dasharray: 12 7;
 }
 
 .glow {
-  position: absolute;
-  left: 0;
-  right: -16px;
-  top: -20px;
-  height: 40px;
+  stroke: var(--color-primary);
+  stroke-dasharray: 12 7;
   opacity: 0;
+  filter: drop-shadow(0 0 2px var(--color-glow)) drop-shadow(0 0 5px var(--color-glow));
   transition: opacity 200ms ease;
 }
 
@@ -508,155 +703,137 @@ const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && 
   opacity: 1;
 }
 
-/* Same dash rhythm as .tube, so the glow sits exactly on the line */
-.glow-tube {
-  position: absolute;
-  right: 0;
-  height: 4px;
-  margin-top: 20px;
-  border-radius: 2px;
-  background: repeating-linear-gradient(
-    90deg,
-    var(--color-primary) 0 12px,
-    transparent 12px 19px
-  );
-  filter: drop-shadow(0 0 2px var(--color-glow)) drop-shadow(0 0 5px var(--color-glow));
-}
-
 .bored {
-  background: var(--color-accent);
-  z-index: 1;
-  transition: width 600ms ease;
+  stroke: var(--color-accent);
+  stroke-linecap: round;
 }
 
-.band {
-  position: absolute;
-  top: -17px;
-  height: 34px;
-  /* Opaque, so the pill reads the same over rock, water or plain card */
-  background: linear-gradient(var(--color-accent-muted), var(--color-accent-muted)), var(--color-card-bg);
+.shaft {
+  fill: var(--color-map-line);
+  transition: fill var(--transition-fast);
 }
 
-.drive {
-  border-radius: 17px;
+.shaft--hover {
+  fill: var(--color-primary);
 }
 
-.casing-band {
-  right: -16px; /* into Penn Station, off the card edge */
-  border-radius: 17px 0 0 17px;
+.tbm rect {
+  fill: var(--color-accent);
+  stroke: var(--color-card-bg);
+  stroke-width: 2;
+  paint-order: stroke;
 }
 
-/* TBMs: identical machine-shaped pills riding their tube, leading edge at the
-   estimated position. Labels sit outside the pair: north above, south below. */
-.tbm {
-  position: absolute;
-  z-index: 4;
-  width: 0;
-  height: 0;
-  transition: left 600ms ease;
+.tbm--upcoming rect {
+  fill: var(--color-card-bg);
+  stroke: var(--color-accent);
+  stroke-width: 2;
 }
 
-.tbm--north {
-  top: calc(-1 * var(--tube-gap));
-}
-
-.tbm--south {
-  top: var(--tube-gap);
-}
-
-.tbm-body {
-  position: absolute;
-  left: -18px;
-  top: -5px;
-  width: 18px;
-  height: 10px;
-  box-sizing: border-box;
-  border-radius: 5px;
-  background: var(--color-accent);
-  box-shadow: 0 0 0 2px var(--color-card-bg);
-}
-
-.tbm--upcoming .tbm-body {
-  background: var(--color-card-bg);
-  border: 2px solid var(--color-accent);
-}
-
-.tbm-label {
-  position: absolute;
-  left: -18px;
-  padding: 1px 6px;
-  border-radius: var(--radius-sm);
-  background: var(--color-accent);
-  color: var(--color-navy);
+.terrain-label {
   font-size: 11px;
-  font-weight: var(--font-weight-bold);
-  line-height: 16px;
-  white-space: nowrap;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  fill: var(--color-ground-ink);
 }
 
-.tbm--north .tbm-label {
-  bottom: 9px;
+.terrain-label--water {
+  fill: var(--color-primary);
 }
 
-.tbm--south .tbm-label {
-  top: 9px;
+.section-label {
+  font-size: 13px;
+  font-weight: var(--font-weight-semibold);
+  fill: var(--color-ground-ink);
+  transition: fill var(--transition-fast);
 }
 
-.tbm--upcoming .tbm-label {
-  background: var(--color-card-bg);
-  color: var(--color-accent-ink);
-  box-shadow: inset 0 0 0 1px var(--color-accent);
+.section-label--hover {
+  fill: var(--color-primary);
+  text-decoration: underline;
 }
 
-/* --- Sites --- */
+/* --- Floating labels --- */
 
-.stops {
+.labels {
   position: absolute;
-  z-index: 2;
-  inset: 0 16px;
-  list-style: none;
+  inset: 0;
   pointer-events: none;
 }
 
-.stop {
+.pin {
   position: absolute;
-  top: var(--track-y);
-  width: 0;
-  height: 0;
+  width: 1px;
+  margin-left: -0.5px;
+  background: var(--color-text-secondary);
+  opacity: 0.55;
+  transition: background var(--transition-fast), opacity var(--transition-fast);
 }
 
-/* Marker + label. The marker is centred on the track; the label sits above or
-   below, clear of the TBM tags. */
-.stop-box {
+.pin--hover {
+  background: var(--color-primary);
+  opacity: 1;
+}
+
+.flabel {
   position: absolute;
-  left: 0;
-  transform: translateX(-50%);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 22px;
-  padding: 8px 12px;
+  white-space: nowrap;
   color: var(--color-text-primary);
 }
 
-.stop--above .stop-box {
-  bottom: -26px;
+.flabel--center {
+  align-items: center;
+  text-align: center;
+  transform: translateX(-50%);
 }
 
-.stop--below .stop-box {
-  top: -26px;
-  flex-direction: column-reverse;
+.flabel--start {
+  align-items: flex-start;
+  transform: translateX(-12px);
 }
 
-/* Full-height click/hover columns, one per site */
+.flabel--end {
+  align-items: flex-end;
+  text-align: right;
+  transform: translateX(calc(-100% + 12px));
+}
+
+.flabel--wrap {
+  width: max-content;
+  white-space: normal;
+  text-wrap: balance;
+}
+
+.flabel-name {
+  font-family: var(--font-family-display);
+  font-size: 17px;
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.15;
+}
+
+.flabel-sub {
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-accent-ink);
+}
+
+.flabel--hover .flabel-name {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+/* --- Hit columns --- */
+
 .hits {
   position: absolute;
-  z-index: 3;
-  inset: 0 16px;
+  inset: 0;
   pointer-events: none;
 }
 
-/* Invisible: hovering a column lights up its label and marker instead. */
 .hit {
   position: absolute;
   top: 0;
@@ -669,149 +846,66 @@ const segmentFrom = (ft: number) => segments.find((seg) => seg.fromFt === ft && 
   outline-offset: -2px;
 }
 
-.stop-marker {
-  position: relative;
-  width: 22px;
-  height: 36px;
-}
+/* --- TBM tags --- */
 
-.stop-dot {
+.tbm-tag {
   position: absolute;
-  inset: 0;
-  border-radius: 11px;
-  border: 4px solid var(--color-map-line);
-  background: var(--color-card-bg);
-  transition: background var(--transition-fast);
+  z-index: 2;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+  transition: left 600ms ease, top 600ms ease;
 }
 
-/* Hudson Yards casing: the box spans the band, label below it */
-.stop--casing {
-  right: -16px;
-  width: auto;
-}
-
-.stop--casing .stop-box {
-  right: 0;
-  transform: none;
-  padding-inline: 6px;
-  top: -25px;
-  gap: 23px;
-  border-radius: 10px 0 0 10px;
-}
-
-.stop--casing .stop-marker {
-  width: 100%;
-  height: 34px;
-}
-
-.stop--casing .stop-label {
-  white-space: normal;
-  text-align: center;
-}
-
-.stop--hover .stop-dot,
-a.vstop-link:hover .vstop-dot {
-  background: var(--color-primary);
-}
-
-.portal,
-.vportal {
+.tbm-tag-text {
   position: absolute;
-  overflow: visible;
-  fill: none;
-  stroke: var(--color-map-line);
-  stroke-width: 3;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  transition: stroke var(--transition-fast);
-}
-
-.portal {
-  left: -1px;
-  top: -8px;
-  width: 24px;
-  height: 52px;
-}
-
-.stop--hover .portal,
-a.vstop-link:hover .vportal {
-  stroke: var(--color-primary);
-}
-
-.stop-label {
-  font-family: var(--font-family-display);
-  font-size: 17px;
-  font-weight: var(--font-weight-semibold);
-  line-height: 1.15;
-  white-space: nowrap;
-}
-
-.stop--hover .stop-label,
-a.vstop-link:hover .stop-label {
-  color: var(--color-primary);
-  text-decoration: underline;
-}
-
-/* Dimension lines naming each tunnel-boring section */
-.dims {
-  position: absolute;
-  left: 16px;
-  right: 16px;
-  top: var(--dims-y);
-  list-style: none;
-}
-
-.dim {
-  position: absolute;
-  top: 0;
-  height: 36px;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  padding: 0 2px 6px;
-  border-bottom: 1px solid var(--color-text-secondary);
-  font-size: 12.5px;
-  line-height: 1.2;
-}
-
-/* Wraps onto two lines when the section is narrow */
-.dim-text {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  column-gap: 6px;
-  text-align: center;
-}
-
-
-
-/* End ticks */
-.dim::before,
-.dim::after {
-  content: "";
-  position: absolute;
-  bottom: -5px;
-  width: 1px;
-  height: 10px;
-  background: var(--color-text-secondary);
-}
-
-.dim::before {
   left: 0;
-}
-
-.dim::after {
-  right: 0;
-}
-
-.dim-label {
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  background: var(--color-accent);
+  color: var(--color-navy);
+  font-size: 11px;
+  line-height: 16px;
   white-space: nowrap;
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
 }
 
-.dim-length {
+.tbm-tag--north .tbm-tag-text {
+  bottom: 9px;
+}
+
+.tbm-tag--south .tbm-tag-text {
+  top: 9px;
+}
+
+.tbm-tag--upcoming .tbm-tag-text {
+  background: var(--color-card-bg);
+  color: var(--color-accent-ink);
+  box-shadow: inset 0 0 0 1px var(--color-accent);
+}
+
+/* =========== Estimate note =========== */
+
+.estimate {
+  border-top: 1px solid var(--color-border);
+  padding: 10px 20px;
+  font-size: 12.5px;
   color: var(--color-text-secondary);
+}
+
+.estimate summary {
+  cursor: pointer;
+  width: fit-content;
+  font-weight: var(--font-weight-semibold);
+}
+
+.estimate summary::marker {
+  color: var(--color-accent);
+}
+
+.estimate p {
+  margin: 8px 0 4px;
+  max-width: 90ch;
+  line-height: 1.5;
 }
 
 /* =========== Vertical line (mobile) =========== */
@@ -820,7 +914,6 @@ a.vstop-link:hover .stop-label {
   display: none;
   list-style: none;
   padding: 0;
-  border-bottom: 1px solid var(--color-border);
 }
 
 .vstop {
@@ -836,11 +929,7 @@ a.vstop-link:hover .stop-label {
   top: 0;
   bottom: 0;
   width: 3px;
-  background: repeating-linear-gradient(
-    180deg,
-    var(--color-map-line) 0 9px,
-    transparent 9px 14px
-  );
+  background: repeating-linear-gradient(180deg, var(--color-map-line) 0 9px, transparent 9px 14px);
   opacity: 0.75;
 }
 
@@ -852,7 +941,7 @@ a.vstop-link:hover .stop-label {
   left: 31px;
 }
 
-/* Portals: solid surface track on the open-air side, dashed tunnel beyond. */
+/* Portal: solid surface track above, dashed tunnel below */
 .vstop--portal-west::before,
 .vstop--portal-west::after {
   background:
@@ -860,20 +949,32 @@ a.vstop-link:hover .stop-label {
     repeating-linear-gradient(180deg, var(--color-map-line) 0 9px, transparent 9px 14px) 0 50% / 100% 50% no-repeat;
 }
 
-.vstop--portal-east::before,
-.vstop--portal-east::after {
-  background:
-    linear-gradient(transparent 0 50%, var(--color-map-line) 50%),
-    repeating-linear-gradient(180deg, var(--color-map-line) 0 9px, transparent 9px 14px) 0 0 / 100% 50% no-repeat;
-}
-
 .vportal {
+  position: absolute;
   left: 8px;
   top: calc(50% - 12px);
   width: 40px;
   height: 24px;
+  overflow: visible;
+  fill: none;
+  stroke: var(--color-map-line);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke var(--transition-fast);
 }
 
+a.vstop-link:hover .vportal {
+  stroke: var(--color-primary);
+}
+
+/* Terrain blocks: the ridge, then water from the river section onwards */
+.vseg--palisades {
+  min-height: 112px;
+  background: var(--color-ground);
+}
+
+.vseg--hudson-river,
 .vstop--river {
   background: var(--river-waves) 0 0 / 40px 20px, var(--color-river);
 }
@@ -884,6 +985,11 @@ a.vstop-link:hover .stop-label {
   gap: 12px;
   padding: 10px 0;
   color: var(--color-text-primary);
+}
+
+/* First row: room for the open-air track coming in from the top edge */
+.vstop--portal-west .vstop-link {
+  padding-block: 16px;
 }
 
 a.vstop-link:hover,
@@ -901,8 +1007,12 @@ a.vstop-link:visited {
   border: 4px solid var(--color-map-line);
   background: var(--color-card-bg);
   z-index: 1;
+  transition: background var(--transition-fast);
 }
 
+a.vstop-link:hover .vstop-dot {
+  background: var(--color-primary);
+}
 
 .vstop-text {
   display: flex;
@@ -911,15 +1021,30 @@ a.vstop-link:visited {
   min-width: 0;
 }
 
+.stop-label {
+  font-family: var(--font-family-display);
+  font-size: 18px;
+  text-wrap: balance;
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.15;
+}
+
+a.vstop-link:hover .stop-label {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+.vstop-sub {
+  margin-top: 2px;
+  font-size: 12.5px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-accent-ink);
+}
+
 .vseg {
   min-height: 64px;
   display: flex;
   align-items: center;
-}
-
-.vseg--palisades {
-  min-height: 96px;
-  background: var(--rock-pattern) 0 0 / 40px 32px, var(--color-rock);
 }
 
 .vseg-text {
@@ -949,31 +1074,19 @@ a.vseg-text:hover .vseg-label {
   color: var(--color-text-secondary);
 }
 
-.vseg-length {
-  font-weight: 400;
-  letter-spacing: 0;
-  text-transform: none;
-}
-
 .vseg-tbm {
   font-size: 13px;
   color: var(--color-accent-ink);
 }
 
-/* Open-air track at each end of the list */
 .vterm {
   display: flex;
   align-items: center;
   min-height: 44px;
 }
 
-.vterm--west::before,
-.vterm--west::after {
-  background: var(--color-map-line);
-}
-
 .vcasing {
-  background: var(--color-accent-muted);
+  background: var(--color-band);
 }
 
 .vterm-text {
@@ -1024,138 +1137,7 @@ a.vseg-text:hover .vseg-label {
   left: 31px;
 }
 
-.vstop-mile {
-  font-size: 11px;
-  color: var(--color-text-secondary);
-}
-
-.vstop .stop-label {
-  font-size: 18px;
-  white-space: normal;
-}
-
-/* =========== Progress table =========== */
-
-.progress {
-  padding: var(--spacing-sm) 20px 18px;
-}
-
-.progress-title {
-  margin: 0 0 10px;
-  font-family: var(--font-family-base);
-  font-size: 13px;
-  font-weight: var(--font-weight-bold);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--color-text-secondary);
-}
-
-.progress-est {
-  margin-left: 6px;
-  padding: 1px 6px;
-  border-radius: var(--radius-sm);
-  background: var(--color-accent-muted);
-  color: var(--color-accent-ink);
-  font-size: 11px;
-  letter-spacing: 0.04em;
-}
-
-.progress-rows {
-  list-style: none;
-  display: grid;
-  gap: 8px;
-}
-
-.progress-row {
-  display: grid;
-  grid-template-columns: 170px minmax(120px, 1fr) minmax(0, auto) 150px;
-  align-items: center;
-  gap: 16px;
-  font-size: 14px;
-}
-
-.pr-name {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-}
-
-.pr-name span {
-  color: var(--color-text-secondary);
-  font-size: 13px;
-}
-
-.pr-bar {
-  position: relative;
-  height: 8px;
-  border-radius: 4px;
-  background: color-mix(in srgb, var(--color-map-line), transparent 85%);
-  overflow: hidden;
-}
-
-.pr-bar > span {
-  position: absolute;
-  inset: 0 auto 0 0;
-  min-width: 4px;
-  border-radius: 4px;
-  background: var(--color-accent);
-}
-
-.progress-row:has(.pr-muted.pr-eta) .pr-bar > span {
-  min-width: 0;
-}
-
-.pr-figure {
-  white-space: nowrap;
-}
-
-.pr-muted {
-  color: var(--color-text-secondary);
-}
-
-.pr-eta {
-  text-align: right;
-  font-weight: var(--font-weight-semibold);
-  white-space: nowrap;
-}
-
-.progress-foot {
-  margin: 12px 0 0;
-  max-width: 90ch;
-  font-size: 12.5px;
-  line-height: 1.5;
-  color: var(--color-text-secondary);
-}
-
-@media (max-width: 1000px) {
-  .progress-row {
-    grid-template-columns: 1fr auto;
-    gap: 4px 12px;
-  }
-
-  .pr-bar {
-    grid-column: 1 / -1;
-    grid-row: 2;
-  }
-
-  .pr-figure {
-    grid-column: 1 / -1;
-    grid-row: 3;
-    white-space: normal;
-  }
-
-  .pr-eta {
-    grid-column: 2;
-    grid-row: 1;
-  }
-
-  .progress-rows {
-    gap: 14px;
-  }
-}
-
-/* Below this the to-scale Manhattan end gets too crowded for labels. */
-@media (max-width: 1080px) {
+@media (max-width: 1024px) {
   .strip {
     display: none;
   }
@@ -1168,8 +1150,8 @@ a.vseg-text:hover .vseg-label {
     font-size: 26px;
   }
 
-  .progress {
-    padding: var(--spacing-sm);
+  .estimate {
+    padding: 10px var(--spacing-sm);
   }
 }
 </style>

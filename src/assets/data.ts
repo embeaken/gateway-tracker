@@ -112,6 +112,9 @@ export const ROUTE = {
   /** NJ waterfront (profile: ~1,480 ft east of the HC shaft) */
   riverFromFt: HC_SHAFT_FT + 1480,
   riverToFt: MANHATTAN_BULKHEAD_FT,
+  /** Hudson River Ground Stabilization zone (profile) */
+  stabilizedFromFt: HC_SHAFT_FT + 5115,
+  stabilizedToFt: HC_SHAFT_FT + 6355,
 } as const;
 
 /** Construction sections, west → east. */
@@ -133,11 +136,10 @@ export const routeSegments: RouteSegment[] = [
   },
   {
     id: "hudson-yards",
-    label: "Hudson Yards casing",
+    label: "Hudson Yards concrete casing",
     fromFt: TWELFTH_AVE_SHAFT_FT,
     toFt: TENTH_AVE_FT + 300,
     kind: "casing",
-    lengthLabel: null,
     cam: "hudson-yards",
   },
 ];
@@ -148,14 +150,12 @@ export const routeStops: RouteStop[] = [
     label: "Tonnelle Avenue",
     ft: 0,
     cams: ["palisades-tunnel"],
-    side: "below",
   },
   {
     id: "hudson-county-shaft",
-    label: "Access shaft",
+    label: "Hudson County access shaft",
     ft: HC_SHAFT_FT,
     cams: ["hudson-county-shaft"],
-    side: "above",
   },
   {
     id: "river",
@@ -163,14 +163,12 @@ export const routeStops: RouteStop[] = [
     // Midpoint of the Hudson River Ground Stabilization zone (profile)
     ft: HC_SHAFT_FT + 5735,
     cams: ["river"],
-    side: "below",
   },
   {
     id: "manhattan-shaft",
-    label: "Access shaft",
+    label: "Manhattan access shaft",
     ft: TWELFTH_AVE_SHAFT_FT,
     cams: ["manhattan-shaft"],
-    side: "above",
   },
 ];
 
