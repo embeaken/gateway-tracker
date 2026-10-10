@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import {
   images,
   blueskyPosts,
@@ -7,6 +7,9 @@ import {
   constructionNotices,
   youtubeVideos,
 } from "../assets/activityData";
+import { formatShortDate, parseDate } from "../dates";
+import { cdnImage, cdnSrcset } from "../imageCdn";
+import { useModal } from "../useModal";
 
 type TimelineItemType = "photo" | "bluesky" | "press" | "construction" | "video";
 
@@ -22,27 +25,20 @@ type TimelineItem = {
   videoId?: string;
 };
 
-const DATE_ONLY_RE = /^\d{4}-\d{2}-\d{2}$/;
-
-const parseDate = (dateStr: string): Date =>
-  DATE_ONLY_RE.test(dateStr) ? new Date(`${dateStr}T12:00:00`) : new Date(dateStr);
-
 const FEED_LIMIT = 100;
-const INITIAL_VISIBLE_ITEMS = 30;
+// Below the sidebar breakpoint the feed sits under the cameras, so start short.
+const INITIAL_VISIBLE_ITEMS = window.matchMedia("(max-width: 1199px)").matches ? 10 : 30;
 const PAGE_SIZE = 20;
-
-const formatDate = (date: Date, includeTime = false): string => {
-  const d = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear() % 100}`;
-  if (!includeTime) return d;
-  const h = date.getHours();
-  const m = date.getMinutes().toString().padStart(2, "0");
-  return `${d} ${h % 12 || 12}:${m}${h >= 12 ? "pm" : "am"}`;
-};
 
 const formatTime = (date: Date): string => {
   const h = date.getHours();
   const m = date.getMinutes().toString().padStart(2, "0");
   return `${h % 12 || 12}:${m}${h >= 12 ? "pm" : "am"}`;
+};
+
+const formatDate = (date: Date, includeTime = false): string => {
+  const d = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear() % 100}`;
+  return includeTime ? `${d} ${formatTime(date)}` : d;
 };
 
 const timelineItems = computed<TimelineItem[]>(() => {
@@ -124,15 +120,33 @@ const showMoreItems = () => {
 
 // --- Date grouping ---
 
-type DateGroup = { dateKey: string; dateLabel: string; items: TimelineItem[] };
+// A block is either a single item or a run of consecutive same-day photos,
+// which render as one mosaic instead of a wall of full-width images.
+type Block =
+  | { kind: "item"; key: string; item: TimelineItem }
+  | { kind: "photos"; key: string; photos: TimelineItem[] };
+
+type DateGroup = { dateKey: string; dateLabel: string; blocks: Block[] };
+
+const MOSAIC_MAX = 5;
+
+const toBlocks = (items: TimelineItem[]): Block[] => {
+  const blocks: Block[] = [];
+  for (const item of items) {
+    const last = blocks[blocks.length - 1];
+    if (item.type === "photo" && last?.kind === "photos") {
+      last.photos.push(item);
+    } else if (item.type === "photo" && last?.kind === "item" && last.item.type === "photo") {
+      blocks[blocks.length - 1] = { kind: "photos", key: last.key, photos: [last.item, item] };
+    } else {
+      blocks.push({ kind: "item", key: item.id, item });
+    }
+  }
+  return blocks;
+};
 
 const getDateKey = (date: Date) =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-
-const formatGroupDate = (date: Date) =>
-  date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-// Note: groupedItems passes `key + 'T12:00:00'` (local noon) to formatGroupDate
-// to prevent UTC midnight being parsed as the prior day in western timezones
 
 const groupedItems = computed<DateGroup[]>(() => {
   const map = new Map<string, TimelineItem[]>();
@@ -143,8 +157,8 @@ const groupedItems = computed<DateGroup[]>(() => {
   }
   return Array.from(map.entries()).map(([key, items]) => ({
     dateKey: key,
-    dateLabel: formatGroupDate(new Date(key + "T12:00:00")),
-    items,
+    dateLabel: formatShortDate(parseDate(key)),
+    blocks: toBlocks(items),
   }));
 });
 
@@ -169,48 +183,48 @@ const badgeLabel = (type: TimelineItemType): string =>
     ({
       photo: "Photo",
       bluesky: "Bluesky",
-      press: "Press",
-      construction: "Construction Notice",
+      press: "Press release",
+      construction: "Construction notice",
       video: "Video",
     }) satisfies Record<TimelineItemType, string>
   )[type];
 
-// --- Image handling ---
+// --- Lightbox: steps through the photo set it was opened from ---
+// (Bluesky images skip the image CDN; Bluesky already serves them small.)
+const lightboxSet = ref<TimelineItem[]>([]);
+const lightboxIndex = ref(0);
+const selectedImage = computed(() => lightboxSet.value[lightboxIndex.value] ?? null);
 
-const transformImage = (url: string, width: number) => {
-  if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
-    return url;
-  }
-
-  const params = new URLSearchParams({
-    url,
-    w: width.toString(),
-    fm: "webp",
-  });
-  return `/.netlify/images?${params.toString()}`;
-};
-
-const selectedImage = ref<TimelineItem | null>(null);
-
-const openImage = (item: TimelineItem) => {
-  if (item.type === "photo" && item.imageUrl) selectedImage.value = item;
+const openImage = (item: TimelineItem, set: TimelineItem[] = [item]) => {
+  if (item.type !== "photo" || !item.imageUrl) return;
+  lightboxSet.value = set;
+  lightboxIndex.value = Math.max(0, set.indexOf(item));
 };
 
 const closeImage = () => {
-  selectedImage.value = null;
+  lightboxSet.value = [];
 };
+
+const step = (delta: number) => {
+  const n = lightboxSet.value.length;
+  if (n > 1) lightboxIndex.value = (lightboxIndex.value + delta + n) % n;
+};
+
+const closeBtn = ref<HTMLButtonElement | null>(null);
+useModal(() => !!selectedImage.value, closeBtn, closeImage);
+
+const onKeydown = (e: KeyboardEvent) => {
+  if (!selectedImage.value) return;
+  if (e.key === "ArrowRight") step(1);
+  if (e.key === "ArrowLeft") step(-1);
+};
+
+onMounted(() => document.addEventListener("keydown", onKeydown));
+onUnmounted(() => document.removeEventListener("keydown", onKeydown));
 </script>
 
 <template>
   <div class="activity-timeline">
-    <!-- Header -->
-    <div class="timeline-header">
-      <div>
-        <h3 class="timeline-title">
-          Updates from the <span class="tooltip" title="Gateway Development Commission">GDC</span>
-        </h3>
-      </div>
-    </div>
 
     <!-- Timeline feed grouped by date -->
     <div class="timeline">
@@ -218,55 +232,84 @@ const closeImage = () => {
         <h4 class="date-header">{{ group.dateLabel }}</h4>
 
         <div class="date-group-items">
+          <template v-for="block in group.blocks" :key="block.key">
+          <!-- Photo set: mosaic -->
+          <article v-if="block.kind === 'photos'" class="timeline-item timeline-item-photo mosaic-item">
+            <div class="compact-header">
+              <span class="item-badge badge-photo">{{ block.photos.length }} photos</span>
+            </div>
+            <div class="mosaic" :class="`mosaic--${Math.min(block.photos.length, MOSAIC_MAX)}`">
+              <button
+                v-for="(photo, pi) in block.photos.slice(0, MOSAIC_MAX)"
+                :key="photo.id"
+                type="button"
+                class="mosaic-tile img-hover"
+                :aria-label="`Open photo: ${photo.title}`"
+                @click="openImage(photo, block.photos)"
+              >
+                <img :src="cdnImage(photo.imageUrl!, pi === 0 ? 800 : 400)" :alt="photo.title" loading="lazy" />
+                <span
+                  v-if="pi === MOSAIC_MAX - 1 && block.photos.length > MOSAIC_MAX"
+                  class="mosaic-more"
+                >+{{ block.photos.length - MOSAIC_MAX }}</span>
+              </button>
+            </div>
+            <p class="photo-caption">{{ block.photos[0]!.content }}</p>
+          </article>
+
           <article
-            v-for="item in group.items"
-            :key="item.id"
+            v-else
             class="timeline-item"
             :class="[
-              `timeline-item-${item.type}`,
-              isCompact(item) && 'timeline-item--compact',
-              isPhotoFull(item) && 'timeline-item--photo-full',
-              isThumb(item) && 'timeline-item--thumb',
-              item.type === 'video' && 'timeline-item--video-card',
+              `timeline-item-${block.item.type}`,
+              isCompact(block.item) && 'timeline-item--compact',
+              isPhotoFull(block.item) && 'timeline-item--photo-full',
+              isThumb(block.item) && 'timeline-item--thumb',
+              block.item.type === 'video' && 'timeline-item--video-card',
             ]"
           >
             <!-- Mode A: compact text strip (press, construction, bluesky w/o image) -->
-            <template v-if="isCompact(item)">
+            <template v-if="isCompact(block.item)">
               <div class="compact-header">
-                <span class="item-badge" :class="`badge-${item.type}`">{{
-                  badgeLabel(item.type)
+                <span class="item-badge" :class="`badge-${block.item.type}`">{{
+                  badgeLabel(block.item.type)
                 }}</span>
-                <time v-if="item.type === 'bluesky'" class="item-time">{{
-                  formatTime(item.date)
+                <time v-if="block.item.type === 'bluesky'" class="item-time">{{
+                  formatTime(block.item.date)
                 }}</time>
               </div>
-              <p class="compact-title">{{ item.type === "bluesky" ? item.content : item.title }}</p>
-              <a v-if="item.link" :href="item.link" target="_blank" class="item-link">
-                {{ item.type === "bluesky" ? "View on Bluesky →" : "View →" }}
+              <p class="compact-title">{{ block.item.type === "bluesky" ? block.item.content : block.item.title }}</p>
+              <a v-if="block.item.link" :href="block.item.link" target="_blank" class="item-link">
+                {{ block.item.type === "bluesky" ? "View on Bluesky →" : "Read the PDF →" }}
               </a>
             </template>
 
             <!-- Mode B: full-width gallery photo -->
-            <template v-else-if="isPhotoFull(item)">
-              <div class="photo-full" @click="openImage(item)">
-                <img :src="transformImage(item.imageUrl!, 800)" :alt="item.title" loading="lazy" />
-              </div>
-              <p v-if="item.content" class="photo-caption">{{ item.content }}</p>
+            <template v-else-if="isPhotoFull(block.item)">
+              <button
+                type="button"
+                class="photo-full img-hover"
+                :aria-label="`Open photo: ${block.item.title}`"
+                @click="openImage(block.item)"
+              >
+                <img :src="cdnImage(block.item.imageUrl!, 800)" :alt="block.item.title" loading="lazy" />
+              </button>
+              <p v-if="block.item.content" class="photo-caption">{{ block.item.content }}</p>
             </template>
 
             <!-- Mode C: bluesky with image (side thumbnail) -->
-            <template v-else-if="isThumb(item)">
+            <template v-else-if="isThumb(block.item)">
               <div class="thumb-layout">
-                <a :href="item.link" target="_blank" class="thumb-image">
-                  <img :src="item.imageUrl" :alt="item.title" loading="lazy" />
-                </a>
+                <div class="thumb-image">
+                  <img :src="block.item.imageUrl" :alt="block.item.title" loading="lazy" />
+                </div>
                 <div class="thumb-content">
                   <div class="compact-header">
                     <span class="item-badge badge-bluesky">Bluesky</span>
-                    <time class="item-time">{{ formatTime(item.date) }}</time>
+                    <time class="item-time">{{ formatTime(block.item.date) }}</time>
                   </div>
-                  <p class="compact-caption">{{ item.content }}</p>
-                  <a v-if="item.link" :href="item.link" target="_blank" class="item-link">View →</a>
+                  <p class="compact-caption">{{ block.item.content }}</p>
+                  <a v-if="block.item.link" :href="block.item.link" target="_blank" class="item-link">View on Bluesky →</a>
                 </div>
               </div>
             </template>
@@ -275,8 +318,8 @@ const closeImage = () => {
             <template v-else>
               <div class="item-video">
                 <iframe
-                  :src="`https://www.youtube.com/embed/${item.videoId}`"
-                  :title="item.title"
+                  :src="`https://www.youtube.com/embed/${block.item.videoId}`"
+                  :title="block.item.title"
                   allow="
                     accelerometer;
                     autoplay;
@@ -290,9 +333,9 @@ const closeImage = () => {
                 ></iframe>
               </div>
               <div class="video-footer">
-                <p class="compact-title">{{ item.title }}</p>
+                <p class="compact-title">{{ block.item.title }}</p>
                 <a
-                  :href="`https://www.youtube.com/watch?v=${item.videoId}`"
+                  :href="`https://www.youtube.com/watch?v=${block.item.videoId}`"
                   target="_blank"
                   class="item-link"
                 >
@@ -301,6 +344,7 @@ const closeImage = () => {
               </div>
             </template>
           </article>
+          </template>
         </div>
       </section>
     </div>
@@ -314,11 +358,23 @@ const closeImage = () => {
     <Teleport to="body">
       <!-- Lightbox -->
       <div v-if="selectedImage" class="lightbox" @click="closeImage">
-        <div class="lightbox-content" @click.stop>
-          <button type="button" class="close-button" @click="closeImage">×</button>
-          <img :src="selectedImage.imageUrl" :alt="selectedImage.title" />
+        <div class="lightbox-content" role="dialog" aria-modal="true" aria-label="Photo" @click.stop>
+          <button ref="closeBtn" type="button" class="close-button" aria-label="Close" @click="closeImage">×</button>
+          <img
+            :src="cdnImage(selectedImage.imageUrl!, 1920)"
+            :srcset="cdnSrcset(selectedImage.imageUrl!, [960, 1440, 1920, 2560])"
+            sizes="90vw"
+            :alt="selectedImage.title"
+          />
+          <template v-if="lightboxSet.length > 1">
+            <button type="button" class="nav-button nav-prev" aria-label="Previous photo" @click="step(-1)">‹</button>
+            <button type="button" class="nav-button nav-next" aria-label="Next photo" @click="step(1)">›</button>
+          </template>
           <div class="lightbox-caption">
-            <p class="caption-date">{{ selectedImage.dateDisplay }}</p>
+            <p class="caption-date">
+              {{ selectedImage.dateDisplay }}
+              <span v-if="lightboxSet.length > 1"> · {{ lightboxIndex + 1 }} / {{ lightboxSet.length }}</span>
+            </p>
             <p class="caption-text">{{ selectedImage.content }}</p>
           </div>
         </div>
@@ -328,38 +384,6 @@ const closeImage = () => {
 </template>
 
 <style scoped>
-/* =============================================
-   Container
-   ============================================= */
-
-.activity-timeline {
-  width: 100%;
-}
-
-/* =============================================
-   Header
-   ============================================= */
-
-.timeline-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--spacing-sm);
-  margin-bottom: 12px;
-}
-
-.timeline-title {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-  margin: 0;
-}
-
-.timeline-title .tooltip {
-  text-decoration: underline dotted;
-  cursor: help;
-}
-
 /* =============================================
    Timeline list
    ============================================= */
@@ -379,7 +403,7 @@ const closeImage = () => {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: var(--font-weight-semibold);
   text-transform: uppercase;
   letter-spacing: 0.7px;
@@ -408,25 +432,23 @@ const closeImage = () => {
   border-radius: var(--radius-md);
   content-visibility: auto;
   contain-intrinsic-size: auto 180px;
-  transition:
-    box-shadow var(--transition-base),
-    background var(--transition-base);
+  transition: background var(--transition-fast);
 }
 
 .timeline-item-photo {
-  border-left-color: var(--color-primary);
+  border-left-color: var(--color-text-secondary);
 }
 .timeline-item-bluesky {
   border-left-color: #0085ff;
 }
 .timeline-item-press {
-  border-left-color: #b8900a;
+  border-left-color: var(--color-primary);
 }
 .timeline-item-construction {
-  border-left-color: #ea580c;
+  border-left-color: var(--color-accent);
 }
 .timeline-item-video {
-  border-left-color: #cc0000;
+  border-left-color: #B42318;
 }
 
 /* =============================================
@@ -448,9 +470,32 @@ const closeImage = () => {
   box-shadow: none;
 }
 
-.timeline-item--compact:hover {
+/* Whole-row links: the row's link stretches over the whole row */
+.timeline-item--compact,
+.timeline-item--thumb {
+  position: relative;
+}
+
+.timeline-item--compact .item-link::after,
+.timeline-item--thumb .item-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.timeline-item--compact:has(.item-link):hover,
+.timeline-item--thumb:hover {
   background: var(--color-primary-muted);
-  box-shadow: none;
+}
+
+.timeline-item--compact:hover .item-link,
+.timeline-item--thumb:hover .item-link {
+  color: var(--color-primary-dark);
+  text-decoration: underline;
+}
+
+.timeline-item--thumb:hover .thumb-image img {
+  filter: brightness(0.88);
 }
 
 /* =============================================
@@ -468,15 +513,15 @@ const closeImage = () => {
   overflow: hidden;
 }
 
-.timeline-item--photo-full:hover {
-  box-shadow: none;
-}
-
 .photo-full {
+  display: block;
   width: 100%;
   aspect-ratio: 16 / 9;
+  padding: 0;
+  border: 0;
   overflow: hidden;
-  cursor: pointer;
+  background: var(--color-background-alt);
+  cursor: zoom-in;
 }
 
 .photo-full img {
@@ -484,11 +529,6 @@ const closeImage = () => {
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: opacity var(--transition-base);
-}
-
-.photo-full:hover img {
-  opacity: 0.88;
 }
 
 .photo-caption {
@@ -513,11 +553,6 @@ const closeImage = () => {
   box-shadow: none;
 }
 
-.timeline-item--thumb:hover {
-  background: var(--color-primary-muted);
-  box-shadow: none;
-}
-
 .thumb-layout {
   display: flex;
   gap: 10px;
@@ -530,7 +565,6 @@ const closeImage = () => {
   flex-shrink: 0;
   border-radius: var(--radius-sm);
   overflow: hidden;
-  cursor: pointer;
   display: block;
 }
 
@@ -539,11 +573,7 @@ const closeImage = () => {
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: opacity var(--transition-base);
-}
-
-.thumb-image:hover img {
-  opacity: 0.82;
+  transition: filter var(--transition-base);
 }
 
 .thumb-content {
@@ -555,7 +585,7 @@ const closeImage = () => {
 }
 
 /* =============================================
-   Mode C — video card (full embed)
+   Mode D — video card (full embed)
    ============================================= */
 
 .timeline-item--video-card {
@@ -568,11 +598,6 @@ const closeImage = () => {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  box-shadow: none;
-}
-
-.timeline-item--video-card:hover {
-  background: var(--color-primary-muted);
   box-shadow: none;
 }
 
@@ -612,10 +637,10 @@ const closeImage = () => {
 }
 
 .item-badge {
-  font-size: 10px;
-  font-weight: var(--font-weight-semibold);
+  font-size: 11px;
+  font-weight: var(--font-weight-bold);
   text-transform: uppercase;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.05em;
   flex-shrink: 0;
   line-height: 1.5;
 }
@@ -624,10 +649,81 @@ const closeImage = () => {
   color: #0085ff;
 }
 .badge-press {
-  color: var(--color-badge-press);
+  color: var(--color-primary);
 }
 .badge-construction {
-  color: #ea580c;
+  color: var(--color-accent-ink);
+}
+.badge-photo {
+  color: var(--color-text-secondary);
+}
+
+/* =============================================
+   Photo mosaic
+   ============================================= */
+
+.mosaic-item {
+  padding: 11px 0 0 13px;
+  background: transparent;
+  border-top-width: 0;
+  border-right-width: 0;
+  border-bottom-width: 0;
+  border-radius: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mosaic-item .photo-caption {
+  padding: 0 0 4px;
+}
+
+.mosaic {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-auto-rows: 40px;
+  gap: 3px;
+}
+
+.mosaic-tile:first-child { grid-column: span 12; grid-row: span 5; }
+.mosaic--2 .mosaic-tile { grid-column: span 6; grid-row: span 4; }
+.mosaic--3 .mosaic-tile:not(:first-child) { grid-column: span 6; grid-row: span 2; }
+.mosaic--4 .mosaic-tile:not(:first-child) { grid-column: span 4; grid-row: span 2; }
+.mosaic--5 .mosaic-tile:not(:first-child) { grid-column: span 3; grid-row: span 2; }
+
+.mosaic-tile {
+  position: relative;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: var(--color-background-alt);
+  cursor: zoom-in;
+}
+
+.mosaic-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.mosaic-tile:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
+.mosaic-more {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  color: white;
+  font-family: var(--font-family-display);
+  font-size: 24px;
+  font-weight: var(--font-weight-bold);
 }
 
 .item-time {
@@ -761,9 +857,29 @@ const closeImage = () => {
   z-index: 1001;
 }
 
-.close-button:hover {
+.close-button:hover,
+.nav-button:hover {
   background: var(--color-lightbox-close-hover-bg);
 }
+
+.nav-button {
+  position: absolute;
+  top: 35vh;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--color-lightbox-close-bg);
+  color: white;
+  font-size: 30px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 1001;
+}
+
+.nav-prev { left: var(--spacing-sm); }
+.nav-next { right: var(--spacing-sm); }
 
 .lightbox-caption {
   padding: var(--spacing-md);
@@ -771,7 +887,8 @@ const closeImage = () => {
 }
 
 .caption-date {
-  font-size: var(--font-size-xs);
+  font-family: var(--font-family-base);
+  font-size: 12px;
   color: var(--color-primary);
   font-weight: var(--font-weight-bold);
   margin: 0 0 var(--spacing-xs) 0;
@@ -789,10 +906,6 @@ const closeImage = () => {
    ============================================= */
 
 @media (max-width: 768px) {
-  .timeline-title {
-    font-size: var(--font-size-base);
-  }
-
   .thumb-image {
     width: 72px;
     height: 54px;

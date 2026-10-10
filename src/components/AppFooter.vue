@@ -1,13 +1,18 @@
 <script setup lang="ts">
 import ThemeToggle from './ThemeToggle.vue'
-
-// Gateway Tracker Footer
 </script>
 
 <template>
   <footer class="app-footer">
     <div class="container footer-content">
-      <p>Made with civic pride by Ilya Rubnich &bull; <a href="https://github.com/embeaken/gateway-tracker" target="_blank">GitHub</a></p>
+      <div class="footer-copy">
+        <p class="footer-sign">🌆 Made with civic pride</p>
+        <p>
+          This is an unofficial fan site. Content is sourced from the
+          <a href="https://www.gatewayprogram.org/" target="_blank" rel="noopener">Gateway Development Commission</a>'s website and social channels.
+          <a href="https://github.com/embeaken/gateway-tracker" target="_blank" rel="noopener">Source on GitHub</a>.
+        </p>
+      </div>
       <ThemeToggle />
     </div>
   </footer>
@@ -15,9 +20,23 @@ import ThemeToggle from './ThemeToggle.vue'
 
 <style scoped>
 .app-footer {
-  margin-top: var(--spacing-sm);
-  padding: var(--spacing-md) 0;
-  background-color: var(--color-background);
+  margin-top: var(--spacing-2xl);
+  padding: var(--spacing-xl) 0;
+  background-color: var(--color-navy);
+  border-top: 3px solid var(--color-accent);
+}
+
+.app-footer .footer-sign {
+  font-family: var(--font-family-display);
+  font-size: 21px;
+  font-weight: var(--font-weight-semibold);
+  color: white;
+  margin-bottom: 4px;
+}
+
+.app-footer :deep(.theme-toggle) {
+  color: rgba(255, 255, 255, 0.7);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .footer-content {
@@ -28,18 +47,20 @@ import ThemeToggle from './ThemeToggle.vue'
 }
 
 .app-footer p {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
   margin: 0;
 }
 
-.app-footer a {
-  color: var(--color-primary);
+.app-footer a,
+.app-footer a:visited {
+  color: white;
   font-weight: var(--font-weight-medium);
 }
 
 .app-footer a:hover {
-  color: var(--color-primary-dark);
+  color: white;
+  text-decoration: underline;
 }
 
 @media (max-width: 768px) {

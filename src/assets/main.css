@@ -3,22 +3,33 @@
    ======================================== */
 
 :root {
-  /* Colors */
-  --color-primary: #005E71;
-  --color-primary-dark: #004555;
-  --color-primary-light: #007A93;
-  --color-accent: #D4980A;
-  --color-primary-muted: rgba(0, 94, 113, 0.08);
+  /* Civic palette: Hudson navy and public-works brass */
+  --color-primary: #1D4F86;          /* links, interactive */
+  --color-primary-dark: #143A66;
+  --color-primary-muted: rgba(29, 79, 134, 0.07);
+  --color-navy: #10284A;             /* header, footer, map line */
+  --color-accent: #B8862B;           /* brass: rules, highlights, TBM marker */
+  --color-accent-ink: #7E5A14;       /* brass dark enough for text on light */
+  --color-river: #DCE8F2;
+  --color-glow: rgba(46, 120, 205, 0.55);
+  --river-waves: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='16'%3E%3Cg fill='none' stroke='%231D4F86' stroke-opacity='0.13' stroke-width='1.1'%3E%3Cpath d='M0 4 Q8 0 16 4 T32 4'/%3E%3Cpath d='M-8 12 Q0 8 8 12 T24 12 T40 12'/%3E%3C/g%3E%3C/svg%3E");
+  --color-ground: #ECE6DB;            /* earth in the route profile */
+  --color-ground-edge: #CBBFAA;
+  --color-ground-ink: #8C7F69;
+  --color-band: #E3D2B0;              /* active work: TBM drive, casing */
+  --color-map-line: #10284A;
+  --color-map-shaft: #4F7FB8;          /* lighter --color-primary; hover deepens to it */
 
-  --color-background: #F8F7F4;
-  --color-background-alt: #EDEFF5;
-  --color-text-primary: #1A1A1A;
-  --color-text-secondary: #4A5568;
-  --color-border: #E2E8F0;
+  --color-background: #F7F5F0;
+  --color-background-alt: #EEF1F5;
+  --color-text-primary: #16202E;
+  --color-text-secondary: #4B5768;
+  --color-border: #DDE2E8;
 
-  /* Typography */
-  --font-family-base: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+  /* Public Sans (US Web Design System) for text, Source Serif for headlines */
+  --font-family-base: "Public Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
                        "Helvetica Neue", Arial, sans-serif;
+  --font-family-display: "Source Serif 4", Georgia, "Times New Roman", serif;
   --font-weight-semibold: 600;
   --font-size-xl: 48px;
   --font-size-lg: 36px;
@@ -64,15 +75,7 @@
   --transition-base: 0.2s ease;
   --transition-slow: 0.3s ease;
 
-  /* Alert Colors */
-  --color-alert-bg: #fffbeb;
-  --color-alert-border: #f59e0b;
-  --color-alert-icon: #d97706;
-  --color-alert-title: #92400e;
-  --color-alert-body: #78350f;
 
-  /* Badge Colors */
-  --color-badge-press: #b8900a;
 
   /* Card Colors */
   --color-card-bg: #FFFFFF;
@@ -103,34 +106,38 @@
 [data-theme="dark"] {
   color-scheme: dark;
 
-  --color-primary: #0EA5C7;
-  --color-primary-dark: #38BDF8;
-  --color-primary-light: #22D3EE;
-  --color-accent: #FACC15;
-  --color-primary-muted: rgba(14, 165, 199, 0.08);
+  --color-primary: #8DB8E8;
+  --color-primary-dark: #B3D0F0;
+  --color-primary-muted: rgba(141, 184, 232, 0.08);
+  --color-navy: #0A1A30;
+  --color-accent: #D9AE55;
+  --color-accent-ink: #E6C27A;
+  --color-river: #16304D;
+  --color-glow: rgba(141, 184, 232, 0.35);
+  --river-waves: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='16'%3E%3Cg fill='none' stroke='%238DB8E8' stroke-opacity='0.13' stroke-width='1.1'%3E%3Cpath d='M0 4 Q8 0 16 4 T32 4'/%3E%3Cpath d='M-8 12 Q0 8 8 12 T24 12 T40 12'/%3E%3C/g%3E%3C/svg%3E");
+  --color-ground: #1F2834;
+  --color-ground-edge: #3A4657;
+  --color-ground-ink: #7F8A99;
+  --color-band: #3E3421;
+  --color-map-line: #C9D4E2;
+  --color-map-shaft: #C9D4E2;
 
-  --color-background: #0F172A;
-  --color-background-alt: #1E293B;
-  --color-text-primary: #E2E8F0;
-  --color-text-secondary: #94A3B8;
-  --color-border: #334155;
+  --color-background: #0D1828;
+  --color-background-alt: #15243A;
+  --color-text-primary: #E7ECF2;
+  --color-text-secondary: #9AA8BA;
+  --color-border: #263752;
 
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
 
-  --color-alert-bg: #1c1507;
-  --color-alert-border: #b45309;
-  --color-alert-icon: #fbbf24;
-  --color-alert-title: #fde68a;
-  --color-alert-body: #fde68a;
 
-  --color-badge-press: #EAB308;
 
-  --color-card-bg: #1E293B;
+  --color-card-bg: #132238;
 
   --color-lightbox-overlay: rgba(0, 0, 0, 0.95);
-  --color-lightbox-bg: #1E293B;
+  --color-lightbox-bg: #132238;
   --color-lightbox-close-bg: rgba(255, 255, 255, 0.15);
   --color-lightbox-close-hover-bg: rgba(255, 255, 255, 0.25);
 }
@@ -139,32 +146,37 @@
   :root:not([data-theme="light"]) {
     color-scheme: dark;
 
-    --color-primary: #0EA5C7;
-    --color-primary-dark: #38BDF8;
-    --color-primary-light: #22D3EE;
-    --color-accent: #FACC15;
-    --color-primary-muted: rgba(14, 165, 199, 0.08);
+    --color-primary: #8DB8E8;
+    --color-primary-dark: #B3D0F0;
+    --color-primary-muted: rgba(141, 184, 232, 0.08);
+    --color-navy: #0A1A30;
+    --color-accent: #D9AE55;
+    --color-accent-ink: #E6C27A;
+    --color-river: #16304D;
+    --color-glow: rgba(141, 184, 232, 0.35);
+    --river-waves: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='16'%3E%3Cg fill='none' stroke='%238DB8E8' stroke-opacity='0.13' stroke-width='1.1'%3E%3Cpath d='M0 4 Q8 0 16 4 T32 4'/%3E%3Cpath d='M-8 12 Q0 8 8 12 T24 12 T40 12'/%3E%3C/g%3E%3C/svg%3E");
+    --color-ground: #1F2834;
+    --color-ground-edge: #3A4657;
+    --color-ground-ink: #7F8A99;
+    --color-band: #3E3421;
+    --color-map-line: #C9D4E2;
+    --color-map-shaft: #C9D4E2;
 
-    --color-background: #0F172A;
-    --color-background-alt: #1E293B;
-    --color-text-primary: #E2E8F0;
-    --color-text-secondary: #94A3B8;
-    --color-border: #334155;
+    --color-background: #0D1828;
+    --color-background-alt: #15243A;
+    --color-text-primary: #E7ECF2;
+    --color-text-secondary: #9AA8BA;
+    --color-border: #263752;
 
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
     --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
 
-    --color-alert-bg: #1c1507;
-    --color-alert-border: #b45309;
-    --color-alert-icon: #fbbf24;
-    --color-alert-title: #fde68a;
-    --color-alert-body: #fde68a;
 
-    --color-card-bg: #1E293B;
+    --color-card-bg: #132238;
 
     --color-lightbox-overlay: rgba(0, 0, 0, 0.95);
-    --color-lightbox-bg: #1E293B;
+    --color-lightbox-bg: #132238;
     --color-lightbox-close-bg: rgba(255, 255, 255, 0.15);
     --color-lightbox-close-hover-bg: rgba(255, 255, 255, 0.25);
   }
@@ -192,12 +204,14 @@ body {
   transition: background-color var(--transition-slow), color var(--transition-slow);
 }
 
-/* Links */
+/* Hover system: text links underline, whole-row links (feed) tint the row,
+   image links darken (.img-hover), buttons change background/border. */
 a {
   color: var(--color-primary);
   text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: all var(--transition-base);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  transition: color var(--transition-fast);
 }
 
 a:visited {
@@ -206,7 +220,7 @@ a:visited {
 
 a:hover {
   color: var(--color-primary-dark);
-  border-bottom-color: var(--color-accent);
+  text-decoration: underline;
 }
 
 a:focus {
@@ -221,7 +235,8 @@ a:focus-visible {
 
 /* Typography */
 h1, h2, h3, h4, h5, h6 {
-  font-weight: var(--font-weight-bold);
+  font-family: var(--font-family-display);
+  font-weight: var(--font-weight-semibold);
   line-height: var(--line-height-tight);
   color: var(--color-text-primary);
 }
@@ -279,4 +294,28 @@ main {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border-width: 0;
+}
+
+/* Small uppercase label */
+.kicker {
+  font-family: var(--font-family-base);
+  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+/* Shared image-link hover */
+.img-hover img {
+  transition: filter var(--transition-base);
+}
+
+.img-hover:hover img {
+  filter: brightness(0.88);
+}
+
+/* Tabular figures wherever numbers line up */
+.tabular {
+  font-variant-numeric: tabular-nums;
 }

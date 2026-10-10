@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import AppHeader from './components/AppHeader.vue'
-import GatewayOverview from './components/GatewayOverview.vue'
+import HeroPhotos from './components/HeroPhotos.vue'
 import OverviewExplainer from './components/OverviewExplainer.vue'
+import RouteMap from './components/RouteMap.vue'
 import AppFooter from './components/AppFooter.vue'
 import MainLayout from './components/MainLayout.vue'
 import ProjectCard from './components/ProjectCard.vue'
@@ -14,41 +15,36 @@ if (import.meta.env.VITE_PLAYWRIGHT) {
   document.documentElement.dataset.visualTest = 'true'
 }
 
-// The "What's going on?" explainer is tucked under the header and pulled into
-// view by the tab on the header's bottom edge. Toggles open and closed; the
-// viewport is intentionally left where it is.
 const showExplainer = ref(false)
 
-function toggleExplainer() {
-  showExplainer.value = !showExplainer.value
-}
-
+/** How far the map card rides up over the bottom of the hero photo, px */
+const OVERLAP = 72
 </script>
 
 <template>
-  <AppHeader :explainer-open="showExplainer" @toggle-explainer="toggleExplainer" />
-  <div class="explainer-collapse">
-    <Transition name="explainer">
-      <OverviewExplainer v-if="showExplainer" />
-    </Transition>
-  </div>
-  <GatewayOverview />
+  <AppHeader :explainer-open="showExplainer" @open-explainer="showExplainer = true" />
+  <OverviewExplainer :open="showExplainer" @close="showExplainer = false" />
+
+  <HeroPhotos :overlap="OVERLAP" />
+  <RouteMap :style="{ marginTop: `-${OVERLAP}px` }" />
 
   <main>
     <MainLayout>
       <template #content>
-        <div id="construction-cameras" class="camera-anchor"></div>
-
-        <ProjectCard
-          v-for="project in projects"
-          :key="project.name"
-          :project="project"
-        />
+        <section id="cameras" class="cams" aria-labelledby="cams-title">
+          <h2 id="cams-title" class="section-title">Construction cameras</h2>
+          <!-- One column so every camera is wide enough for EarthCam's interactive player -->
+          <div class="cam-grid">
+            <ProjectCard v-for="project in projects" :key="project.id" :project="project" />
+          </div>
+        </section>
       </template>
 
       <template #sidebar>
-        <div id="activity" class="activity-anchor"></div>
-        <Sidebar data-testid="activity">
+        <h2 id="activity" class="section-title">
+          Updates from the <abbr title="Gateway Development Commission">GDC</abbr>
+        </h2>
+        <Sidebar>
           <ActivityTimeline />
         </Sidebar>
       </template>
@@ -59,28 +55,31 @@ function toggleExplainer() {
 </template>
 
 <style scoped>
-/* Simple CSS transition for the explainer: transform + opacity (animates
-   reliably). Layout shift is instant — height is not animated. */
-.explainer-enter-active,
-.explainer-leave-active {
-  transition: transform 190ms ease, opacity 190ms ease;
-}
-
-.explainer-enter-from,
-.explainer-leave-to {
-  opacity: 0;
-  transform: translateY(-12px);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .explainer-enter-active,
-  .explainer-leave-active {
-    transition: none;
-  }
-}
-
-.camera-anchor,
-.activity-anchor {
+.cams,
+#activity {
   scroll-margin-top: var(--spacing-lg);
+}
+
+.section-title {
+  margin-bottom: var(--spacing-sm);
+  font-size: 32px;
+  line-height: 1.1;
+}
+
+.section-title abbr {
+  text-decoration: underline dotted 2px;
+  text-underline-offset: 3px;
+  cursor: help;
+}
+
+.cam-grid {
+  display: grid;
+  gap: var(--spacing-md);
+}
+
+@media (max-width: 820px) {
+  .section-title {
+    font-size: 26px;
+  }
 }
 </style>

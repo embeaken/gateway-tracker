@@ -1,164 +1,135 @@
 <script setup lang="ts">
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import type { Project } from '../types'
-import FactsList from './FactsList.vue'
 
-defineProps<{
-  project: Project
-}>()
+defineProps<{ project: Project }>()
+
+// EarthCam only serves its interactive player to iframes at least ~600px wide,
+// so on narrow screens render it at 640px and scale it down to fit.
+const MIN_PLAYER_WIDTH = 640
+const monitor = ref<HTMLElement>()
+const monitorWidth = ref(MIN_PLAYER_WIDTH)
+let observer: ResizeObserver | undefined
+
+onMounted(() => {
+  if (!monitor.value) return
+  observer = new ResizeObserver(([entry]) => {
+    if (entry) monitorWidth.value = entry.contentRect.width
+  })
+  observer.observe(monitor.value)
+})
+onUnmounted(() => observer?.disconnect())
+
+const frameStyle = computed(() => {
+  if (monitorWidth.value >= MIN_PLAYER_WIDTH) return undefined
+  return {
+    width: `${MIN_PLAYER_WIDTH}px`,
+    height: `${(MIN_PLAYER_WIDTH * 9) / 16}px`,
+    transform: `scale(${monitorWidth.value / MIN_PLAYER_WIDTH})`,
+    transformOrigin: '0 0',
+  }
+})
 </script>
 
 <template>
-  <article class="project-card">
-    <div class="project-header">
-      <div>
-        <h2 class="project-title">{{ project.name }}</h2>
-      </div>
-    </div>
-
-    <p class="project-description">{{ project.desc }}</p>
-
-    <FactsList :facts="project.facts" />
-
-    <div class="earthcam-container">
-      <div class="earthcam-placeholder" aria-hidden="true">
-        <span class="placeholder-title">Live EarthCam feed</span>
-        <span class="placeholder-subtitle">Loading construction camera</span>
-      </div>
+  <article :id="`cam-${project.id}`" class="cam-card">
+    <div ref="monitor" class="monitor">
+      <div class="monitor-placeholder" aria-hidden="true">Loading live view…</div>
       <iframe
         :src="project.earthcam"
         allow="fullscreen"
         loading="lazy"
-        class="earthcam-iframe"
+        class="monitor-iframe"
+        :style="frameStyle"
         :title="`Live EarthCam feed for ${project.name}`"
       />
+    </div>
+
+    <div class="cam-body">
+      <p class="kicker">{{ project.location }}</p>
+      <h3 class="cam-title">{{ project.name }}</h3>
+      <p class="cam-desc">{{ project.desc }}</p>
+      <p class="cam-status"><strong>Status:</strong> {{ project.status }}</p>
     </div>
   </article>
 </template>
 
 <style scoped>
-.project-card {
+.cam-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
   background: var(--color-card-bg);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-sm);
-  margin-bottom: var(--spacing-sm);
-  transition: box-shadow var(--transition-base), border-color var(--transition-base);
-}
-
-.project-card:hover {
-  box-shadow: var(--shadow-md);
-  border-color: rgba(0, 94, 113, 0.32);
-}
-
-.project-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--spacing-sm);
-  margin-bottom: 8px;
-}
-
-.project-title {
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-  margin: 0;
-  letter-spacing: 0;
-}
-
-.project-description {
-  font-size: 15px;
-  line-height: var(--line-height-normal);
-  color: var(--color-text-primary);
-  margin: 0 0 10px 0;
-  max-width: 980px;
-}
-
-.earthcam-container {
-  position: relative;
-  width: 100%;
-  margin-top: 10px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  border-radius: var(--radius-sm);
-  background-color: #000;
+  scroll-margin-top: var(--spacing-lg);
 }
 
-.earthcam-placeholder {
+.cam-card:target {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-muted);
+}
+
+.monitor {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--color-navy);
+}
+
+.monitor-placeholder {
   position: absolute;
   inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 6px;
-  padding: var(--spacing-md);
-  background:
-    linear-gradient(135deg, rgba(0, 94, 113, 0.28), rgba(0, 0, 0, 0.86)),
-    #000;
-  color: white;
-  text-align: center;
-  pointer-events: none;
-}
-
-.placeholder-title,
-.placeholder-subtitle {
-  display: block;
-}
-
-.placeholder-title {
+  display: grid;
+  place-items: center;
+  background: radial-gradient(ellipse at center, #1C3A63, var(--color-navy));
+  color: rgba(255, 255, 255, 0.8);
   font-size: 14px;
-  font-weight: var(--font-weight-bold);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 
-.placeholder-subtitle {
-  color: rgba(255, 255, 255, 0.72);
-  font-size: 13px;
-}
-
-.earthcam-iframe {
-  position: relative;
+.monitor-iframe {
+  position: absolute;
+  inset: 0;
   width: 100%;
-  height: 620px;
-  border: none;
-  background-color: #000;
+  height: 100%;
+  border: 0;
   display: block;
   z-index: 1;
 }
 
-:global([data-visual-test="true"]) .earthcam-iframe {
+:global([data-visual-test="true"]) .monitor-iframe {
   opacity: 0;
 }
 
-@media (max-width: 1280px) {
-  .earthcam-iframe {
-    height: 500px;
-  }
+.cam-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: var(--spacing-sm) 18px 18px;
 }
 
-@media (max-width: 768px) {
-  .project-card {
-    padding: var(--spacing-sm);
-    margin-bottom: var(--spacing-sm);
-  }
+.cam-title {
+  margin: 0;
+  font-size: 23px;
+  line-height: 1.15;
+}
 
-  .project-title {
-    font-size: var(--font-size-sm);
-  }
+.cam-desc {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 15px;
+  line-height: 1.5;
+}
 
-  .project-header {
-    flex-direction: column;
-    gap: 8px;
-  }
+.cam-status {
+  margin: 4px 0 0;
+  color: var(--color-text-primary);
+  font-size: 15px;
+  line-height: 1.5;
+}
 
-  .project-description {
-    font-size: 14px;
-    max-width: 100%;
-  }
-
-  .earthcam-iframe {
-    height: 300px;
-  }
+.cam-status strong {
+  font-weight: var(--font-weight-semibold);
 }
 </style>
