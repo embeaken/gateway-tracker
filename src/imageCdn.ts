@@ -15,3 +15,10 @@ export const cdnImage = (url: string, width: number) =>
 /** A `srcset` of resized WebPs, so the browser picks a size for the screen. */
 export const cdnSrcset = (url: string, widths: number[]) =>
   widths.map((w) => `${cdnImage(url, w)} ${w}w`).join(', ')
+
+/**
+ * A big, fast copy for "view the photo" links: 4000px wide, wider than any
+ * screen, ~2.5MB instead of a 7008px, 40MB+ original. Smaller originals keep
+ * their size (the CDN doesn't upscale).
+ */
+export const cdnFullImage = (url: string) => cdnImage(url, 4000)

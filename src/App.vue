@@ -4,7 +4,6 @@ import AppHeader from './components/AppHeader.vue'
 import HeroPhotos from './components/HeroPhotos.vue'
 import OverviewExplainer from './components/OverviewExplainer.vue'
 import RouteMap from './components/RouteMap.vue'
-import TbmStatus from './components/TbmStatus.vue'
 import AppFooter from './components/AppFooter.vue'
 import MainLayout from './components/MainLayout.vue'
 import ProjectCard from './components/ProjectCard.vue'
@@ -19,7 +18,7 @@ if (import.meta.env.VITE_PLAYWRIGHT) {
 // "What's going on?" opens a slide-out drawer from the header.
 const showExplainer = ref(false)
 
-// Hero: full-bleed photo with the live TBM status; the map card overlaps its
+// Hero: full-bleed photo; the map card overlaps its
 // bottom edge by this much.
 const OVERLAP = 72
 </script>
@@ -28,9 +27,7 @@ const OVERLAP = 72
   <AppHeader :explainer-open="showExplainer" @open-explainer="showExplainer = true" />
   <OverviewExplainer :open="showExplainer" @close="showExplainer = false" />
 
-  <HeroPhotos :overlap="OVERLAP">
-    <TbmStatus tone="dark" />
-  </HeroPhotos>
+  <HeroPhotos :overlap="OVERLAP" />
   <RouteMap class="route--overlap" :style="{ '--overlap': `${OVERLAP}px` }">
     <template #head>
       <h2 id="route-title" class="sr-only">Construction map</h2>

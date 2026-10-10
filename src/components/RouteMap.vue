@@ -173,10 +173,8 @@ const shafts = routeStops.filter((stop) => stop.id.endsWith("shaft"));
 const portal = routeStops.find((stop) => stop.ft === 0)!;
 const stabilization = routeStops.find((stop) => stop.id === "river")!;
 
-const camHref = (cams: string[] | string | undefined) => {
-  const cam = Array.isArray(cams) ? cams[0] : cams;
-  return cam ? `#cam-${cam}` : undefined;
-};
+// Sites with a construction camera get a hover highlight (no link).
+const hasCam = (cams: string[] | string | undefined) => (Array.isArray(cams) ? cams.length > 0 : !!cams);
 
 // --- TBMs ------------------------------------------------------------------
 
@@ -291,11 +289,11 @@ const labels = computed(() => {
 const HALF = 130;
 const hits = computed(() => {
   const sites = [
-    ...routeStops.map((stop) => ({ id: stop.id, label: stop.label, href: camHref(stop.cams), at: x(stop.ft) })),
-    { id: drive.id, label: drive.label, href: camHref(drive.cam), at: (x(drive.fromFt) + x(drive.toFt)) / 2 },
-    { id: casing.id, label: casing.label, href: camHref(casing.cam), at: (x(casing.fromFt) + W.value) / 2 + 8 },
+    ...routeStops.map((stop) => ({ id: stop.id, cam: hasCam(stop.cams), at: x(stop.ft) })),
+    { id: drive.id, cam: hasCam(drive.cam), at: (x(drive.fromFt) + x(drive.toFt)) / 2 },
+    { id: casing.id, cam: hasCam(casing.cam), at: (x(casing.fromFt) + W.value) / 2 + 8 },
   ]
-    .filter((site) => site.href)
+    .filter((site) => site.cam)
     .sort((a, b) => a.at - b.at);
 
   return sites.map((site, i) => {
@@ -467,20 +465,16 @@ const segmentFrom = (ft: number) => routeSegments.find((seg) => seg.fromFt === f
             </template>
           </div>
 
-          <!-- Hit columns: one full-height link per site -->
-          <div class="hits">
-            <a
+          <!-- Hover columns: one full-height area per site -->
+          <div class="hits" aria-hidden="true">
+            <div
               v-for="hit in hits"
               :key="hit.id"
               class="hit"
-              :href="hit.href"
-              :aria-label="`${hit.label} camera`"
               :style="{ left: `${hit.left}px`, width: `${hit.width}px` }"
               @mouseenter="hovered = hit.id"
               @mouseleave="hovered = null"
-              @focus="hovered = hit.id"
-              @blur="hovered = null"
-            ></a>
+            ></div>
           </div>
 
           <!-- TBM tags -->
@@ -505,7 +499,7 @@ const segmentFrom = (ft: number) => routeSegments.find((seg) => seg.fromFt === f
               class="vstop"
               :class="[stop.id === 'river' && 'vstop--river', stop.ft === 0 && 'vstop--portal-west']"
             >
-              <component :is="camHref(stop.cams) ? 'a' : 'div'" :href="camHref(stop.cams)" class="vstop-link">
+              <div class="vstop-link" :class="hasCam(stop.cams) && 'is-hoverable'">
                 <svg v-if="stop.ft === 0" class="vportal" viewBox="-20 -12 40 24" aria-hidden="true">
                   <path d="M-8 0 H-13 L-19 -7 M8 0 H13 L19 -7" />
                 </svg>
@@ -513,7 +507,7 @@ const segmentFrom = (ft: number) => routeSegments.find((seg) => seg.fromFt === f
                 <span class="vstop-text">
                   <span class="stop-label">{{ stop.label }}</span>
                 </span>
-              </component>
+              </div>
             </li>
             <li v-if="segmentFrom(stop.ft)" class="vstop vseg" :class="`vseg--${segmentFrom(stop.ft)!.id}`">
               <template v-if="stop.ft === 0">
@@ -526,11 +520,7 @@ const segmentFrom = (ft: number) => routeSegments.find((seg) => seg.fromFt === f
                   aria-hidden="true"
                 ></span>
               </template>
-              <component
-                :is="camHref(segmentFrom(stop.ft)!.cam) ? 'a' : 'span'"
-                :href="camHref(segmentFrom(stop.ft)!.cam)"
-                class="vseg-text"
-              >
+              <span class="vseg-text" :class="hasCam(segmentFrom(stop.ft)!.cam) && 'is-hoverable'">
                 <span class="vseg-label">{{ segmentFrom(stop.ft)!.label }}</span>
                 <template v-if="stop.ft === 0">
                   <span v-for="m in markers" :key="m.tbm.id" class="vseg-tbm">
@@ -538,15 +528,15 @@ const segmentFrom = (ft: number) => routeSegments.find((seg) => seg.fromFt === f
                     {{ m.status === "upcoming" ? m.tbm.expected : `${formatPct(m.fraction)} of the way (est.)` }}
                   </span>
                 </template>
-              </component>
+              </span>
             </li>
           </template>
           <li class="vstop vcasing">
-            <a :href="camHref(casing.cam)" class="vstop-link">
+            <div class="vstop-link" :class="hasCam(casing.cam) && 'is-hoverable'">
               <span class="vstop-text">
                 <span class="stop-label">{{ casing.label }}</span>
               </span>
-            </a>
+            </div>
           </li>
           <li class="vstop vterm" aria-hidden="true">
             <span class="vterm-text">Penn Station ↓</span>
@@ -824,11 +814,6 @@ const segmentFrom = (ft: number) => routeSegments.find((seg) => seg.fromFt === f
   pointer-events: auto;
 }
 
-.hit:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: -2px;
-}
-
 /* --- TBM tags --- */
 
 .tbm-tag {
@@ -947,7 +932,7 @@ const segmentFrom = (ft: number) => routeSegments.find((seg) => seg.fromFt === f
   transition: stroke var(--transition-fast);
 }
 
-a.vstop-link:hover .vportal {
+.vstop-link.is-hoverable:hover .vportal {
   stroke: var(--color-primary);
 }
 
@@ -975,12 +960,6 @@ a.vstop-link:hover .vportal {
   padding-block: 16px;
 }
 
-a.vstop-link:hover,
-a.vstop-link:visited {
-  color: var(--color-text-primary);
-  text-decoration: none;
-}
-
 .vstop-dot {
   position: absolute;
   left: 16px;
@@ -993,7 +972,7 @@ a.vstop-link:visited {
   transition: background var(--transition-fast);
 }
 
-a.vstop-link:hover .vstop-dot {
+.vstop-link.is-hoverable:hover .vstop-dot {
   background: var(--color-primary);
 }
 
@@ -1012,7 +991,7 @@ a.vstop-link:hover .vstop-dot {
   line-height: 1.15;
 }
 
-a.vstop-link:hover .stop-label {
+.vstop-link.is-hoverable:hover .stop-label {
   color: var(--color-primary);
 }
 
@@ -1029,14 +1008,11 @@ a.vstop-link:hover .stop-label {
   padding: 10px 0;
 }
 
-a.vseg-text,
-a.vseg-text:visited {
+.vseg-text.is-hoverable {
   flex: 1;
-  color: inherit;
-  text-decoration: none;
 }
 
-a.vseg-text:hover .vseg-label {
+.vseg-text.is-hoverable:hover .vseg-label {
   color: var(--color-primary);
 }
 

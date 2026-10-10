@@ -33,7 +33,6 @@ test.describe('design refresh smoke', () => {
     await expect(page.getByRole('link', { name: 'hudson.tube home' })).toBeVisible()
     await expect(page.getByText('Tracking the new Hudson River rail tunnels')).toBeVisible()
     await expect(page.locator('.feature-photo')).toBeVisible()
-    await expect(page.locator('.feature-photo').getByRole('heading', { name: /TBM 1/ })).toBeVisible()
     await expect(page.locator('.route-card')).toBeVisible()
     await expect(page.getByText('TBM positions are estimates')).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Construction cameras' })).toBeVisible()
@@ -51,9 +50,13 @@ test.describe('design refresh smoke', () => {
     await page.keyboard.press('Escape')
     await expect(page.getByRole('dialog', { name: "What is this?" })).toHaveCount(0)
 
-    // Route map stops jump to their camera.
-    await page.locator('.strip, .vline').locator('a:visible').first().click()
-    await expect(page).toHaveURL(/#cam-palisades-tunnel$/)
+    // Route map sites highlight on hover but don't link anywhere.
+    await expect(page.locator('#route a[href^="#cam-"]')).toHaveCount(0)
+    const hit = page.locator('.hit:visible').first()
+    if (await hit.count()) {
+      await hit.hover()
+      await expect(page.locator('.flabel--hover, .glow--on').first()).toBeAttached()
+    }
 
     await page.getByRole('button', { name: /Switch to dark mode/i }).click()
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')

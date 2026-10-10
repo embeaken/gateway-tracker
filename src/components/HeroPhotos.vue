@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { images } from "../assets/activityData";
-import { cdnImage, cdnSrcset } from "../imageCdn";
+import { cdnFullImage, cdnImage, cdnSrcset } from "../imageCdn";
 
 // Latest GDC construction photos, auto-rotating, full-bleed across the top of
 // the page. The default slot is laid over the bottom-left; the bottom `overlap`
@@ -34,6 +34,13 @@ const WIDTHS = [640, 960, 1280, 1920, 2560];
 // doesn't fetch all five photos up front. Slides stay mounted afterwards so
 // the crossfade has something to fade from.
 const mounted = ref(new Set([0, 1]));
+
+// Hide each photo until it has loaded, so the slow first load shows the navy
+// background (not alt text), then fades in.
+const loaded = ref(new Set<number>());
+const onLoad = (index: number) => {
+  loaded.value = new Set([...loaded.value, index]);
+};
 
 const goTo = (index: number) => {
   activePhotoIndex.value = index;
@@ -73,7 +80,7 @@ onUnmounted(() => {
       @focusin="paused = true"
       @focusout="paused = false"
     >
-      <a class="feature-photo-link" :href="activePhoto.url" target="_blank" rel="noopener" tabindex="-1">
+      <a class="feature-photo-link" :href="cdnFullImage(activePhoto.url)" target="_blank" rel="noopener" tabindex="-1">
         <template v-for="(photo, index) in heroPhotos" :key="photo.url">
           <img
             v-if="mounted.has(index)"
@@ -84,7 +91,8 @@ onUnmounted(() => {
             :aria-hidden="index !== activePhotoIndex"
             :fetchpriority="index === 0 ? 'high' : 'low'"
             class="carousel-photo"
-            :class="{ 'carousel-photo--active': index === activePhotoIndex }"
+            :class="{ 'carousel-photo--active': index === activePhotoIndex && loaded.has(index) }"
+            @load="onLoad(index)"
           />
         </template>
       </a>
@@ -96,7 +104,7 @@ onUnmounted(() => {
         <div class="photo-meta">
           <p class="photo-caption">
             <span class="photo-date tabular">{{ formatDate(activePhoto.date) }}</span>
-            <a :href="activePhoto.url" target="_blank" rel="noopener">{{ activePhoto.caption }}</a>
+            <a :href="cdnFullImage(activePhoto.url)" target="_blank" rel="noopener">{{ activePhoto.caption }}</a>
           </p>
           <div class="photo-dots" role="group" aria-label="Choose photo">
             <button
@@ -178,6 +186,7 @@ onUnmounted(() => {
 .photo-meta {
   display: flex;
   flex: 0 1 340px;
+  margin-left: auto;
   flex-direction: column;
   align-items: flex-end;
   gap: 8px;
