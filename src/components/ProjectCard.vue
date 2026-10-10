@@ -69,10 +69,7 @@ const otherFacts = computed(() =>
       </p>
       <h3 class="cam-title">{{ project.name }}</h3>
       <p class="cam-desc">{{ project.desc }}</p>
-      <p v-if="status" class="cam-status">
-        <span class="status-label">Status</span>
-        <span>{{ status }}</span>
-      </p>
+      <p v-if="status" class="cam-status"><strong>Status:</strong> {{ status }}</p>
       <dl v-if="otherFacts.length" class="cam-facts">
         <div v-for="fact in otherFacts" :key="fact.label">
           <dt class="kicker">{{ fact.label }}</dt>
@@ -170,27 +167,14 @@ const otherFacts = computed(() =>
 }
 
 .cam-status {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  margin: 6px 0 0;
-  padding-top: 10px;
-  border-top: 1px solid var(--color-border);
-  font-size: 14px;
-  line-height: 1.45;
-  font-weight: var(--font-weight-medium);
+  margin: 4px 0 0;
+  color: var(--color-text-primary);
+  font-size: 15px;
+  line-height: 1.5;
 }
 
-.status-label {
-  flex-shrink: 0;
-  padding: 2px 6px;
-  border-radius: var(--radius-sm);
-  background: var(--color-primary-muted);
-  color: var(--color-primary);
-  font-size: 11px;
-  font-weight: var(--font-weight-bold);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+.cam-status strong {
+  font-weight: var(--font-weight-semibold);
 }
 
 .cam-facts dd {

@@ -691,7 +691,7 @@ const segmentFrom = (ft: number) => routeSegments.find((seg) => seg.fromFt === f
 }
 
 .shaft {
-  fill: var(--color-map-line);
+  fill: var(--color-map-shaft);
   transition: fill var(--transition-fast);
 }
 
@@ -830,8 +830,9 @@ const segmentFrom = (ft: number) => routeSegments.find((seg) => seg.fromFt === f
   left: 0;
   padding: 1px 6px;
   border-radius: var(--radius-sm);
-  background: var(--color-accent);
-  color: var(--color-navy);
+  /* Dark brass + white in light mode; light brass + dark text in dark mode */
+  background: var(--color-accent-ink);
+  color: var(--color-card-bg);
   font-size: 11px;
   line-height: 16px;
   white-space: nowrap;

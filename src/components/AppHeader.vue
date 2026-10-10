@@ -12,7 +12,6 @@ const emit = defineEmits<{ (e: 'open-explainer'): void }>()
         <BrandMark class="brand-icon" />
         <span class="brand-name">hudson.tube</span>
       </a>
-      <p class="tagline">Tracking the new Hudson River rail tunnels</p>
 
       <button
         type="button"
@@ -71,20 +70,6 @@ const emit = defineEmits<{ (e: 'open-explainer'): void }>()
   font-size: 23px;
   font-weight: var(--font-weight-semibold);
   line-height: 1;
-}
-
-.tagline {
-  flex: 1;
-  min-width: 0;
-  margin: 2px 0 0;
-  padding-left: var(--spacing-md);
-  border-left: 1px solid rgba(255, 255, 255, 0.25);
-  color: rgba(255, 255, 255, 0.75);
-  font-size: 15px;
-  line-height: 1.2;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .explainer-btn {

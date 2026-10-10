@@ -9,7 +9,7 @@ export const projects: Project[] = [
     earthcam:
       "https://share.earthcam.net/public/tJ90CoLmq7TzrY396Yd88DHnIWc3K6LbTCb94NA4Z6s/tonnelle_ave_bridge",
     facts: [
-      { label: "Construction status", value: "TBM 1 began mining Oct 8, 2026. TBM 2 launches later this fall." },
+      { label: "Construction status", value: "The north tube TBM started drilling in October 2026. The south tube TBM will launch in November." },
       { label: "Location", value: "North Bergen, NJ" },
     ],
   },
@@ -21,7 +21,7 @@ export const projects: Project[] = [
     earthcam:
       "https://share.earthcam.net/public/tJ90CoLmq7TzrY396Yd88DYh7fIx4oqpKxs7kkPWy_A/palisades_portal_site",
     facts: [
-      { label: "Construction status", value: "TBM 1 began mining Oct 8, 2026. TBM 2 launches later this fall." },
+      { label: "Construction status", value: "The north tube TBM started drilling in October 2026. The south tube TBM will launch in November." },
       { label: "Location", value: "North Bergen, NJ" },
     ],
   },
@@ -48,7 +48,7 @@ export const projects: Project[] = [
     earthcam:
       "https://share.earthcam.net/public/tJ90CoLmq7TzrY396Yd88NgWcY4qcaFR1ARpUFeGtWU/311_-_11th_ave",
     facts: [
-      { label: "Construction status", value: "Ground stabilization 80% complete, progress of pier removal unknown" },
+      { label: "Construction status", value: "80% complete" },
       { label: "Location", value: "Hudson River near 30th Street" },
     ],
   },

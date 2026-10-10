@@ -22,6 +22,7 @@
   --color-ground-ink: #8C7F69;
   --color-band: #E3D2B0;              /* active work: TBM drive, casing */
   --color-map-line: #10284A;
+  --color-map-shaft: #4F7FB8;          /* access shafts: a lighter --color-primary; hover deepens to it */
 
   --color-background: #F7F5F0;
   --color-background-alt: #EEF1F5;
@@ -136,6 +137,7 @@
   --color-ground-ink: #7F8A99;
   --color-band: #3E3421;
   --color-map-line: #C9D4E2;
+  --color-map-shaft: #C9D4E2;
 
   --color-background: #0D1828;
   --color-background-alt: #15243A;
@@ -184,6 +186,7 @@
     --color-ground-ink: #7F8A99;
     --color-band: #3E3421;
     --color-map-line: #C9D4E2;
+    --color-map-shaft: #C9D4E2;
 
     --color-background: #0D1828;
     --color-background-alt: #15243A;
