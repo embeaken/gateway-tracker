@@ -63,11 +63,7 @@ const otherFacts = computed(() =>
 
     <div class="cam-body">
       <p class="kicker cam-meta">
-        <span class="cam-live">Live view</span>
-        <span aria-hidden="true">·</span>
-        <span class="tabular">Camera {{ index + 1 }}</span>
         <template v-if="location">
-          <span aria-hidden="true">·</span>
           <span>{{ location }}</span>
         </template>
       </p>
@@ -159,12 +155,6 @@ const otherFacts = computed(() =>
   gap: 4px 8px;
   margin: 0;
 }
-
-.cam-live {
-  color: var(--color-progress);
-}
-
-
 
 .cam-title {
   margin: 0;

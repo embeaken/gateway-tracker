@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import BrandMark from './BrandMark.vue'
+
+defineProps<{ explainerOpen: boolean }>()
+const emit = defineEmits<{ (e: 'open-explainer'): void }>()
 </script>
 
 <template>
@@ -7,11 +10,20 @@ import BrandMark from './BrandMark.vue'
     <div class="container header-content">
       <a href="/" class="brand-lockup" aria-label="hudson.tube home">
         <BrandMark class="brand-icon" />
-        <span>
-          <span class="brand-name">hudson.tube</span>
-        </span>
+        <span class="brand-name">hudson.tube</span>
       </a>
+      <p class="tagline">Tracking the new Hudson River rail tunnels</p>
 
+      <button
+        type="button"
+        class="explainer-btn"
+        aria-haspopup="dialog"
+        :aria-expanded="explainerOpen"
+        aria-controls="overview-explainer"
+        @click="emit('open-explainer')"
+      >
+        What is this?
+      </button>
     </div>
   </header>
 </template>
@@ -59,6 +71,65 @@ import BrandMark from './BrandMark.vue'
   font-size: 23px;
   font-weight: var(--font-weight-semibold);
   line-height: 1;
+}
+
+.tagline {
+  flex: 1;
+  min-width: 0;
+  margin: 2px 0 0;
+  padding-left: var(--spacing-md);
+  border-left: 1px solid rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 15px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.explainer-btn {
+  flex: none;
+  padding: 7px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  background: transparent;
+  color: white;
+  font: inherit;
+  font-size: 14px;
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.2;
+  cursor: pointer;
+  transition: border-color var(--transition-base), background var(--transition-base);
+}
+
+.explainer-btn:hover {
+  border-color: var(--color-accent);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.explainer-btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+@media (max-width: 820px) {
+  .header-content {
+    flex-wrap: wrap;
+    row-gap: 6px;
+  }
+
+  .brand-lockup {
+    flex: 1;
+  }
+
+  .tagline {
+    order: 3;
+    flex-basis: 100%;
+    margin: 0;
+    padding-left: 0;
+    border-left: 0;
+    font-size: 13px;
+  }
 }
 
 @media (max-width: 640px) {

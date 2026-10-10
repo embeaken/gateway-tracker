@@ -7,6 +7,7 @@ import {
   constructionNotices,
   youtubeVideos,
 } from "../assets/activityData";
+import { cdnImage, cdnSrcset } from "../imageCdn";
 
 type TimelineItemType = "photo" | "bluesky" | "press" | "construction" | "video";
 
@@ -201,19 +202,8 @@ const badgeLabel = (type: TimelineItemType): string =>
   )[type];
 
 // --- Image handling ---
-
-const transformImage = (url: string, width: number) => {
-  if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
-    return url;
-  }
-
-  const params = new URLSearchParams({
-    url,
-    w: width.toString(),
-    fm: "webp",
-  });
-  return `/.netlify/images?${params.toString()}`;
-};
+// Photos go through the image CDN (see imageCdn.ts); Bluesky images are already
+// served at a sensible size by Bluesky's own CDN.
 
 // Lightbox can step through the photo set it was opened from.
 const lightboxSet = ref<TimelineItem[]>([]);
@@ -276,7 +266,7 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
                 :aria-label="`Open photo: ${photo.title}`"
                 @click="openImage(photo, block.photos)"
               >
-                <img :src="transformImage(photo.imageUrl!, pi === 0 ? 800 : 400)" :alt="photo.title" loading="lazy" />
+                <img :src="cdnImage(photo.imageUrl!, pi === 0 ? 800 : 400)" :alt="photo.title" loading="lazy" />
                 <span
                   v-if="pi === MOSAIC_MAX - 1 && block.photos.length > MOSAIC_MAX"
                   class="mosaic-more"
@@ -321,7 +311,7 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
                 :aria-label="`Open photo: ${block.item.title}`"
                 @click="openImage(block.item)"
               >
-                <img :src="transformImage(block.item.imageUrl!, 800)" :alt="block.item.title" loading="lazy" />
+                <img :src="cdnImage(block.item.imageUrl!, 800)" :alt="block.item.title" loading="lazy" />
               </button>
               <p v-if="block.item.content" class="photo-caption">{{ block.item.content }}</p>
             </template>
@@ -389,7 +379,12 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
       <div v-if="selectedImage" class="lightbox" @click="closeImage">
         <div class="lightbox-content" @click.stop>
           <button type="button" class="close-button" aria-label="Close" @click="closeImage">×</button>
-          <img :src="selectedImage.imageUrl" :alt="selectedImage.title" />
+          <img
+            :src="cdnImage(selectedImage.imageUrl!, 1920)"
+            :srcset="cdnSrcset(selectedImage.imageUrl!, [960, 1440, 1920, 2560])"
+            sizes="90vw"
+            :alt="selectedImage.title"
+          />
           <template v-if="lightboxSet.length > 1">
             <button type="button" class="nav-button nav-prev" aria-label="Previous photo" @click="step(-1)">‹</button>
             <button type="button" class="nav-button nav-next" aria-label="Next photo" @click="step(1)">›</button>

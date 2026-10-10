@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { routeStops, routeSegments, PALISADES_DRIVE, ROUTE } from "../assets/data";
-import { useTbmProgress, formatFt, formatPct, formatMonth } from "../useTbmProgress";
+import { useTbmProgress, formatFt, formatPct } from "../useTbmProgress";
 
 // ---------------------------------------------------------------------------
 // Side-view profile of the route, west → east. Horizontal is to scale (feet
@@ -180,7 +180,7 @@ const camHref = (cams: string[] | string | undefined) => {
 
 // --- TBMs ------------------------------------------------------------------
 
-const { progress, lead } = useTbmProgress();
+const { progress } = useTbmProgress();
 
 /** A machine at 0 ft still sits just inside the portal */
 const MIN_INSIDE_PX = 22;
@@ -208,13 +208,6 @@ const markers = computed(() => {
   });
 });
 
-const leadEta = computed(() => {
-  const m = lead.value;
-  if (m.status === "mining" && m.arrival) return `${m.tbm.label} due ~${formatMonth(m.arrival)}`;
-  if (m.status === "arrived") return `${m.tbm.label} has arrived (est.)`;
-  return undefined;
-});
-
 // --- Floating labels -------------------------------------------------------
 // Sites float in the sky with a pin down to what they name. Two tiers keep the
 // crowded Manhattan end readable.
@@ -223,7 +216,6 @@ type Align = "center" | "start" | "end";
 type FloatLabel = {
   id: string;
   label: string;
-  sub?: string;
   x: number;
   tier: keyof typeof TIER;
   align: Align;
@@ -252,7 +244,6 @@ const labels = computed(() => {
     ...shafts.map((s) => ({
       id: s.id,
       label: s.label,
-      sub: s.ft === PALISADES_DRIVE.lengthFt ? leadEta.value : undefined,
       x: x(s.ft),
       tier: s.ft === PALISADES_DRIVE.lengthFt ? ("a" as const) : ("b" as const),
       align: "center" as Align,
@@ -331,7 +322,10 @@ const segmentFrom = (ft: number) => routeSegments.find((seg) => seg.fromFt === f
   <section id="route" class="route" aria-labelledby="route-title">
     <div class="container">
       <div class="route-head">
-        <h2 id="route-title" class="route-title">Construction map</h2>
+        <!-- The page can swap in a live status headline (must keep id="route-title") -->
+        <slot name="head">
+          <h2 id="route-title" class="route-title">Construction map</h2>
+        </slot>
       </div>
 
       <div class="route-card">
@@ -469,7 +463,6 @@ const segmentFrom = (ft: number) => routeSegments.find((seg) => seg.fromFt === f
                 :style="{ left: `${l.x + l.nudge}px`, bottom: `${H - l.base}px`, maxWidth: l.wrapAt && `${l.wrapAt}px` }"
               >
                 <span class="flabel-name">{{ l.label }}</span>
-                <span v-if="l.sub" class="flabel-sub">{{ l.sub }}</span>
               </span>
             </template>
           </div>
@@ -519,7 +512,6 @@ const segmentFrom = (ft: number) => routeSegments.find((seg) => seg.fromFt === f
                 <span v-else class="vstop-dot" aria-hidden="true"></span>
                 <span class="vstop-text">
                   <span class="stop-label">{{ stop.label }}</span>
-                  <span v-if="stop.ft === PALISADES_DRIVE.lengthFt && leadEta" class="vstop-sub">{{ leadEta }}</span>
                 </span>
               </component>
             </li>
@@ -751,7 +743,6 @@ const segmentFrom = (ft: number) => routeSegments.find((seg) => seg.fromFt === f
 
 .section-label--hover {
   fill: var(--color-primary);
-  text-decoration: underline;
 }
 
 /* --- Floating labels --- */
@@ -814,16 +805,8 @@ const segmentFrom = (ft: number) => routeSegments.find((seg) => seg.fromFt === f
   line-height: 1.15;
 }
 
-.flabel-sub {
-  margin-top: 2px;
-  font-size: 12px;
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-accent-ink);
-}
-
 .flabel--hover .flabel-name {
   color: var(--color-primary);
-  text-decoration: underline;
 }
 
 /* --- Hit columns --- */
@@ -1031,14 +1014,6 @@ a.vstop-link:hover .vstop-dot {
 
 a.vstop-link:hover .stop-label {
   color: var(--color-primary);
-  text-decoration: underline;
-}
-
-.vstop-sub {
-  margin-top: 2px;
-  font-size: 12.5px;
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-accent-ink);
 }
 
 .vseg {
@@ -1063,7 +1038,6 @@ a.vseg-text:visited {
 
 a.vseg-text:hover .vseg-label {
   color: var(--color-primary);
-  text-decoration: underline;
 }
 
 .vseg-label {

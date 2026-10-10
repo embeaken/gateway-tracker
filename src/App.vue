@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import AppHeader from './components/AppHeader.vue'
-import GatewayOverview from './components/GatewayOverview.vue'
+import HeroPhotos from './components/HeroPhotos.vue'
 import OverviewExplainer from './components/OverviewExplainer.vue'
 import RouteMap from './components/RouteMap.vue'
+import TbmStatus from './components/TbmStatus.vue'
 import AppFooter from './components/AppFooter.vue'
 import MainLayout from './components/MainLayout.vue'
 import ProjectCard from './components/ProjectCard.vue'
@@ -15,30 +16,33 @@ if (import.meta.env.VITE_PLAYWRIGHT) {
   document.documentElement.dataset.visualTest = 'true'
 }
 
-// The "What's going on?" explainer expands in place under the hero.
+// "What's going on?" opens a slide-out drawer from the header.
 const showExplainer = ref(false)
 
-function toggleExplainer() {
-  showExplainer.value = !showExplainer.value
-}
+// Hero: full-bleed photo with the live TBM status; the map card overlaps its
+// bottom edge by this much.
+const OVERLAP = 72
 </script>
 
 <template>
-  <AppHeader />
-  <GatewayOverview :explainer-open="showExplainer" @toggle-explainer="toggleExplainer" />
-  <div class="explainer-collapse">
-    <Transition name="explainer">
-      <OverviewExplainer v-if="showExplainer" />
-    </Transition>
-  </div>
-  <RouteMap />
+  <AppHeader :explainer-open="showExplainer" @open-explainer="showExplainer = true" />
+  <OverviewExplainer :open="showExplainer" @close="showExplainer = false" />
+
+  <HeroPhotos :overlap="OVERLAP">
+    <TbmStatus tone="dark" />
+  </HeroPhotos>
+  <RouteMap class="route--overlap" :style="{ '--overlap': `${OVERLAP}px` }">
+    <template #head>
+      <h2 id="route-title" class="sr-only">Construction map</h2>
+    </template>
+  </RouteMap>
 
   <main>
     <MainLayout>
       <template #content>
         <section id="cameras" class="cams" aria-labelledby="cams-title">
           <div class="section-head">
-            <h2 id="cams-title" class="section-title">Live from the sites</h2>
+            <h2 id="cams-title" class="section-title">Construction cameras</h2>
           </div>
 
           <div class="cam-grid">
@@ -65,22 +69,20 @@ function toggleExplainer() {
 </template>
 
 <style scoped>
-.explainer-enter-active,
-.explainer-leave-active {
-  transition: transform 190ms ease, opacity 190ms ease;
+/* The map card rides up over the bottom of the photo */
+.route--overlap {
+  position: relative;
+  z-index: 2;
+  margin-top: calc(-1 * var(--overlap));
+  padding-top: 0;
 }
 
-.explainer-enter-from,
-.explainer-leave-to {
-  opacity: 0;
-  transform: translateY(-12px);
+.route--overlap :deep(.route-head) {
+  margin: 0;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .explainer-enter-active,
-  .explainer-leave-active {
-    transition: none;
-  }
+.route--overlap :deep(.route-card) {
+  box-shadow: var(--shadow-lg);
 }
 
 .cams {
