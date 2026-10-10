@@ -206,7 +206,7 @@ export type Tbm = {
 
 export const tbms: Tbm[] = [
   { id: "tbm-1", label: "TBM 1", tube: "North", launched: "2026-10-08" },
-  { id: "tbm-2", label: "TBM 2", tube: "South", launched: null, expected: "Launching later this fall" },
+  { id: "tbm-2", label: "TBM 2", tube: "South", launched: null, expected: "Launching in November" },
 ];
 
 /** The first TBM started mining on this date. */

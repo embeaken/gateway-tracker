@@ -525,7 +525,7 @@ const segmentFrom = (ft: number) => routeSegments.find((seg) => seg.fromFt === f
                 <template v-if="stop.ft === 0">
                   <span v-for="m in markers" :key="m.tbm.id" class="vseg-tbm">
                     <strong>{{ m.tbm.label }}</strong> ·
-                    {{ m.status === "upcoming" ? m.tbm.expected : `${formatPct(m.fraction)} of the way (est.)` }}
+                    {{ m.status === "upcoming" ? m.tbm.expected : `${formatPct(m.fraction)} done` }}
                   </span>
                 </template>
               </span>
