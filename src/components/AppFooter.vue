@@ -8,12 +8,11 @@ import ThemeToggle from './ThemeToggle.vue'
   <footer class="app-footer">
     <div class="container footer-content">
       <div class="footer-copy">
-        <p class="footer-sign">Made with civic pride by Ilya Rubnich</p>
+        <p class="footer-sign">🌆 Made with civic pride</p>
         <p>
-          Unofficial fan site. Photos, video and documents from the
-          <a href="https://www.gatewayprogram.org/" target="_blank" rel="noopener">Gateway Development Commission</a>;
-          live cams by EarthCam.
-          <a href="https://github.com/embeaken/gateway-tracker" target="_blank" rel="noopener">Source on GitHub</a>
+          This is an unofficial fan site. Content is sourced from the
+          <a href="https://www.gatewayprogram.org/" target="_blank" rel="noopener">Gateway Development Commission</a>'s website and social channels.
+          <a href="https://github.com/embeaken/gateway-tracker" target="_blank" rel="noopener">Source on GitHub</a>.
         </p>
       </div>
       <ThemeToggle />

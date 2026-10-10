@@ -545,13 +545,13 @@ const segmentFrom = (ft: number) => routeSegments.find((seg) => seg.fromFt === f
 
         <!-- How the TBM positions are estimated -->
         <details class="estimate">
-          <summary>TBM positions are estimates</summary>
+          <summary>About this graphic</summary>
           <p>
-            Our estimate, not an official figure. It assumes GDC's stated average of about
-            {{ PALISADES_DRIVE.rateFtPerDay }} ft per day, including maintenance pauses, over the
-            {{ formatFt(PALISADES_DRIVE.lengthFt) }} first drive from the Tonnelle Avenue portal to the
-            Hudson County shaft. GDC's own schedule for this section, both tubes, is about a year, so
-            treat these arrival dates as optimistic. We'll correct them as real figures are published.
+            This is not to scale. TBM positions are a "best estimate", not an official figure. They assume
+            GDC's claimed average of
+            {{ PALISADES_DRIVE.rateFtPerDay }} feet of progress per day is accurate. GDC's estimate for boring the
+            {{ formatFt(PALISADES_DRIVE.lengthFt) }}-long Palisades Tunnel is "a year", which
+            gives an estimated completion date of <strong>October 2027</strong>.
             <a :href="PALISADES_DRIVE.sourceUrl" target="_blank" rel="noopener">Source</a>
           </p>
         </details>
