@@ -37,6 +37,8 @@ useModal(() => props.open, closeBtn, () => emit("close"));
           </div>
 
           <div class="drawer-body">
+            <h3 class="lede">This website is tracking the construction of a new rail tunnel under the Hudson River.</h3>
+
             <div class="video-wrapper">
               <iframe
                 :src="VIDEO_URL"
@@ -146,6 +148,14 @@ useModal(() => props.open, closeBtn, () => emit("close"));
   flex: 1;
   overflow-y: auto;
   padding: var(--spacing-lg);
+}
+
+.lede {
+  margin: 0 0 var(--spacing-lg);
+  color: var(--color-text-primary);
+  font-size: 20px;
+  font-weight: var(--font-weight-normal);
+  line-height: 1.35;
 }
 
 .video-wrapper {
