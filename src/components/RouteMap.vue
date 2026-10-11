@@ -304,7 +304,6 @@ const vrows = routeStops.map((stop) => ({
 <template>
   <section id="route" class="route" aria-labelledby="route-title">
     <h2 id="route-title" class="sr-only">Construction map</h2>
-    <div class="container">
       <div class="route-card">
         <!-- Side view (desktop) -->
         <div ref="strip" class="strip" :style="{ height: `${H}px` }">
@@ -526,23 +525,19 @@ const vrows = routeStops.map((stop) => ({
           </p>
         </details>
       </div>
-    </div>
   </section>
 </template>
 
 <style scoped>
-/* Overlaps the hero photo (App sets a negative margin-top) */
 .route {
-  position: relative;
-  z-index: 2;
-  padding-bottom: var(--spacing-xl);
+  min-width: 0;
+  scroll-margin-top: var(--spacing-lg);
 }
 
 .route-card {
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   background: var(--color-card-bg);
   border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-lg);
   overflow: hidden;
 }
 

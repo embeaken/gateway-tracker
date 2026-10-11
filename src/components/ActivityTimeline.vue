@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from "vue";
+import { ref, computed } from "vue";
 import {
   images,
   blueskyPosts,
@@ -8,10 +8,13 @@ import {
   youtubeVideos,
 } from "../assets/activityData";
 import { formatShortDate, parseDate } from "../dates";
-import { cdnImage, cdnSrcset } from "../imageCdn";
-import { useModal } from "../useModal";
+import { cdnImage } from "../imageCdn";
+import type { LightboxPhoto } from "../types";
+import PhotoLightbox from "./PhotoLightbox.vue";
 
 type TimelineItemType = "photo" | "bluesky" | "press" | "construction" | "video";
+
+const props = withDefaults(defineProps<{ exclude?: TimelineItemType[] }>(), { exclude: () => [] });
 
 type TimelineItem = {
   id: string;
@@ -105,7 +108,9 @@ const timelineItems = computed<TimelineItem[]>(() => {
     });
   });
 
-  return items.sort((a, b) => b.date.getTime() - a.date.getTime());
+  return items
+    .filter((item) => !props.exclude.includes(item.type))
+    .sort((a, b) => b.date.getTime() - a.date.getTime());
 });
 
 const visibleItemCount = ref(INITIAL_VISIBLE_ITEMS);
@@ -190,37 +195,15 @@ const badgeLabel = (type: TimelineItemType): string =>
   )[type];
 
 // --- Lightbox: steps through the photo set it was opened from ---
-// (Bluesky images skip the image CDN; Bluesky already serves them small.)
-const lightboxSet = ref<TimelineItem[]>([]);
-const lightboxIndex = ref(0);
-const selectedImage = computed(() => lightboxSet.value[lightboxIndex.value] ?? null);
+const lightbox = ref<{ photos: LightboxPhoto[]; index: number } | null>(null);
 
 const openImage = (item: TimelineItem, set: TimelineItem[] = [item]) => {
   if (item.type !== "photo" || !item.imageUrl) return;
-  lightboxSet.value = set;
-  lightboxIndex.value = Math.max(0, set.indexOf(item));
+  lightbox.value = {
+    photos: set.map((p) => ({ url: p.imageUrl!, caption: p.content, dateDisplay: p.dateDisplay })),
+    index: Math.max(0, set.indexOf(item)),
+  };
 };
-
-const closeImage = () => {
-  lightboxSet.value = [];
-};
-
-const step = (delta: number) => {
-  const n = lightboxSet.value.length;
-  if (n > 1) lightboxIndex.value = (lightboxIndex.value + delta + n) % n;
-};
-
-const closeBtn = ref<HTMLButtonElement | null>(null);
-useModal(() => !!selectedImage.value, closeBtn, closeImage);
-
-const onKeydown = (e: KeyboardEvent) => {
-  if (!selectedImage.value) return;
-  if (e.key === "ArrowRight") step(1);
-  if (e.key === "ArrowLeft") step(-1);
-};
-
-onMounted(() => document.addEventListener("keydown", onKeydown));
-onUnmounted(() => document.removeEventListener("keydown", onKeydown));
 </script>
 
 <template>
@@ -355,31 +338,12 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
       </button>
     </div>
 
-    <Teleport to="body">
-      <!-- Lightbox -->
-      <div v-if="selectedImage" class="lightbox" @click="closeImage">
-        <div class="lightbox-content" role="dialog" aria-modal="true" aria-label="Photo" @click.stop>
-          <button ref="closeBtn" type="button" class="close-button" aria-label="Close" @click="closeImage">×</button>
-          <img
-            :src="cdnImage(selectedImage.imageUrl!, 1920)"
-            :srcset="cdnSrcset(selectedImage.imageUrl!, [960, 1440, 1920, 2560])"
-            sizes="90vw"
-            :alt="selectedImage.title"
-          />
-          <template v-if="lightboxSet.length > 1">
-            <button type="button" class="nav-button nav-prev" aria-label="Previous photo" @click="step(-1)">‹</button>
-            <button type="button" class="nav-button nav-next" aria-label="Next photo" @click="step(1)">›</button>
-          </template>
-          <div class="lightbox-caption">
-            <p class="caption-date">
-              {{ selectedImage.dateDisplay }}
-              <span v-if="lightboxSet.length > 1"> · {{ lightboxIndex + 1 }} / {{ lightboxSet.length }}</span>
-            </p>
-            <p class="caption-text">{{ selectedImage.content }}</p>
-          </div>
-        </div>
-      </div>
-    </Teleport>
+    <PhotoLightbox
+      v-if="lightbox"
+      :photos="lightbox.photos"
+      :start-index="lightbox.index"
+      @close="lightbox = null"
+    />
   </div>
 </template>
 
@@ -798,107 +762,6 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
 .load-more-button:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
-}
-
-/* =============================================
-   Lightbox
-   ============================================= */
-
-.lightbox {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--color-lightbox-overlay);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: var(--spacing-md);
-  cursor: pointer;
-}
-
-.lightbox-content {
-  position: relative;
-  max-width: 90vw;
-  max-height: 90vh;
-  background: var(--color-lightbox-bg);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  cursor: default;
-}
-
-.lightbox-content img {
-  width: 100%;
-  height: auto;
-  max-height: 70vh;
-  object-fit: contain;
-  display: block;
-}
-
-.close-button {
-  position: absolute;
-  top: var(--spacing-sm);
-  right: var(--spacing-sm);
-  width: 40px;
-  height: 40px;
-  background: var(--color-lightbox-close-bg);
-  color: white;
-  border: none;
-  border-radius: 50%;
-  font-size: 30px;
-  line-height: 1;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background var(--transition-base);
-  z-index: 1001;
-}
-
-.close-button:hover,
-.nav-button:hover {
-  background: var(--color-lightbox-close-hover-bg);
-}
-
-.nav-button {
-  position: absolute;
-  top: 35vh;
-  transform: translateY(-50%);
-  width: 44px;
-  height: 44px;
-  border: 0;
-  border-radius: 50%;
-  background: var(--color-lightbox-close-bg);
-  color: white;
-  font-size: 30px;
-  line-height: 1;
-  cursor: pointer;
-  z-index: 1001;
-}
-
-.nav-prev { left: var(--spacing-sm); }
-.nav-next { right: var(--spacing-sm); }
-
-.lightbox-caption {
-  padding: var(--spacing-md);
-  background: var(--color-lightbox-bg);
-}
-
-.caption-date {
-  font-family: var(--font-family-base);
-  font-size: 12px;
-  color: var(--color-primary);
-  font-weight: var(--font-weight-bold);
-  margin: 0 0 var(--spacing-xs) 0;
-}
-
-.caption-text {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-primary);
-  margin: 0;
-  line-height: var(--line-height-relaxed);
 }
 
 /* =============================================

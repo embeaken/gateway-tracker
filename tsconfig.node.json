@@ -6,7 +6,9 @@
     "cypress.config.*",
     "nightwatch.conf.*",
     "playwright.config.*",
-    "eslint.config.*"
+    "eslint.config.*",
+    "netlify/functions/**/*",
+    "src/earthcam.ts"
   ],
   "compilerOptions": {
     "noEmit": true,

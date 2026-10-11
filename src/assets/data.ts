@@ -1,4 +1,4 @@
-import { formatMonthYear, parseDate } from "../dates";
+import { formatLongDate, formatMonthYear, parseDate } from "../dates";
 import type { Project, RouteSegment, RouteStop } from "../types";
 
 export type Tbm = {
@@ -28,21 +28,15 @@ const tbmStatus = tbms
   .join(" ");
 
 export const projects: Project[] = [
-  {
-    id: "palisades-tunnel",
-    name: "Palisades Tunnel Project",
-    desc: "This project will drill the first section of tunnel through the NJ Palisades from North Bergen to Hudson County.",
-    earthcam:
-      "https://share.earthcam.net/public/tJ90CoLmq7TzrY396Yd88DHnIWc3K6LbTCb94NA4Z6s/tonnelle_ave_bridge",
-    status: tbmStatus,
-    location: "North Bergen, NJ",
-  },
+  // The Tonnelle Ave bridge cameras (tonnelle_ave_bridge) are retired: that
+  // package is done, and the launch box is where the Palisades work is now.
   {
     id: "launch-box",
     name: "Palisades TBM Launch Box",
-    desc: "This is the view from the tunnel's west portal, where the first TBM was assembled and launched.",
+    desc: "This project will drill the first section of tunnel through the NJ Palisades from North Bergen to Hudson County.",
     earthcam:
       "https://share.earthcam.net/public/tJ90CoLmq7TzrY396Yd88DYh7fIx4oqpKxs7kkPWy_A/palisades_portal_site",
+    featuredView: 1,
     status: tbmStatus,
     location: "North Bergen, NJ",
   },
@@ -52,6 +46,7 @@ export const projects: Project[] = [
     desc: "TBMs will drill east from Tonnelle Avenue to this access shaft. The Hudson River Tunnel TBMs will then launch from here.",
     earthcam:
       "https://share.earthcam.net/public/tJ90CoLmq7TzrY396Yd88GNFxpIIqJR7pVbVOesSSvk/hudson_county_shaft_site",
+    featuredView: 0,
     status: "Shaft excavation in progress",
     location: "Hudson County, NJ",
   },
@@ -131,7 +126,7 @@ export const routeSegments: RouteSegment[] = [
 ];
 
 export const routeStops: RouteStop[] = [
-  { id: "portal", label: "Tonnelle Avenue", ft: 0, cam: "palisades-tunnel" },
+  { id: "portal", label: "Tonnelle Avenue", ft: 0, cam: "launch-box" },
   { id: "hudson-county-shaft", label: "Hudson County access shaft", ft: HC_SHAFT_FT, cam: "hudson-county-shaft" },
   {
     id: "river",
@@ -153,3 +148,68 @@ export const PALISADES_DRIVE = {
   sourceUrl:
     "https://www.gatewayprogram.org/wp-content/uploads/2026/09/September-2026-TBM-Launch-Press-Release.pdf",
 } as const;
+
+// ---------------------------------------------------------------------------
+// Dashboard facts. Every figure is from a GDC document; see
+// docs/research/data-catalog.md for the full source list.
+// ---------------------------------------------------------------------------
+
+export type ConstructionPackage = {
+  name: string;
+  contractor: string;
+  /** Full-time-equivalent jobs supported over the contract (GDC economic model) */
+  jobs: number | null;
+  /** Board-approved Market Case Estimate, $ */
+  budget: number;
+  complete?: boolean;
+  /** Project id of its camera */
+  cam?: string;
+};
+
+// Contractors and budgets: GDC board resolutions (Market Case Estimates, incl.
+// the Jul 2026 HRGS change order). Jobs: Jan 2026 board deck.
+export const constructionPackages: ConstructionPackage[] = [
+  { name: "Tonnelle Avenue Bridge & Utility Relocation", contractor: "Conti Civil", jobs: 400, budget: 47_300_000, complete: true },
+  { name: "Palisades Tunnel & Hudson County Shaft", contractor: "Schiavone Lane Dragados JV", jobs: 5_500, budget: 744_791_972, cam: "launch-box" },
+  { name: "Hudson River Ground Stabilization", contractor: "Weeks Marine", jobs: 2_300, budget: 443_188_130, cam: "river" },
+  { name: "Manhattan Tunnel & 12th Avenue Shaft", contractor: "Frontier-Kemper / Tutor Perini JV", jobs: 7_200, budget: 1_835_009_534, cam: "manhattan-shaft" },
+  { name: "Hudson Yards Concrete Casing – Section 3", contractor: "Amtrak", jobs: 4_800, budget: 692_700_000, cam: "hudson-yards" },
+  { name: "Hudson River Tunnel Section", contractor: "Traylor / Walsh / Skanska JV", jobs: null, budget: 2_079_867_631 },
+  { name: "New Jersey Surface Alignment", contractor: "Skanska Creamer Sanzari JV", jobs: null, budget: 1_424_252_294 },
+];
+
+/**
+ * Who pays for the ~$16B project (Jan 2026 board deck). The local share is
+ * three federal RRIF loans that New York, New Jersey and the Port Authority repay.
+ */
+export const fundingShares = [
+  { key: "federal", label: "Federal grants", amount: 10_997_171_053, note: "FTA, FRA and USDOT grants" },
+  { key: "local", label: "New York, New Jersey & Port Authority", amount: 4_006_000_000, note: "Federal loans the states repay" },
+  { key: "amtrak", label: "Amtrak", amount: 1_016_000_000, note: "" },
+] as const;
+
+const tbm2 = tbms.find((t) => t.id === "tbm-2")!;
+
+/**
+ * What's done, then what GDC has scheduled, in order. Only facts and dates GDC
+ * has stated; no estimates. Flip `done` by hand as things happen (TBM 2 follows
+ * `tbms` automatically), never by date.
+ */
+export const milestones: { when: string; text: string; done: boolean }[] = [
+  { when: "May 2021", text: "Federal environmental approval (Record of Decision)", done: true },
+  { when: "Nov 2023", text: "Construction begins at Tonnelle Avenue", done: true },
+  { when: "Jul 2024", text: "Full funding agreements signed", done: true },
+  { when: "Oct 2025", text: "Tonnelle Avenue bridge substantially complete", done: true },
+  { when: "Feb 2026", text: "Federal funding freeze pauses construction for about two weeks", done: true },
+  { when: "Jun 2026", text: "All tunnel boring and heavy civil work under contract", done: true },
+  { when: "Oct 8, 2026", text: "TBM 1 starts mining", done: true },
+  tbm2.launched
+    ? { when: formatLongDate(parseDate(tbm2.launched)), text: "TBM 2 starts mining", done: true }
+    : { when: "Fall 2026", text: "TBM 2 launches", done: false },
+  { when: "2026", text: "Hudson Yards concrete casing finished", done: false },
+  { when: "Fall 2027", text: "TBMs reach the Hudson County shaft", done: false },
+  { when: "2028", text: "Riverbed pile removal complete", done: false },
+  { when: "Apr 2030", text: "Manhattan Tunnel package complete", done: false },
+  { when: "2035", text: "New tunnel opens for service", done: false },
+  { when: "2038", text: "North River Tunnel rehabilitation complete", done: false },
+];

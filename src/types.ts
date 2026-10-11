@@ -4,6 +4,8 @@ export type Project = {
   name: string
   desc: string
   earthcam: string
+  /** Which of the site's EarthCam views the dashboard shows (0-based); default 0 */
+  featuredView?: number
   status: string
   location: string
 }
@@ -24,4 +26,12 @@ export type RouteStop = Cam & {
   label: string
   /** Feet east of the Tonnelle Ave portal */
   ft: number
+}
+
+/** A photo in PhotoLightbox */
+export type LightboxPhoto = {
+  /** GDC original; resized through the image CDN */
+  url: string
+  caption: string
+  dateDisplay: string
 }
