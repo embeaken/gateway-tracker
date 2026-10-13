@@ -1,26 +1,19 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import {
-  images,
   blueskyPosts,
   pressReleases,
   constructionNotices,
   youtubeVideos,
 } from "../assets/activityData";
 import { formatShortDate, parseDate } from "../dates";
-import { cdnImage } from "../imageCdn";
-import type { LightboxPhoto } from "../types";
-import PhotoLightbox from "./PhotoLightbox.vue";
 
-type TimelineItemType = "photo" | "bluesky" | "press" | "construction" | "video";
-
-const props = withDefaults(defineProps<{ exclude?: TimelineItemType[] }>(), { exclude: () => [] });
+type TimelineItemType = "bluesky" | "press" | "construction" | "video";
 
 type TimelineItem = {
   id: string;
   type: TimelineItemType;
   date: Date;
-  dateDisplay: string;
   title: string;
   content: string;
   imageUrl?: string;
@@ -39,32 +32,14 @@ const formatTime = (date: Date): string => {
   return `${h % 12 || 12}:${m}${h >= 12 ? "pm" : "am"}`;
 };
 
-const formatDate = (date: Date, includeTime = false): string => {
-  const d = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear() % 100}`;
-  return includeTime ? `${d} ${formatTime(date)}` : d;
-};
-
 const timelineItems = computed<TimelineItem[]>(() => {
   const items: TimelineItem[] = [];
-
-  images.forEach((image) => {
-    items.push({
-      id: image.url,
-      type: "photo",
-      date: parseDate(image.date),
-      dateDisplay: formatDate(parseDate(image.date)),
-      title: image.caption,
-      content: image.caption,
-      imageUrl: image.url,
-    });
-  });
 
   blueskyPosts.forEach((post) => {
     items.push({
       id: post.link,
       type: "bluesky",
       date: parseDate(post.date),
-      dateDisplay: formatDate(parseDate(post.date), true),
       title: post.text.substring(0, 60) + (post.text.length > 60 ? "..." : ""),
       content: post.text,
       link: post.link,
@@ -77,7 +52,6 @@ const timelineItems = computed<TimelineItem[]>(() => {
       id: press.link,
       type: "press",
       date: parseDate(press.date),
-      dateDisplay: formatDate(parseDate(press.date)),
       title: press.title,
       content: "",
       link: press.link,
@@ -89,7 +63,6 @@ const timelineItems = computed<TimelineItem[]>(() => {
       id: notice.link,
       type: "construction",
       date: parseDate(notice.date),
-      dateDisplay: formatDate(parseDate(notice.date)),
       title: notice.title,
       content: "",
       link: notice.link,
@@ -101,16 +74,13 @@ const timelineItems = computed<TimelineItem[]>(() => {
       id: video.videoId,
       type: "video",
       date: parseDate(video.date),
-      dateDisplay: formatDate(parseDate(video.date)),
       title: video.title,
       content: video.description || "",
       videoId: video.videoId,
     });
   });
 
-  return items
-    .filter((item) => !props.exclude.includes(item.type))
-    .sort((a, b) => b.date.getTime() - a.date.getTime());
+  return items.sort((a, b) => b.date.getTime() - a.date.getTime());
 });
 
 const visibleItemCount = ref(INITIAL_VISIBLE_ITEMS);
@@ -125,30 +95,7 @@ const showMoreItems = () => {
 
 // --- Date grouping ---
 
-// A block is either a single item or a run of consecutive same-day photos,
-// which render as one mosaic instead of a wall of full-width images.
-type Block =
-  | { kind: "item"; key: string; item: TimelineItem }
-  | { kind: "photos"; key: string; photos: TimelineItem[] };
-
-type DateGroup = { dateKey: string; dateLabel: string; blocks: Block[] };
-
-const MOSAIC_MAX = 5;
-
-const toBlocks = (items: TimelineItem[]): Block[] => {
-  const blocks: Block[] = [];
-  for (const item of items) {
-    const last = blocks[blocks.length - 1];
-    if (item.type === "photo" && last?.kind === "photos") {
-      last.photos.push(item);
-    } else if (item.type === "photo" && last?.kind === "item" && last.item.type === "photo") {
-      blocks[blocks.length - 1] = { kind: "photos", key: last.key, photos: [last.item, item] };
-    } else {
-      blocks.push({ kind: "item", key: item.id, item });
-    }
-  }
-  return blocks;
-};
+type DateGroup = { dateKey: string; dateLabel: string; items: TimelineItem[] };
 
 const getDateKey = (date: Date) =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
@@ -163,7 +110,7 @@ const groupedItems = computed<DateGroup[]>(() => {
   return Array.from(map.entries()).map(([key, items]) => ({
     dateKey: key,
     dateLabel: formatShortDate(parseDate(key)),
-    blocks: toBlocks(items),
+    items,
   }));
 });
 
@@ -175,18 +122,12 @@ const isCompact = (item: TimelineItem) =>
   item.type === "construction" ||
   (item.type === "bluesky" && !item.imageUrl);
 
-// Mode B: full-width gallery photo
-const isPhotoFull = (item: TimelineItem) => item.type === "photo";
-
-// Mode C: side-thumbnail — bluesky with image
+// Mode B: side-thumbnail — bluesky with image
 const isThumb = (item: TimelineItem) => item.type === "bluesky" && !!item.imageUrl;
-
-// Mode D: full-width video embed (everything else)
 
 const badgeLabel = (type: TimelineItemType): string =>
   (
     ({
-      photo: "Photo",
       bluesky: "Bluesky",
       press: "Press release",
       construction: "Construction notice",
@@ -194,16 +135,6 @@ const badgeLabel = (type: TimelineItemType): string =>
     }) satisfies Record<TimelineItemType, string>
   )[type];
 
-// --- Lightbox: steps through the photo set it was opened from ---
-const lightbox = ref<{ photos: LightboxPhoto[]; index: number } | null>(null);
-
-const openImage = (item: TimelineItem, set: TimelineItem[] = [item]) => {
-  if (item.type !== "photo" || !item.imageUrl) return;
-  lightbox.value = {
-    photos: set.map((p) => ({ url: p.imageUrl!, caption: p.content, dateDisplay: p.dateDisplay })),
-    index: Math.max(0, set.indexOf(item)),
-  };
-};
 </script>
 
 <template>
@@ -215,94 +146,55 @@ const openImage = (item: TimelineItem, set: TimelineItem[] = [item]) => {
         <h4 class="date-header">{{ group.dateLabel }}</h4>
 
         <div class="date-group-items">
-          <template v-for="block in group.blocks" :key="block.key">
-          <!-- Photo set: mosaic -->
-          <article v-if="block.kind === 'photos'" class="timeline-item timeline-item-photo mosaic-item">
-            <div class="compact-header">
-              <span class="item-badge badge-photo">{{ block.photos.length }} photos</span>
-            </div>
-            <div class="mosaic" :class="`mosaic--${Math.min(block.photos.length, MOSAIC_MAX)}`">
-              <button
-                v-for="(photo, pi) in block.photos.slice(0, MOSAIC_MAX)"
-                :key="photo.id"
-                type="button"
-                class="mosaic-tile img-hover"
-                :aria-label="`Open photo: ${photo.title}`"
-                @click="openImage(photo, block.photos)"
-              >
-                <img :src="cdnImage(photo.imageUrl!, pi === 0 ? 800 : 400)" :alt="photo.title" loading="lazy" />
-                <span
-                  v-if="pi === MOSAIC_MAX - 1 && block.photos.length > MOSAIC_MAX"
-                  class="mosaic-more"
-                >+{{ block.photos.length - MOSAIC_MAX }}</span>
-              </button>
-            </div>
-            <p class="photo-caption">{{ block.photos[0]!.content }}</p>
-          </article>
-
+          <template v-for="item in group.items" :key="item.id">
           <article
-            v-else
             class="timeline-item"
             :class="[
-              `timeline-item-${block.item.type}`,
-              isCompact(block.item) && 'timeline-item--compact',
-              isPhotoFull(block.item) && 'timeline-item--photo-full',
-              isThumb(block.item) && 'timeline-item--thumb',
-              block.item.type === 'video' && 'timeline-item--video-card',
+              `timeline-item-${item.type}`,
+              isCompact(item) && 'timeline-item--compact',
+              isThumb(item) && 'timeline-item--thumb',
+              item.type === 'video' && 'timeline-item--video-card',
             ]"
           >
             <!-- Mode A: compact text strip (press, construction, bluesky w/o image) -->
-            <template v-if="isCompact(block.item)">
+            <template v-if="isCompact(item)">
               <div class="compact-header">
-                <span class="item-badge" :class="`badge-${block.item.type}`">{{
-                  badgeLabel(block.item.type)
+                <span class="item-badge" :class="`badge-${item.type}`">{{
+                  badgeLabel(item.type)
                 }}</span>
-                <time v-if="block.item.type === 'bluesky'" class="item-time">{{
-                  formatTime(block.item.date)
+                <time v-if="item.type === 'bluesky'" class="item-time">{{
+                  formatTime(item.date)
                 }}</time>
               </div>
-              <p class="compact-title">{{ block.item.type === "bluesky" ? block.item.content : block.item.title }}</p>
-              <a v-if="block.item.link" :href="block.item.link" target="_blank" class="item-link">
-                {{ block.item.type === "bluesky" ? "View on Bluesky →" : "Read the PDF →" }}
+              <p class="compact-title">{{ item.type === "bluesky" ? item.content : item.title }}</p>
+              <a v-if="item.link" :href="item.link" target="_blank" class="item-link">
+                {{ item.type === "bluesky" ? "View on Bluesky →" : "Read the PDF →" }}
               </a>
             </template>
 
-            <!-- Mode B: full-width gallery photo -->
-            <template v-else-if="isPhotoFull(block.item)">
-              <button
-                type="button"
-                class="photo-full img-hover"
-                :aria-label="`Open photo: ${block.item.title}`"
-                @click="openImage(block.item)"
-              >
-                <img :src="cdnImage(block.item.imageUrl!, 800)" :alt="block.item.title" loading="lazy" />
-              </button>
-              <p v-if="block.item.content" class="photo-caption">{{ block.item.content }}</p>
-            </template>
-
-            <!-- Mode C: bluesky with image (side thumbnail) -->
-            <template v-else-if="isThumb(block.item)">
+            <!-- Mode B: bluesky with image (side thumbnail) -->
+            <template v-else-if="isThumb(item)">
               <div class="thumb-layout">
                 <div class="thumb-image">
-                  <img :src="block.item.imageUrl" :alt="block.item.title" loading="lazy" />
+                  <img :src="item.imageUrl" :alt="item.title" loading="lazy" />
                 </div>
                 <div class="thumb-content">
                   <div class="compact-header">
                     <span class="item-badge badge-bluesky">Bluesky</span>
-                    <time class="item-time">{{ formatTime(block.item.date) }}</time>
+                    <time class="item-time">{{ formatTime(item.date) }}</time>
                   </div>
-                  <p class="compact-caption">{{ block.item.content }}</p>
-                  <a v-if="block.item.link" :href="block.item.link" target="_blank" class="item-link">View on Bluesky →</a>
+                  <p class="compact-caption">{{ item.content }}</p>
+                  <a v-if="item.link" :href="item.link" target="_blank" class="item-link">View on Bluesky →</a>
                 </div>
               </div>
             </template>
 
-            <!-- Mode D: full-width video embed -->
+            <!-- Mode C: full-width video embed -->
             <template v-else>
               <div class="item-video">
                 <iframe
-                  :src="`https://www.youtube.com/embed/${block.item.videoId}`"
-                  :title="block.item.title"
+                  :src="`https://www.youtube.com/embed/${item.videoId}`"
+                  :title="item.title"
                   allow="
                     accelerometer;
                     autoplay;
@@ -316,9 +208,9 @@ const openImage = (item: TimelineItem, set: TimelineItem[] = [item]) => {
                 ></iframe>
               </div>
               <div class="video-footer">
-                <p class="compact-title">{{ block.item.title }}</p>
+                <p class="compact-title">{{ item.title }}</p>
                 <a
-                  :href="`https://www.youtube.com/watch?v=${block.item.videoId}`"
+                  :href="`https://www.youtube.com/watch?v=${item.videoId}`"
                   target="_blank"
                   class="item-link"
                 >
@@ -333,17 +225,11 @@ const openImage = (item: TimelineItem, set: TimelineItem[] = [item]) => {
     </div>
 
     <div v-if="hasMoreItems" class="timeline-footer">
-      <button type="button" class="load-more-button" @click="showMoreItems">
+      <button type="button" class="show-more" @click="showMoreItems">
         Show more updates
       </button>
     </div>
 
-    <PhotoLightbox
-      v-if="lightbox"
-      :photos="lightbox.photos"
-      :start-index="lightbox.index"
-      @close="lightbox = null"
-    />
   </div>
 </template>
 
@@ -399,9 +285,6 @@ const openImage = (item: TimelineItem, set: TimelineItem[] = [item]) => {
   transition: background var(--transition-fast);
 }
 
-.timeline-item-photo {
-  border-left-color: var(--color-text-secondary);
-}
 .timeline-item-bluesky {
   border-left-color: #0085ff;
 }
@@ -463,48 +346,7 @@ const openImage = (item: TimelineItem, set: TimelineItem[] = [item]) => {
 }
 
 /* =============================================
-   Mode B — full-width gallery photo
-   ============================================= */
-
-.timeline-item--photo-full {
-  background: transparent;
-  border-top-width: 0;
-  border-right-width: 0;
-  border-bottom-width: 0;
-  border-radius: 0;
-  padding: 0 0 0 8px;
-  box-shadow: none;
-  overflow: hidden;
-}
-
-.photo-full {
-  display: block;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  padding: 0;
-  border: 0;
-  overflow: hidden;
-  background: var(--color-background-alt);
-  cursor: zoom-in;
-}
-
-.photo-full img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.photo-caption {
-  font-size: 13px;
-  color: var(--color-text-secondary);
-  line-height: 1.4;
-  margin: 0;
-  padding: 7px 13px 11px;
-}
-
-/* =============================================
-   Mode C — side-thumbnail (bluesky with image)
+   Mode B — side-thumbnail (bluesky with image)
    ============================================= */
 
 .timeline-item--thumb {
@@ -549,7 +391,7 @@ const openImage = (item: TimelineItem, set: TimelineItem[] = [item]) => {
 }
 
 /* =============================================
-   Mode D — video card (full embed)
+   Mode C — video card (full embed)
    ============================================= */
 
 .timeline-item--video-card {
@@ -618,78 +460,6 @@ const openImage = (item: TimelineItem, set: TimelineItem[] = [item]) => {
 .badge-construction {
   color: var(--color-accent-ink);
 }
-.badge-photo {
-  color: var(--color-text-secondary);
-}
-
-/* =============================================
-   Photo mosaic
-   ============================================= */
-
-.mosaic-item {
-  padding: 11px 0 0 13px;
-  background: transparent;
-  border-top-width: 0;
-  border-right-width: 0;
-  border-bottom-width: 0;
-  border-radius: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.mosaic-item .photo-caption {
-  padding: 0 0 4px;
-}
-
-.mosaic {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  grid-auto-rows: 40px;
-  gap: 3px;
-}
-
-.mosaic-tile:first-child { grid-column: span 12; grid-row: span 5; }
-.mosaic--2 .mosaic-tile { grid-column: span 6; grid-row: span 4; }
-.mosaic--3 .mosaic-tile:not(:first-child) { grid-column: span 6; grid-row: span 2; }
-.mosaic--4 .mosaic-tile:not(:first-child) { grid-column: span 4; grid-row: span 2; }
-.mosaic--5 .mosaic-tile:not(:first-child) { grid-column: span 3; grid-row: span 2; }
-
-.mosaic-tile {
-  position: relative;
-  padding: 0;
-  border: 0;
-  overflow: hidden;
-  border-radius: var(--radius-sm);
-  background: var(--color-background-alt);
-  cursor: zoom-in;
-}
-
-.mosaic-tile img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.mosaic-tile:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 1px;
-}
-
-.mosaic-more {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.55);
-  color: white;
-  font-family: var(--font-family-display);
-  font-size: 24px;
-  font-weight: var(--font-weight-bold);
-}
-
 .item-time {
   font-size: 12px;
   color: var(--color-text-secondary);
@@ -731,37 +501,6 @@ const openImage = (item: TimelineItem, set: TimelineItem[] = [item]) => {
   display: flex;
   justify-content: center;
   margin-top: 16px;
-}
-
-.load-more-button {
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-primary);
-  background: transparent;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  padding: 7px 12px;
-  cursor: pointer;
-  transition:
-    background var(--transition-fast),
-    border-color var(--transition-fast),
-    color var(--transition-fast);
-}
-
-.load-more-button:hover {
-  color: var(--color-primary-dark);
-  border-color: var(--color-primary);
-  background: var(--color-primary-muted);
-}
-
-.load-more-button:focus {
-  outline: none;
-}
-
-.load-more-button:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
 }
 
 /* =============================================

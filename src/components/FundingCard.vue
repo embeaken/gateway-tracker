@@ -16,7 +16,7 @@ const paid = sum((a) => a.paid)
 
 const shares = [
   { key: 'federal', label: 'Federal grants', amount: committed, note: 'FTA, FRA and USDOT grants' },
-  ...fundingShares.filter((s) => s.key !== 'federal'),
+  ...fundingShares,
 ]
 const total = shares.reduce((t, s) => t + s.amount, 0)
 
@@ -114,7 +114,7 @@ const barTitle = (m: Month) => {
       </div>
     </div>
 
-    <h3 class="q">Federal grant reimburesment status</h3>
+    <h3 class="q">Federal grant reimbursement status</h3>
     <div class="fedbar" role="img" :aria-label="`${billions(paid)} paid, ${billions(obligated - paid)} released, ${billions(committed - obligated)} to come`">
       <div class="fedbar-paid" :style="{ width: pct(paid, committed) }" />
       <div class="fedbar-released" :style="{ width: pct(obligated - paid, committed) }" />
@@ -131,7 +131,7 @@ const barTitle = (m: Month) => {
       </div>
     </div>
 
-    <h3 class="q">Federal grant reimburesments by month</h3>
+    <h3 class="q">Federal grant reimbursements by month</h3>
     <div class="legend">
       <span><i class="swatch swatch--gdc" />Tunnel</span>
       <span><i class="swatch swatch--amtrak" />Hudson Yards Concrete Casing</span>

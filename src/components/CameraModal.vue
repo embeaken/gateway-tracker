@@ -42,7 +42,7 @@ const frameStyle = computed(() => {
 
 <template>
   <Teleport to="body">
-    <div v-if="project" class="cam-modal" @click="close">
+    <div v-if="project" class="modal-overlay" @click="close">
       <div
         class="cam-modal-panel"
         role="dialog"
@@ -79,18 +79,6 @@ const frameStyle = computed(() => {
 </template>
 
 <style scoped>
-.cam-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--spacing-md);
-  background: var(--color-lightbox-overlay);
-  cursor: pointer;
-}
-
 .cam-modal-panel {
   width: min(1280px, 100%);
   max-height: 100%;

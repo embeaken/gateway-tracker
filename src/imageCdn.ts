@@ -11,16 +11,11 @@ export const cdnImage = (url: string, width: number) =>
 export const cdnSrcset = (url: string, widths: number[]) =>
   widths.map((w) => `${cdnImage(url, w)} ${w}w`).join(', ')
 
-/** For "view the photo" links: wider than any screen; the CDN never upscales. */
-export const cdnFullImage = (url: string) => cdnImage(url, 4000)
-
 /**
  * Like cdnImage, but for paths served by this site's own functions (e.g.
  * /api/cam-frame/…). Locally there's no Image CDN that can reach the dev
  * server, so those load as-is.
  */
-export const cdnSiteImage = (path: string, width: number) =>
-  isLocal ? path : `/.netlify/images?${new URLSearchParams({ url: path, w: String(width), fm: 'webp' })}`
+export const cdnSiteImage = (path: string, width: number) => (isLocal ? path : cdnImage(path, width))
 
-export const cdnSiteSrcset = (path: string, widths: number[]) =>
-  isLocal ? undefined : widths.map((w) => `${cdnSiteImage(path, w)} ${w}w`).join(', ')
+export const cdnSiteSrcset = (path: string, widths: number[]) => (isLocal ? undefined : cdnSrcset(path, widths))

@@ -26,7 +26,6 @@ const closeBtn = ref<HTMLButtonElement | null>(null)
 useModal(() => !!photo.value, closeBtn, close)
 
 const onKeydown = (e: KeyboardEvent) => {
-  if (!photo.value) return
   if (e.key === 'ArrowRight') step(1)
   if (e.key === 'ArrowLeft') step(-1)
 }
@@ -36,7 +35,7 @@ onUnmounted(() => document.removeEventListener('keydown', onKeydown))
 
 <template>
   <Teleport to="body">
-    <div v-if="photo" class="lightbox" @click="close">
+    <div v-if="photo" class="modal-overlay" @click="close">
       <div class="lightbox-content" role="dialog" aria-modal="true" aria-label="Photo" @click.stop>
         <button ref="closeBtn" type="button" class="close-button" aria-label="Close" @click="close">×</button>
         <img
@@ -62,18 +61,6 @@ onUnmounted(() => document.removeEventListener('keydown', onKeydown))
 </template>
 
 <style scoped>
-.lightbox {
-  position: fixed;
-  inset: 0;
-  background: var(--color-lightbox-overlay);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: var(--spacing-md);
-  cursor: pointer;
-}
-
 .lightbox-content {
   position: relative;
   max-width: 90vw;

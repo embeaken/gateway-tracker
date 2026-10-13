@@ -6,8 +6,7 @@ import { USER_AGENT, earthcamPage, framePath, type CamSite, type CamView, type C
 
 type EarthCamPage = {
   cameras: {
-    name: string
-    archives: { type: string; display_name?: string; image?: { url: string; datetime: string } }[]
+    archives: { type: string; image?: { url: string; datetime: string } }[]
   }[]
 }
 
@@ -23,15 +22,12 @@ async function fetchSite(projectId: string, playerUrl: string): Promise<CamSite>
     if (!res.ok) throw new Error(`EarthCam returned HTTP ${res.status}`)
     const page = (await res.json()) as EarthCamPage
 
-    // EarthCam's own view names ("View 5") mean nothing to visitors, so number them.
-    const stills = page.cameras.flatMap((camera) =>
-      camera.archives.filter((a) => a.type === 'archive' && a.image).map((a) => a.image!),
-    )
-    const views: CamView[] = stills.flatMap((image) => {
-      const frame = framePath(image.url)
-      return frame ? [{ label: '', frame, takenAt: isoDate(image.datetime) }] : []
-    })
-    if (views.length > 1) views.forEach((v, i) => (v.label = `View ${i + 1}`))
+    const views: CamView[] = page.cameras
+      .flatMap((camera) => camera.archives)
+      .flatMap((a) => {
+        const frame = a.type === 'archive' && a.image && framePath(a.image.url)
+        return frame ? [{ frame, takenAt: isoDate(a.image!.datetime) }] : []
+      })
     return { projectId, views }
   } catch (e) {
     return { projectId, views: [], error: e instanceof Error ? e.message : String(e) }

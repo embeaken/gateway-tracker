@@ -20,7 +20,7 @@ Vue 3 single-page dashboard tracking the Gateway Hudson River tunnel project. No
 Cards other than the route map and TBM cards use `DashCard` (small uppercase title, optional right-aligned meta). Camera tiles open `CameraModal` (EarthCam's interactive player). Photos open `PhotoLightbox`, which both the gallery and the feed use.
 
 **Data:**
-- `src/assets/data.ts`: hand-maintained facts (projects/cameras, route geometry, `tbms`, construction packages, funding split, milestones). Every figure comes from a GDC document; sources are in `docs/research/data-catalog.md`. TBM launch dates live only in `tbms`; the camera status text, explainer copy, map estimates, TBM cards and the TBM 2 milestone all derive from it. Milestones are only facts and GDC-stated dates, and `done` is flipped by hand, never inferred from the date.
+- `src/assets/data.ts`: hand-maintained facts (projects/cameras, route geometry, `tbms`, construction packages, funding split, milestones). Every figure comes from a GDC document; sources are in `docs/research/data-catalog.md`. TBM launch dates live only in `tbms`; the camera status text, explainer copy, map estimates and TBM cards all derive from it. Milestones are only facts and GDC-stated dates, and `done` is flipped by hand, never inferred from the date.
 - `src/assets/activityData.json`: the GDC feed, written by `scripts/update_data.py`.
 - `src/assets/fundingData.json`: federal grant payments, written by `scripts/update_funding.py`.
 

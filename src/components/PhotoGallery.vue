@@ -87,7 +87,7 @@ onBeforeUnmount(() => {
       </button>
     </li>
   </ul>
-  <button v-if="visible.length < photos.length" type="button" class="gallery-more" @click="count += PAGE_SIZE">
+  <button v-if="visible.length < photos.length" type="button" class="show-more gallery-more" @click="count += PAGE_SIZE">
     Show more photos
   </button>
 
@@ -120,26 +120,6 @@ onBeforeUnmount(() => {
 
 .gallery-more {
   margin-top: 12px;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-primary);
-  background: transparent;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  padding: 7px 12px;
-  cursor: pointer;
-}
-
-.gallery-more:hover {
-  color: var(--color-primary-dark);
-  border-color: var(--color-primary);
-  background: var(--color-primary-muted);
-}
-
-.gallery-more:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
 }
 
 .gallery-lead {

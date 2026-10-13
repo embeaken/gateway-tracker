@@ -16,8 +16,6 @@ export const USER_AGENT = 'hudson.tube'
 
 /** One camera view's latest still */
 export type CamView = {
-  /** "View 2" when a site has several views, else empty */
-  label: string
   /** Our cached proxy path for the frame, e.g. /api/cam-frame/resource6/AbC… */
   frame: string
   /** ISO timestamp the still was taken */

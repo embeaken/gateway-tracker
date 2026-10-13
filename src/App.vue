@@ -39,10 +39,10 @@ const tbmProgress = useTbmProgress()
       </DashCard>
 
       <div class="pair">
-        <DashCard id="funding" title="Financing" title-id="funding-title" meta="">
+        <DashCard id="funding" title="Financing" title-id="funding-title" >
           <FundingCard />
         </DashCard>
-        <DashCard id="photos" title="Photos" title-id="photos-title" meta="">
+        <DashCard id="photos" title="Photos" title-id="photos-title" >
           <PhotoGallery />
         </DashCard>
       </div>
@@ -58,7 +58,7 @@ const tbmProgress = useTbmProgress()
       </DashCard>
       <DashCard id="activity" class="feed" title="Updates from the GDC" title-id="activity-title">
         <div class="feed-scroll">
-          <ActivityTimeline :exclude="['photo']" />
+          <ActivityTimeline />
         </div>
       </DashCard>
     </aside>

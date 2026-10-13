@@ -347,6 +347,47 @@ main {
   filter: brightness(0.88);
 }
 
+/* "Show more" buttons under the gallery and the feed */
+.show-more {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 7px 12px;
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.show-more:hover {
+  color: var(--color-primary-dark);
+  border-color: var(--color-primary);
+  background: var(--color-primary-muted);
+}
+
+.show-more:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Full-screen backdrop for the photo and camera dialogs; click it to close */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-md);
+  background: var(--color-lightbox-overlay);
+  cursor: pointer;
+}
+
 /* Tabular figures wherever numbers line up */
 .tabular {
   font-variant-numeric: tabular-nums;

@@ -674,7 +674,7 @@ def fetch_pdfs(client, index, n_press=FEED_ITEM_LIMIT, n_notices=FEED_ITEM_LIMIT
                 # Videos, zips etc. are worth a human look, but only in recent
                 # folders; older ones are mostly archive dumps.
                 ext = "." + fname.rsplit(".", 1)[-1].lower() if "." in fname else ""
-                if ext not in IMAGE_EXTENSIONS and fname and (now.year, now.month) <= (year, month + 2):
+                if ext not in IMAGE_EXTENSIONS and fname and now.year * 12 + now.month - (year * 12 + month) <= 2:
                     unclassified.append(furl)
                 continue
 
@@ -805,17 +805,6 @@ def fetch_videos(existing, limit=FEED_ITEM_LIMIT):
 
 # ── JSON writer ───────────────────────────────────────────────────────────────
 
-def write_data_file(photos, posts, press_releases, notices, videos):
-    data = {
-        "images": photos,
-        "blueskyPosts": posts,
-        "pressReleases": press_releases,
-        "constructionNotices": notices,
-        "youtubeVideos": videos,
-    }
-    DATA_FILE.write_text(json.dumps(data, indent=2) + "\n")
-
-
 def diff_data(old_json, new_data):
     """Compare old JSON (dict from file) with new data dict.
 
@@ -911,12 +900,7 @@ def main():
             dates_needing_review.append(("photo", p["url"], date_str))
         photos.append({"url": p["url"], "caption": p.get("caption", ""), "date": date_str})
 
-    press_releases, notices, unclassified = fetch_pdfs(
-        client,
-        pdf_index,
-        n_press=FEED_ITEM_LIMIT,
-        n_notices=FEED_ITEM_LIMIT,
-    )
+    press_releases, notices, unclassified = fetch_pdfs(client, pdf_index)
 
     print("Dating press releases...")
     press_releases = fill_dates_from_filenames(press_releases, client, pdf_index)
@@ -946,7 +930,7 @@ def main():
         "constructionNotices": notices,
         "youtubeVideos": videos,
     }
-    write_data_file(photos, posts, press_releases, notices, videos)
+    DATA_FILE.write_text(json.dumps(new_data, indent=2) + "\n")
     save_pdf_index(pdf_index)
     print("  → Done")
 

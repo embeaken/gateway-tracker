@@ -179,19 +179,18 @@ export const constructionPackages: ConstructionPackage[] = [
 ];
 
 /**
- * Who pays for the ~$16B project (Jan 2026 board deck). The local share is
- * three federal RRIF loans that New York, New Jersey and the Port Authority repay.
+ * The non-grant shares of the ~$16B project (Jan 2026 board deck). The federal
+ * grant share is summed from fundingData.json. The local share is three federal
+ * RRIF loans that New York, New Jersey and the Port Authority repay.
  */
 export const fundingShares = [
-  { key: "federal", label: "Federal grants", amount: 10_997_171_053, note: "FTA, FRA and USDOT grants" },
   { key: "local", label: "New York, New Jersey & Port Authority", amount: 4_006_000_000, note: "Federal loans the states repay" },
   { key: "amtrak", label: "Amtrak", amount: 1_016_000_000, note: "" },
 ] as const;
 
 /**
  * What's done, then what GDC has scheduled, in order. Only facts and dates GDC
- * has stated; no estimates. Flip `done` by hand as things happen (TBM 2 follows
- * `tbms` automatically), never by date.
+ * has stated; no estimates. Flip `done` by hand as things happen, never by date.
  */
 export const milestones: { when: string; text: string; done: boolean }[] = [
   { when: "May 2021", text: "Federal approval", done: true },

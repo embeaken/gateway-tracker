@@ -3,7 +3,8 @@ import { nextTick, onBeforeUnmount, watch, type Ref } from 'vue'
 /**
  * Modal behaviour for a dialog teleported to <body>: while open, the page
  * behind it is inert (so Tab stays in the dialog) and doesn't scroll, Escape
- * closes it, and focus moves in on open and back on close.
+ * closes it, and focus moves in on open and back on close. Also works for
+ * dialogs that are mounted already open (`v-if` on the component itself).
  */
 export function useModal(isOpen: () => boolean, initialFocus: Ref<HTMLElement | null>, close: () => void) {
   let returnFocusTo: HTMLElement | null = null
@@ -33,7 +34,7 @@ export function useModal(isOpen: () => boolean, initialFocus: Ref<HTMLElement | 
       release()
       returnFocusTo?.focus()
     }
-  })
+  }, { immediate: true })
 
   onBeforeUnmount(release)
 }
