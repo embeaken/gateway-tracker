@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { routeStops, routeSegments, PALISADES_DRIVE, ROUTE } from "../assets/data";
-import { formatMonthYear } from "../dates";
 import { useTbmProgress, formatFt, formatPct } from "../useTbmProgress";
 
 // Side view of the route, west → east. Horizontal is to scale; vertical is
@@ -171,11 +170,6 @@ const stateLineX = computed(() => (x(R0) + x(R1)) / 2 + 30);
 
 const progress = useTbmProgress();
 
-const leadArrival = computed(() => {
-  const lead = progress.value.find((p) => p.status === "mining");
-  return lead?.arrival && { label: lead.tbm.label, month: formatMonthYear(lead.arrival) };
-});
-
 /** Keep a machine at 0 ft visibly inside the portal */
 const MIN_INSIDE_PX = 22;
 
@@ -304,7 +298,6 @@ const vrows = routeStops.map((stop) => ({
 <template>
   <section id="route" class="route" aria-labelledby="route-title">
     <h2 id="route-title" class="sr-only">Construction map</h2>
-    <div class="container">
       <div class="route-card">
         <!-- Side view (desktop) -->
         <div ref="strip" class="strip" :style="{ height: `${H}px` }">
@@ -518,31 +511,27 @@ const vrows = routeStops.map((stop) => ({
         <details class="estimate">
           <summary>About this graphic</summary>
           <p>
-            This is to scale horizontally but not vertically. TBM positions are a best estimate, not an
-            official figure. GDC expects the machines to bore the {{ formatFt(PALISADES_DRIVE.lengthFt) }}
-            Palisades Tunnel in about a year.
+            TBM positions are an estimate, not an
+            official figure. GDC expects the machines to finish boring the {{ formatFt(PALISADES_DRIVE.lengthFt) }}
+            Palisades Tunnel "about a year" after the October 2026 launch.
             GDC also quotes a rate of {{ PALISADES_DRIVE.quotedFtPerDay }} feet per day while the machines are running.
             <a :href="PALISADES_DRIVE.sourceUrl" target="_blank" rel="noopener">Source</a>
           </p>
         </details>
       </div>
-    </div>
   </section>
 </template>
 
 <style scoped>
-/* Overlaps the hero photo (App sets a negative margin-top) */
 .route {
-  position: relative;
-  z-index: 2;
-  padding-bottom: var(--spacing-xl);
+  min-width: 0;
+  scroll-margin-top: var(--spacing-lg);
 }
 
 .route-card {
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   background: var(--color-card-bg);
   border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-lg);
   overflow: hidden;
 }
 

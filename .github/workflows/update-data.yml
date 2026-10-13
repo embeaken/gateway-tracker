@@ -23,9 +23,12 @@ jobs:
         uses: astral-sh/setup-uv@v5
 
       - name: Update activity data
-        run: uv run scripts/update_data.py
+        run: uv run scripts/update_data.py --summary-file "$RUNNER_TEMP/update-summary.md"
         env:
           HUDSON_TUBE_ANTHROPIC_API_KEY: ${{ secrets.HUDSON_TUBE_ANTHROPIC_API_KEY }}
+
+      - name: Update federal funding data
+        run: uv run scripts/update_funding.py --summary-file "$RUNNER_TEMP/update-summary.md"
 
       - name: Branch name
         id: branch-name
@@ -40,7 +43,7 @@ jobs:
           delete-branch: true
           commit-message: "update data"
           title: "[${{ steps.branch-name.outputs.branch-name }}] update data"
-          body: Automated data update.
+          body-path: ${{ runner.temp }}/update-summary.md
 
       - name: Close older PRs
         if: steps.create-pr.outputs.pull-request-number

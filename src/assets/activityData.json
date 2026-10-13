@@ -1065,14 +1065,14 @@
   ],
   "pressReleases": [
     {
-      "title": "The GDC Gazette: Fall 2026 Hudson Tunnel Project Newsletter",
-      "date": "2026-10-01",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/10/GDC-Gazette-Fall-2026-Print.pdf"
-    },
-    {
       "title": "Hudson Tunnel Project Tunnel Boring Machine Begins Mining",
       "date": "2026-10-08",
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/10/TBM-Start-of-Mining-Press-Release.pdf"
+    },
+    {
+      "title": "The GDC Gazette: Fall 2026 Hudson Tunnel Project Newsletter",
+      "date": "2026-10-01",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/10/GDC-Gazette-Fall-2026-Print.pdf"
     },
     {
       "title": "Gateway Development Commission Celebrates Start of Tunnel Boring for Hudson Tunnel Project",
@@ -1090,6 +1090,11 @@
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/07/July-8-2026-Board-Meeting-Press-Release.pdf"
     },
     {
+      "title": "Gateway Development Commission Opens New Jersey Community Engagement Center",
+      "date": "2026-06-15",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/06/NJ-CEC-Opening-Press-Release.pdf"
+    },
+    {
       "title": "The GDC Gazette: Summer 2026 - Hudson Tunnel Project Construction Updates",
       "date": "2026-06-01",
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/06/GDC-Gazette-Summer-2026.pdf"
@@ -1100,24 +1105,9 @@
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/06/June-2026-Board-Meeting-Press-Release-FINAL.pdf"
     },
     {
-      "title": "Gateway Development Commission Opens New Jersey Community Engagement Center",
-      "date": "2026-06-15",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/06/NJ-CEC-Opening-Press-Release.pdf"
-    },
-    {
-      "title": "The GDC Gazette: Spring 2026 Hudson Tunnel Project Update",
-      "date": "2026-03-01",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/04/GDC-Gazette-Spring-2026.pdf"
-    },
-    {
       "title": "GDC Awards Contract for Hudson Tunnel Project Construction Package 1C: The Hudson River Tunnel Section",
       "date": "2026-04-27",
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/04/P1C-Contract-Award-Press-Release.pdf"
-    },
-    {
-      "title": "The GDC Gazette: Hudson Tunnel Project Update - December 2025",
-      "date": "2025-12-01",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/GDC-Gazette-12.2025.pdf"
     },
     {
       "title": "Hudson Tunnel Project Construction Update",
@@ -1125,39 +1115,14 @@
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/GDC-Press-Release-March-2026-Construction-Update-for-website.pdf"
     },
     {
-      "title": "Gateway Development Commission Seeks Bids for Tonnelle Avenue Bridge Construction on Hudson Tunnel Project",
-      "date": "2023-02-16",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/GDC-preleasetonnelleprocurement-0223Final-2.pdf"
-    },
-    {
-      "title": "Complaint: Gateway Development Commission v. The United States (U.S. Court of Federal Claims)",
-      "date": "2026-02-02",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/02/20260202-GDC-COFC-Complaint.pdf"
-    },
-    {
-      "title": "Hudson Tunnel Project Construction Suspended Due to Lack of Federal Funding",
-      "date": "2026-02-06",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/02/Construction-Pause-Press-Release-Feb-6-2026.pdf"
-    },
-    {
-      "title": "Gateway Development Commission Files Breach of Contract Claim Against Federal Government",
-      "date": "2026-02-02",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/02/GDC-2026.02.02-Press-Release-for-Website.pdf"
-    },
-    {
-      "title": "Gateway Development Commission Statement on New York, New Jersey's Hudson Tunnel Project Lawsuit Hearing",
-      "date": "2026-02-06",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/02/GDC-2026.02.06-GDC-Statement-on-NY-NJ-Lawsuit.pdf"
+      "title": "The GDC Gazette: Spring 2026 Hudson Tunnel Project Update",
+      "date": "2026-03-01",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/04/GDC-Gazette-Spring-2026.pdf"
     },
     {
       "title": "Gateway Development Commission Resumes Hudson Tunnel Project Construction",
       "date": "2026-02-24",
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/02/GDC-Release-Feb-24-2026-Construction-Update-for-Website.pdf"
-    },
-    {
-      "title": "Gateway Development Commission Statement on Hudson Tunnel Project Lawsuit",
-      "date": "2026-02-12",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/02/GDC-Statement-02.12.2026.pdf"
     },
     {
       "title": "Gateway Development Commission Statement on Disbursement of Federal Funds for Hudson Tunnel Project",
@@ -1170,6 +1135,31 @@
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/02/GDC-Statement-on-Initial-Disbursement-of-Federal-Funds.pdf"
     },
     {
+      "title": "Gateway Development Commission Statement on Hudson Tunnel Project Lawsuit",
+      "date": "2026-02-12",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/02/GDC-Statement-02.12.2026.pdf"
+    },
+    {
+      "title": "Hudson Tunnel Project Construction Suspended Due to Lack of Federal Funding",
+      "date": "2026-02-06",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/02/Construction-Pause-Press-Release-Feb-6-2026.pdf"
+    },
+    {
+      "title": "Gateway Development Commission Statement on New York, New Jersey's Hudson Tunnel Project Lawsuit Hearing",
+      "date": "2026-02-06",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/02/GDC-2026.02.06-GDC-Statement-on-NY-NJ-Lawsuit.pdf"
+    },
+    {
+      "title": "Complaint: Gateway Development Commission v. The United States (U.S. Court of Federal Claims)",
+      "date": "2026-02-02",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/02/20260202-GDC-COFC-Complaint.pdf"
+    },
+    {
+      "title": "Gateway Development Commission Files Breach of Contract Claim Against Federal Government",
+      "date": "2026-02-02",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/02/GDC-2026.02.02-Press-Release-for-Website.pdf"
+    },
+    {
       "title": "Gateway Development Commission Announces Hudson Tunnel Project Construction Pause If Federal Funding Not Restored",
       "date": "2026-01-27",
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/01/01.27.2026-Board-Meeting-Press-Release-for-Website.pdf"
@@ -1180,139 +1170,24 @@
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/12/GDC-December-Board-Meeting-Press-Release-for-website.pdf"
     },
     {
-      "title": "Gateway Hudson Tunnel Project Construction Begins in New York",
-      "date": "2023-11-03",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/11.2.23_Fin_GDC-HYCC3RELEASE_Proofed-1-1.pdf"
+      "title": "The GDC Gazette: Hudson Tunnel Project Update - December 2025",
+      "date": "2025-12-01",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/GDC-Gazette-12.2025.pdf"
     },
     {
-      "title": "Schumer, Buttigieg, Hochul, and Murphy Mark Start of Hudson Tunnel Project Construction in New York",
-      "date": "2023-11-03",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/11.2.23_Fin_GDC-HYCC3RELEASE_Proofed-1.pdf"
+      "title": "Joint Statement on Incident at HYCC-3 Construction Site",
+      "date": "2025-10-23",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2025.10.23-Joint-Statement-from-GDC-Amtrak-Related-Companies.pdf"
     },
     {
-      "title": "Gateway Corporation Trustees Statement on RPA Report Regarding Hudson River Rail Tunnel",
-      "date": "2019-02-26",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2019-02-26-Statement-on-RPA-Report.pdf"
+      "title": "Statement From GDC CEO Thomas Prendergast on Hudson Tunnel Project FTA Disbursement Pause",
+      "date": "2025-10-01",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2025.10.01-Statement-from-GDC-CEO-Tom-Prendergast.pdf"
     },
     {
-      "title": "Gateway Corporation Trustees Statement on Senator Schumer's Legislative Proposal",
-      "date": "2019-03-04",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2019-03-04-GDC-Statement-Schumer-Legislation.pdf"
-    },
-    {
-      "title": "Gateway Corporation Statement on FTA Ratings of Portal North Bridge and Hudson Tunnel Projects",
-      "date": "2019-03-15",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2019-03-15-GDC-Statement-FTA-Ratings.pdf"
-    },
-    {
-      "title": "Gateway Program Development Corporation Statement on White House/Congressional Infrastructure Meeting",
-      "date": "2019-04-30",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2019-04-30-GDC-Statement-WH-Congress-Mtg.pdf"
-    },
-    {
-      "title": "Gateway Program Development Corporation Statement On NY-NJ Passage Of Bi-State GDC Legislation",
-      "date": "2019-06-20",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2019-06-20-GDC-Bi-State-Legislation-Statement.pdf"
-    },
-    {
-      "title": "Gateway Program Development Corporation Statement on Governors' Signing of Bi-State GDC Legislation",
-      "date": "2019-07-22",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2019-07-22-GDC-Statement-Bi-State-Leg-Signed.pdf"
-    },
-    {
-      "title": "Gateway Corporation Statement on Strengthened Financial Plan for Portal North Bridge Construction",
-      "date": "2019-09-13",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2019-09-13-PNB-Financial-Plan-Statement.pdf"
-    },
-    {
-      "title": "Gateway Program Development Corporation Statement on Appointment of New Gateway Commissioners",
-      "date": "2019-10-07",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2019-10-07-GDC-Statement-GW-Commissioners.pdf"
-    },
-    {
-      "title": "Gateway Program Statement on Federal Budget Agreement for Fiscal Year 2020",
-      "date": "2019-12-21",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2019-12-21-Statement-FY20-Approps.pdf"
-    },
-    {
-      "title": "Gateway Corporation Chairman Statement On FTA Rating Of Hudson Tunnel Project",
-      "date": "2020-02-11",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2020-02-11-GDC-Statement-CIG-Rating-HTP.pdf"
-    },
-    {
-      "title": "Gateway Corporation Statement on FTA Rating of Portal North Bridge Project",
-      "date": "2020-02-11",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2020-02-11-GDC-Statement-CIG-Rating-PNB-1.pdf"
-    },
-    {
-      "title": "Gateway Corporation Statement on FTA Rating of Portal North Bridge Project",
-      "date": "2020-02-11",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2020-02-11-GDC-Statement-CIG-Rating-PNB.pdf"
-    },
-    {
-      "title": "GDC Chairman Statement on House Invest in America Act",
-      "date": "2020-06-03",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2020-06-03-GDC-Statement-Invest-in-America.pdf"
-    },
-    {
-      "title": "New Video Highlights Urgency Behind Initial Gateway Program Projects",
-      "date": "2021-07-21",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2021-07-21-Gateway-Video-Release.pdf"
-    },
-    {
-      "title": "Hudson Tunnel Project Clears Final Regulatory Hurdle with Army Corps of Engineers Permit",
-      "date": "2021-12-01",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2021-12-01-GDC-Armycorpspermitrelease.pdf"
-    },
-    {
-      "title": "Gateway Development Commission Advances Federal Funding Process for Hudson Tunnel Project",
-      "date": "2022-11-18",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2022-11-18-GDC-Release-NovBoard-PDA-Budget.pdf"
-    },
-    {
-      "title": "Final Required Documents For Full-Funding Grant Agreement Submitted To FTA, GDC Announces At Board Meeting",
-      "date": "2024-04-16",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2024.04.16_GDC-Release-April-Board-Meeting-1.pdf"
-    },
-    {
-      "title": "Gateway Development Commission Submits Final Required Documents for Hudson Tunnel Project Full-Funding Grant Agreement",
-      "date": "2024-04-16",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2024.04.16_GDC-Release-April-Board-Meeting.pdf"
-    },
-    {
-      "title": "Equal Employment Opportunity Statement",
-      "date": "2025-04-21",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2024.08.12_GDC-EEO-Statement-for-Website-rev-4-21-25-1.pdf"
-    },
-    {
-      "title": "Equal Employment Opportunity Statement",
-      "date": "2025-04-21",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2024.08.12_GDC-EEO-Statement-for-Website-rev-4-21-25.pdf"
-    },
-    {
-      "title": "Gateway Development Commission Establishes Board Committee to Lead CEO Search",
-      "date": "2024-08-14",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2024.08.14_CEO-Search-Committee-Statement-for-Website.pdf"
-    },
-    {
-      "title": "Gateway Development Commission Announces Execution of $3.8 Billion FSP Grant for Hudson Tunnel Project",
-      "date": "2024-09-30",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2024.09.30_FSP-Grant-Execution-Release-Updated-for-Website-1.pdf"
-    },
-    {
-      "title": "Gateway Development Commission Announces Execution of $3.8 Billion FSP Grant for Hudson Tunnel Project",
-      "date": "2024-09-30",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2024.09.30_FSP-Grant-Execution-Release-Updated-for-Website.pdf"
-    },
-    {
-      "title": "Gateway Development Commission Releases RFQ For New Jersey Surface Alignment Project",
-      "date": "2024-11-19",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2024.11.19_GDC-P3-RFQ-Press-Release-for-website.pdf"
-    },
-    {
-      "title": "Gateway Development Commission Appoints Thomas Prendergast Chief Executive Officer",
-      "date": "2025-01-16",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2025.01.16-CEO-Announcement-Press-Release-updated-for-website.pdf"
+      "title": "Gateway Development Commission Launches New Phase of Public-Private Infrastructure Delivery Contract",
+      "date": "2025-09-30",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-September-2025-Board-Release-for-Website.pdf"
     },
     {
       "title": "Manufacture of Tunnel Boring Machines for Hudson Tunnel Project Nears Completion",
@@ -1325,34 +1200,14 @@
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2025.08.20-GDC-Board-Meeting-Press-Release-for-website.pdf"
     },
     {
-      "title": "Statement From GDC CEO Thomas Prendergast on Hudson Tunnel Project FTA Disbursement Pause",
-      "date": "2025-10-01",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2025.10.01-Statement-from-GDC-CEO-Tom-Prendergast.pdf"
-    },
-    {
-      "title": "Joint Statement on Incident at HYCC-3 Construction Site",
-      "date": "2025-10-23",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2025.10.23-Joint-Statement-from-GDC-Amtrak-Related-Companies.pdf"
-    },
-    {
-      "title": "Gateway Development Commission Announces Hudson Yards Concrete Casing Section 3 Project More Than 50% Complete",
-      "date": "2025-05-20",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/5.20.2025-May-Board-Meeting-Press-Release-for-website.pdf"
-    },
-    {
       "title": "James Starace Joins Gateway Development Commission as Chief of Program Delivery",
       "date": "2025-07-28",
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-2025.07.28-GDC-Board-Meeting-Release-fin.pdf"
     },
     {
-      "title": "Gateway Development Commission Awards Palisades Tunnel Project Contract and Approves Hudson River Ground Stabilization Phase Two",
-      "date": "2024-08-01",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-August-1-Board-Meeting-Release-for-Website.pdf"
-    },
-    {
-      "title": "Gateway Development Commission Provides Update On CEO Search",
-      "date": "2024-11-04",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-CEO-Search-Update-Statement-for-website.pdf"
+      "title": "Statements On Confirmation Of Victor Herlinsky, Jr. To Gateway Development Commission",
+      "date": "2025-06-30",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/Herlinsky-Confirmation-Statements.pdf"
     },
     {
       "title": "Gateway Development Commission Highlights Workers Building the Hudson Tunnel Project in New Video",
@@ -1360,29 +1215,14 @@
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-Construction-Worker-Testimonial-Video-Press-Release-for-website.pdf"
     },
     {
-      "title": "Gateway Development Commission Secures Full Funding for Hudson Tunnel Project",
-      "date": "2024-07-08",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-FFGA-Signing-Press-Release-7.8.24_PROOFEDfin-1.pdf"
+      "title": "Gateway Development Commission Announces Hudson Yards Concrete Casing Section 3 Project More Than 50% Complete",
+      "date": "2025-05-20",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/5.20.2025-May-Board-Meeting-Press-Release-for-website.pdf"
     },
     {
-      "title": "Gateway Development Commission Awards Manhattan Tunnel Project Contract",
-      "date": "2025-02-03",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-February-3-2025-Board-Meeting-Press-Release-for-website.pdf"
-    },
-    {
-      "title": "Gateway Development Commission Enhances Organizational Capacity With Cutting-Edge Delivery Partner Model",
-      "date": "2024-02-28",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-Press-Release-Feb-28-2024-1.pdf"
-    },
-    {
-      "title": "Gateway Development Commission Enhances Organizational Capacity With Cutting-Edge Delivery Partner Model",
-      "date": "2024-02-28",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-Press-Release-Feb-28-2024-2.pdf"
-    },
-    {
-      "title": "Gateway Development Commission Enhances Organizational Capacity With Cutting-Edge Delivery Partner Model",
-      "date": "2024-02-28",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-Press-Release-Feb-28-2024.pdf"
+      "title": "Equal Employment Opportunity Statement",
+      "date": "2025-04-21",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2024.08.12_GDC-EEO-Statement-for-Website-rev-4-21-25-1.pdf"
     },
     {
       "title": "Former Metro-North President Catherine Rinaldi Named Gateway Development Commission Executive Vice President",
@@ -1395,19 +1235,39 @@
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-Press-Release_CR-Final-04.07.2025.pdf"
     },
     {
-      "title": "Gateway Development Commission Announces New CEO Kris Kolluri and New York Co-Chair Alicia Glen",
-      "date": "2021-07-19",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-PressreleaseGlenKOLLURI0722FINAL-1.pdf"
+      "title": "New Hudson Tunnel Project Analysis Shows Active Construction Is Supporting 20,200 Jobs, $4.5 Billion in Economic Output",
+      "date": "2025-03-20",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-Economic-Impact-Analysis-Press-Note-for-website-combined.pdf"
     },
     {
-      "title": "Gateway Development Commission Announces New CEO Kris Kolluri and New York Co-Chair Alicia Glen",
-      "date": "2021-07-19",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-PressreleaseGlenKOLLURI0722FINAL.pdf"
+      "title": "Gateway Development Commission Awards Manhattan Tunnel Project Contract",
+      "date": "2025-02-03",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-February-3-2025-Board-Meeting-Press-Release-for-website.pdf"
     },
     {
-      "title": "Gateway Commission Moves Forward on Hiring Process for CEO, Receives Update on Progress Toward Construction of Hudson Tunnel Project",
-      "date": "2022-05-16",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-RELEASE-2022-05-16-Board-Mtg-CEO-Process-1.pdf"
+      "title": "Gateway Development Commission Appoints Thomas Prendergast Chief Executive Officer",
+      "date": "2025-01-16",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2025.01.16-CEO-Announcement-Press-Release-updated-for-website.pdf"
+    },
+    {
+      "title": "Hudson Tunnel Project Tonnelle Avenue Bridge and Utility Relocation More Than 50% Complete",
+      "date": "2024-12-12",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-Tonnelle-Ave-50-Percent-Completion-Release-for-Website.pdf"
+    },
+    {
+      "title": "Gateway Development Commission Releases RFQ For New Jersey Surface Alignment Project",
+      "date": "2024-11-19",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2024.11.19_GDC-P3-RFQ-Press-Release-for-website.pdf"
+    },
+    {
+      "title": "Gateway Development Commission Provides Update On CEO Search",
+      "date": "2024-11-04",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-CEO-Search-Update-Statement-for-website.pdf"
+    },
+    {
+      "title": "Gateway Development Commission Announces Execution of $3.8 Billion FSP Grant for Hudson Tunnel Project",
+      "date": "2024-09-30",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2024.09.30_FSP-Grant-Execution-Release-Updated-for-Website-1.pdf"
     },
     {
       "title": "Gateway Development Commission Board Authorizes $3.8 Billion Grant Agreement for Hudson Tunnel Project",
@@ -1415,34 +1275,74 @@
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-Release-August-28-Board-Meeting-for-website.pdf"
     },
     {
+      "title": "Gateway Development Commission Establishes Board Committee to Lead CEO Search",
+      "date": "2024-08-14",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2024.08.14_CEO-Search-Committee-Statement-for-Website.pdf"
+    },
+    {
+      "title": "Gateway Development Commission Awards Palisades Tunnel Project Contract and Approves Hudson River Ground Stabilization Phase Two",
+      "date": "2024-08-01",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-August-1-Board-Meeting-Release-for-Website.pdf"
+    },
+    {
+      "title": "Gateway Development Commission Secures Full Funding for Hudson Tunnel Project",
+      "date": "2024-07-08",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-FFGA-Signing-Press-Release-7.8.24_PROOFEDfin-1.pdf"
+    },
+    {
+      "title": "New Research Finds Hudson Tunnel Project Will Generate 95,000 Jobs, $19.6 Billion in Economic Activity",
+      "date": "2024-04-29",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-RPA-HTP-Economic-Impact-Report2024.04.29.pdf"
+    },
+    {
+      "title": "Final Required Documents For Full-Funding Grant Agreement Submitted To FTA, GDC Announces At Board Meeting",
+      "date": "2024-04-16",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2024.04.16_GDC-Release-April-Board-Meeting-1.pdf"
+    },
+    {
+      "title": "Gateway Development Commission Submits Final Required Documents for Hudson Tunnel Project Full-Funding Grant Agreement",
+      "date": "2024-04-16",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2024.04.16_GDC-Release-April-Board-Meeting.pdf"
+    },
+    {
+      "title": "Gateway Development Commission Announces EarthCam Installation to Provide Daily Updates on Tonnelle Ave Construction",
+      "date": "2024-04-03",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2024.04.03_GDC-Tonnelle-Ave-EarthCam.pdf"
+    },
+    {
+      "title": "Gateway Development Commission Enhances Organizational Capacity With Cutting-Edge Delivery Partner Model",
+      "date": "2024-02-28",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-Press-Release-Feb-28-2024-1.pdf"
+    },
+    {
       "title": "Gateway Development Commission Awards Hudson River Ground Stabilization Project, First Heavy Construction Contract",
       "date": "2024-02-16",
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-Release-Feb-2024-Board-Meeting-1.pdf"
     },
     {
-      "title": "Gateway Development Commission Awards Hudson River Ground Stabilization Project, First Heavy Construction Contract",
-      "date": "2024-02-16",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-Release-Feb-2024-Board-Meeting.pdf"
+      "title": "Governors Murphy and Hochul Announce Hudson Tunnel Project NJ Groundbreaking on Tonnelle Avenue Bridge",
+      "date": "2023-11-30",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/Tonnelle-Groundbreaking-Press-Release-11.30.23.pdf"
     },
     {
-      "title": "Gateway Development Commission Announces New Cost Estimate and Schedule for Hudson Tunnel Project",
-      "date": "2022-08-31",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-Release-Hudson-Tunnel-Project-Cost-Schedule.pdf"
+      "title": "Gateway Hudson Tunnel Project Construction Begins in New York",
+      "date": "2023-11-03",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/11.2.23_Fin_GDC-HYCC3RELEASE_Proofed-1-1.pdf"
     },
     {
-      "title": "Hudson Tunnel Project Enters New Phase with Supplemental Geotechnical Borings",
-      "date": "2021-11-16",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-Release2021-11-16-21-Board-Mtg.pdf"
+      "title": "Schumer, Buttigieg, Hochul, and Murphy Mark Start of Hudson Tunnel Project Construction in New York",
+      "date": "2023-11-03",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/11.2.23_Fin_GDC-HYCC3RELEASE_Proofed-1.pdf"
     },
     {
-      "title": "GDC Announces Requests for Qualifications for Two Major Pieces of Hudson Tunnel Project",
-      "date": "2023-05-31",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-ReleaseRFQsMay2023.pdf"
+      "title": "Gateway Development Commission Board Authorizes Key Agreements With Amtrak, NJT As Hudson Tunnel Project Continues to Advance",
+      "date": "2023-10-16",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/Immediate-Release_October_Board_Meeting_10.16.23.pdf"
     },
     {
-      "title": "Gateway Development Commission Launches New Phase of Public-Private Infrastructure Delivery Contract",
-      "date": "2025-09-30",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-September-2025-Board-Release-for-Website.pdf"
+      "title": "Gateway Development Commission Board Awards Two Major Contracts For Tonnelle Avenue Bridge And Utility Relocation Project",
+      "date": "2023-09-11",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC_Press-Release_Board-Meeting_9.11.23_fin.pdf"
     },
     {
       "title": "Hudson Tunnel Project To Receive $6.88 Billion Federal Grant",
@@ -1455,9 +1355,69 @@
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-StatementRAISEJune2023.pdf"
     },
     {
-      "title": "Hudson Tunnel Project Tonnelle Avenue Bridge and Utility Relocation More Than 50% Complete",
-      "date": "2024-12-12",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-Tonnelle-Ave-50-Percent-Completion-Release-for-Website.pdf"
+      "title": "GDC Announces Requests for Qualifications for Two Major Pieces of Hudson Tunnel Project",
+      "date": "2023-05-31",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-ReleaseRFQsMay2023.pdf"
+    },
+    {
+      "title": "Gateway Development Commission Highlights Progress and Early Work on Hudson Tunnel Project in Board Meeting",
+      "date": "2023-05-02",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2023-05-03-GDC-Highlights-Progress-Early-Work-on-Hudson-Tunnel-Project.pdf"
+    },
+    {
+      "title": "Gateway Development Commission Announces Improved Contracting Strategy for Hudson Tunnel Project to Ensure Competitive Bidding Pool and Advance Early Work",
+      "date": "2023-04-18",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2023-04-18-Hudson-Tunnel-Procurement-Strategy.pdf"
+    },
+    {
+      "title": "Gateway Development Commission Seeks Bids for Tonnelle Avenue Bridge Construction on Hudson Tunnel Project",
+      "date": "2023-02-16",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/GDC-preleasetonnelleprocurement-0223Final-2.pdf"
+    },
+    {
+      "title": "Gateway Development Commission Advances Federal Funding Process for Hudson Tunnel Project",
+      "date": "2022-11-18",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2022-11-18-GDC-Release-NovBoard-PDA-Budget.pdf"
+    },
+    {
+      "title": "Gateway Development Commission Announces New Cost Estimate and Schedule for Hudson Tunnel Project",
+      "date": "2022-08-31",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-Release-Hudson-Tunnel-Project-Cost-Schedule.pdf"
+    },
+    {
+      "title": "Amtrak Awards Contract to Arup for Preliminary Design of Railroad Infrastructure that Will Support New York Penn Station Expansion",
+      "date": "2022-06-23",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/Amtrak-Awards-Contract-to-Arup-for-Preliminary-Design-of-Railroad-Infrastructure-that-Will-Support-New-York-Penn-Station-Expansion-.pdf"
+    },
+    {
+      "title": "Gateway Commission Moves Forward on Hiring Process for CEO, Receives Update on Progress Toward Construction of Hudson Tunnel Project",
+      "date": "2022-05-16",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-RELEASE-2022-05-16-Board-Mtg-CEO-Process-1.pdf"
+    },
+    {
+      "title": "Hudson Tunnel Project Clears Final Regulatory Hurdle with Army Corps of Engineers Permit",
+      "date": "2021-12-01",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2021-12-01-GDC-Armycorpspermitrelease.pdf"
+    },
+    {
+      "title": "Hudson Tunnel Project Enters New Phase with Supplemental Geotechnical Borings",
+      "date": "2021-11-16",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-Release2021-11-16-21-Board-Mtg.pdf"
+    },
+    {
+      "title": "New Financial Plan Should Qualify Hudson Tunnel Project for Improved Rating",
+      "date": "2021-08-27",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/GDC-HTP-Financial-Plan-2021-Submittal-vFINAL-w-Letter-1.pdf"
+    },
+    {
+      "title": "New Video Highlights Urgency Behind Initial Gateway Program Projects",
+      "date": "2021-07-21",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2021-07-21-Gateway-Video-Release.pdf"
+    },
+    {
+      "title": "Gateway Development Commission Announces New CEO Kris Kolluri and New York Co-Chair Alicia Glen",
+      "date": "2021-07-19",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-PressreleaseGlenKOLLURI0722FINAL-1.pdf"
     },
     {
       "title": "New Data Shows Delays Continued in Hudson Tunnel Despite Lower Ridership in 2020",
@@ -1465,19 +1425,114 @@
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-release0712boardmeeting-NRT-Delay-Data.pdf"
     },
     {
-      "title": "Gateway Development Commission Board Awards Two Major Contracts For Tonnelle Avenue Bridge And Utility Relocation Project",
-      "date": "2023-09-11",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC_Press-Release_Board-Meeting_9.11.23_fin.pdf"
+      "title": "Major Step Forward on Hudson Tunnel Project as Joint Final Environmental Impact Statement and Record of Decision Issued by U.S. Department of Transportation",
+      "date": "2021-05-28",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2021-05-28-Hudson-Tunnel-Project-ROD.pdf"
     },
     {
-      "title": "Statements On Confirmation Of Victor Herlinsky, Jr. To Gateway Development Commission",
-      "date": "2025-06-30",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/Herlinsky-Confirmation-Statements.pdf"
+      "title": "Gateway Development Commission to Hold Meeting",
+      "date": "2021-05-05",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2021-05-05-Gateway-Commission-Advisory.pdf"
     },
     {
-      "title": "Gateway Development Commission Board Authorizes Key Agreements With Amtrak, NJT As Hudson Tunnel Project Continues to Advance",
-      "date": "2023-10-16",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/Immediate-Release_October_Board_Meeting_10.16.23.pdf"
+      "title": "Gateway Development Commission Continues Early Work on Hudson Tunnel Project: \"Test Pits\" Show Where North End of Manhattan Ventilation Shaft Can Reach to Not Disrupt Electricity Lines",
+      "date": "2021-04-29",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2021-04-29-GDC-HTP-Test-Pits.pdf"
+    },
+    {
+      "title": "In First Congressional Hearing, Secretary Buttigieg Calls Hudson Tunnel \"A Project of National Significance\" & Commits to Completing EIS \"In Second Quarter of This Year\"",
+      "date": "2021-03-25",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2021-03-25-GDC-Buttigieg-Testimony.pdf"
+    },
+    {
+      "title": "Steven M. Cohen and Balpreet Grewal-Virk Selected to Co-Chair Bi-State Gateway Development Commission",
+      "date": "2021-03-05",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2021-03-05-GDC-Commissioners-FINAL.pdf"
+    },
+    {
+      "title": "Gateway Partners Advance Early Construction Work on Third and Final Section of Hudson Yards Concrete Casing",
+      "date": "2021-03-05",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2021-03-05_ESB-Construction-FINAL.pdf"
+    },
+    {
+      "title": "Gateway Program Development Corporation Welcomes New Jersey Commissioners to GDC",
+      "date": "2020-12-17",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-Welcome-Commissioners.pdf"
+    },
+    {
+      "title": "Gateway Program Development Corporation Releases Independent Analysis of North River Tunnel Rehabilitation",
+      "date": "2020-11-23",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/2020-11-23-LBA-vFINAL.pdf"
+    },
+    {
+      "title": "Gateway Program Development Corporation Announces Significant Progress in Pre-Procurement Data Room",
+      "date": "2020-08-20",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2020-08-20-GDC-Data-Room-Progress.pdf"
+    },
+    {
+      "title": "GDC Chairman Statement on House Invest in America Act",
+      "date": "2020-06-03",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2020-06-03-GDC-Statement-Invest-in-America.pdf"
+    },
+    {
+      "title": "Gateway Corporation Chairman Statement On FTA Rating Of Hudson Tunnel Project",
+      "date": "2020-02-11",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2020-02-11-GDC-Statement-CIG-Rating-HTP.pdf"
+    },
+    {
+      "title": "Gateway Corporation Statement on FTA Rating of Portal North Bridge Project",
+      "date": "2020-02-11",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2020-02-11-GDC-Statement-CIG-Rating-PNB-1.pdf"
+    },
+    {
+      "title": "Steven M. Cohen Becomes Chairman of Gateway Program Development Corporation for 2020",
+      "date": "2020-01-02",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2019-01-02-Steve-Cohen-GDC-Chair.pdf"
+    },
+    {
+      "title": "Gateway Program Statement on Federal Budget Agreement for Fiscal Year 2020",
+      "date": "2019-12-21",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2019-12-21-Statement-FY20-Approps.pdf"
+    },
+    {
+      "title": "Gateway Program Statement Marking 109th \"Birthday\" of Hudson River Tunnel and Portal Bridge",
+      "date": "2019-11-27",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2019-11-27-Happy-Birthday-NRT-PB.pdf"
+    },
+    {
+      "title": "New Phase of Work Begins in Hudson River as Engineering Advances on Gateway Hudson Tunnel Project",
+      "date": "2019-10-24",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2019-10-24-HTP-Geotech-Boring-Phase-II.pdf"
+    },
+    {
+      "title": "Gateway Program Development Corporation Statement on Appointment of New Gateway Commissioners",
+      "date": "2019-10-07",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2019-10-07-GDC-Statement-GW-Commissioners.pdf"
+    },
+    {
+      "title": "Gateway Corporation Statement on Strengthened Financial Plan for Portal North Bridge Construction",
+      "date": "2019-09-13",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2019-09-13-PNB-Financial-Plan-Statement.pdf"
+    },
+    {
+      "title": "Poll: Gateway Projects Most Important Regional Transportation Priority",
+      "date": "2019-08-12",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2019-08-12-GDC-Transportation-Priorities-Survey.pdf"
+    },
+    {
+      "title": "Gateway Program Development Corporation Statement on Governors' Signing of Bi-State GDC Legislation",
+      "date": "2019-07-22",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2019-07-22-GDC-Statement-Bi-State-Leg-Signed.pdf"
+    },
+    {
+      "title": "New Analysis Finds 85 Days of \"Major Infrastructure Failure\" With Five-Hour Delays in Century-Old Tunnel and Bridge",
+      "date": "2019-07-22",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/GDC-Delay-Analysis-NR.pdf"
+    },
+    {
+      "title": "Gateway Program Development Corporation Statement On NY-NJ Passage Of Bi-State GDC Legislation",
+      "date": "2019-06-20",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2019-06-20-GDC-Bi-State-Legislation-Statement.pdf"
     },
     {
       "title": "Statement on Raritan Valley Line Mayors Alliance Rally Supporting Gateway Program",
@@ -1485,16 +1540,46 @@
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/Raritan-Valley-Mayors-Alliance-Rally-Statement-GDC.pdf"
     },
     {
-      "title": "Governors Murphy and Hochul Announce Hudson Tunnel Project NJ Groundbreaking on Tonnelle Avenue Bridge",
-      "date": "2023-11-30",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/Tonnelle-Groundbreaking-Press-Release-11.30.23.pdf"
+      "title": "Gateway Development Corporation Launches Enhanced Media Center with New Images, Videos and Other Content",
+      "date": "2019-05-30",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2019-05-30-GDC-Media-Center.pdf"
+    },
+    {
+      "title": "Gateway Program Development Corporation Statement on White House/Congressional Infrastructure Meeting",
+      "date": "2019-04-30",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2019-04-30-GDC-Statement-WH-Congress-Mtg.pdf"
+    },
+    {
+      "title": "Gateway Corporation Statement on FTA Ratings of Portal North Bridge and Hudson Tunnel Projects",
+      "date": "2019-03-15",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2019-03-15-GDC-Statement-FTA-Ratings.pdf"
+    },
+    {
+      "title": "Gateway Corporation Trustees Statement on Senator Schumer's Legislative Proposal",
+      "date": "2019-03-04",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2019-03-04-GDC-Statement-Schumer-Legislation.pdf"
+    },
+    {
+      "title": "Gateway Corporation Trustees Statement on RPA Report Regarding Hudson River Rail Tunnel",
+      "date": "2019-02-26",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2019-02-26-Statement-on-RPA-Report.pdf"
     }
   ],
   "constructionNotices": [
     {
-      "title": "Boater Safety Alert: Additional Buoy Installation for Hudson Tunnel Project",
-      "date": "2026-05-01",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/10/Boater-Safety-Alert-2026-V9.pdf"
+      "title": "Micropile and Underpinning Work Moves Forward: Hudson River Tunnel Section (Project Update, October 2026)",
+      "date": "2026-10-01",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/10/CN-P1C-October-2026-V3.pdf"
+    },
+    {
+      "title": "TBM Mining Starting Soon: What to Expect (Hudson Tunnel Project)",
+      "date": "2026-10-01",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/10/TBM-Mining-Starting_Eng.-Spa._FV.pdf"
+    },
+    {
+      "title": "Hudson River Tunnel Section Update: September 2026 Look-Ahead (Pre-Construction Activities Continue)",
+      "date": "2026-09-01",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/08/Hudson-Tunnel-Project-September-Look-Ahead-2026-v5.pdf"
     },
     {
       "title": "Damage Claims FAQ",
@@ -1502,9 +1587,9 @@
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/08/Damage-Claims-FAQ_English-Spanish-8.4.26.pdf"
     },
     {
-      "title": "Hudson Tunnel Project Frequently Asked Questions: New Jersey Key Terms",
-      "date": "2026-01-01",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/08/NJ-CEC-Key-Terms-FAQs-2026-V7-2.pdf"
+      "title": "Hudson River Tunnel Section Open House in Hoboken",
+      "date": "2026-08-01",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/08/Hoboken-Open-House-Fence-Sign-V3-web-1-2.pdf"
     },
     {
       "title": "Hudson Tunnel Project Frequently Asked Questions: New Jersey",
@@ -1512,24 +1597,14 @@
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/08/NJ-FAQ_English-Spanish_FV.pdf"
     },
     {
-      "title": "Hudson Tunnel Project Frequently Asked Questions: New York Key Terms",
-      "date": "2026-01-01",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/08/NY-CEC-Key-Terms-FAQs-2026-V4.pdf"
-    },
-    {
       "title": "Hudson Tunnel Project Frequently Asked Questions: New York",
       "date": "2026-08-01",
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/08/NY-FAQ_English-Spanish_FV.pdf"
     },
     {
-      "title": "Gateway Development Commission Construction Notice: Temporary Bikeway and Walkway Shift at Hudson River Park",
-      "date": "2026-06-29",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/07/2026.6.29_Gateway-Development-Commission-Construction-Notice-HRP-Bike-Ped.pdf"
-    },
-    {
-      "title": "Hudson River Park Area Impacts-Frequently Asked Questions: Bikeway and Walkway Changes for Hudson Tunnel Project",
-      "date": "2026-07-01",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/07/2026.7.1_Bike-Ped-Park-FAQ-vf.pdf"
+      "title": "Upcoming Road & Sidewalk Maintenance at Hudson County Shaft Site (Park Ave. and 19th St.)",
+      "date": "2026-08-01",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/08/P1A_Road-Sidewalk-Maintenance-Notice_FV.pdf"
     },
     {
       "title": "Hudson Tunnel Project Frequently Asked Questions: Manhattan",
@@ -1537,9 +1612,9 @@
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/07/7.15.2026_Gateway-Development-Commission-Manhattan-Tunneling-FAQ.pdf"
     },
     {
-      "title": "Damage Claim FAQs for Palisades Tunnel Project",
-      "date": "2026-07-01",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/07/Damage-Claim-FAQs-for-website.pdf"
+      "title": "Noise Abatement Program: Frequently Asked Questions (Spanish)",
+      "date": "2026-07-14",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/07/SP-FAQs_V3_Noise-Abatement-Program_rev07142026.pdf"
     },
     {
       "title": "Noise Abatement Program-Frequently Asked Questions (FAQs)",
@@ -1547,9 +1622,14 @@
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/07/FAQs_V3_Noise-Abatement-Program_rev07132026.pdf"
     },
     {
-      "title": "North Bergen Portal Site Summer Update: Controlled Blasting Resumes",
-      "date": "2026-06-30",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/07/P1A-Construction-Notice_Blasting-6.30.26-Eng.-Spa.-FV-1.pdf"
+      "title": "Hudson River Park Area Impacts-Frequently Asked Questions: Bikeway and Walkway Changes for Hudson Tunnel Project",
+      "date": "2026-07-01",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/07/2026.7.1_Bike-Ped-Park-FAQ-vf.pdf"
+    },
+    {
+      "title": "Damage Claim FAQs for Palisades Tunnel Project",
+      "date": "2026-07-01",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/07/Damage-Claim-FAQs-for-website.pdf"
     },
     {
       "title": "Hudson River Tunnel Section Site Mobilization Construction Notice",
@@ -1557,14 +1637,19 @@
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/07/P1C-July-2026-Site-Mobilization-Construction-Notice-FV.pdf"
     },
     {
-      "title": "Noise Abatement Program: Frequently Asked Questions (Spanish)",
-      "date": "2026-07-14",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/07/SP-FAQs_V3_Noise-Abatement-Program_rev07142026.pdf"
-    },
-    {
       "title": "Hudson Tunnel Project: Bike and Pedestrian Path FAQ for Hudson River Park",
       "date": "2026-07-01",
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/07/Sp_2026.7.1_Bike-Ped-Park-FAQ-vf.pdf"
+    },
+    {
+      "title": "North Bergen Portal Site Summer Update: Controlled Blasting Resumes",
+      "date": "2026-06-30",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/07/P1A-Construction-Notice_Blasting-6.30.26-Eng.-Spa.-FV-1.pdf"
+    },
+    {
+      "title": "Gateway Development Commission Construction Notice: Temporary Bikeway and Walkway Shift at Hudson River Park",
+      "date": "2026-06-29",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/07/2026.6.29_Gateway-Development-Commission-Construction-Notice-HRP-Bike-Ped.pdf"
     },
     {
       "title": "Boater Safety Alert: Hudson Tunnel Project Cofferdam Shift Eastward",
@@ -1577,6 +1662,16 @@
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/06/6.26.2026_Gateway-Development-Commission-Construction-Notice-30th-Street-Trucks_vf.pdf"
     },
     {
+      "title": "What to Expect at the Hudson County Shaft Site: Upcoming Excavation Work",
+      "date": "2026-06-15",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/06/Hudson-County-Shaft-Upcoming-Excavation-Work-6.15.26.pdf"
+    },
+    {
+      "title": "Boater Safety Alert: Additional Buoy Installation for Hudson Tunnel Project",
+      "date": "2026-05-01",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/10/Boater-Safety-Alert-2026-V9.pdf"
+    },
+    {
       "title": "Boater Safety Alert: Hudson Tunnel Project Safety Zone and Seasonal Buoys",
       "date": "2026-05-01",
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/05/2026.5.1_Gateway-Development-Commission-Boater-Safety-Alert_vf.pdf"
@@ -1587,19 +1682,9 @@
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/04/Construction-Notice_Secant-Pile-Wall-Installation_2026-04-14_final._eng_span.pdf"
     },
     {
-      "title": "Construction Notice: North Bergen Portal Upcoming Activity - Palisades Tunnel Project",
-      "date": "2026-03-01",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/Construction-Notice-North-Bergen-Portal-Upcoming-Activity-Notice.pdf"
-    },
-    {
       "title": "Palisades Tunnel Project: Upcoming Construction Activity at the Hudson County Shaft Site (Spring 2026)",
       "date": "2026-03-21",
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/HC-Shaft-Site-Upcoming-Activity_spring-2026_final.pdf"
-    },
-    {
-      "title": "Temporary Parking Restriction Notice: Paterson Plank Road, North Bergen (Palisades Tunnel Project)",
-      "date": "2026-03-09",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/Parking-Restrictions-3_9_26-PPR.pdf"
     },
     {
       "title": "Tonnelle Avenue Bridge and Utility Relocation Project Construction Notice - Lane Closures",
@@ -1607,9 +1692,54 @@
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/Tonnelle-Construction-Notice_2026-03-13_lane-closures.pdf"
     },
     {
+      "title": "Temporary Parking Restriction Notice: Paterson Plank Road, North Bergen (Palisades Tunnel Project)",
+      "date": "2026-03-09",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/Parking-Restrictions-3_9_26-PPR.pdf"
+    },
+    {
+      "title": "Construction Notice: North Bergen Portal Upcoming Activity - Palisades Tunnel Project",
+      "date": "2026-03-01",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/03/Construction-Notice-North-Bergen-Portal-Upcoming-Activity-Notice.pdf"
+    },
+    {
       "title": "Hudson Yards Concrete Casing Section 3 Construction Notice",
       "date": "2026-01-21",
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/01/1.21.2026_Gateway-Development-Commission-Construction-Notice.pdf"
+    },
+    {
+      "title": "Construction Notice: Overnight Shaft Excavation Work at Block 675 (12th Avenue Shaft)",
+      "date": "2026-01-01",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/08/CN-Overnight-Shaft-Excavation-Work-2026-V4.pdf"
+    },
+    {
+      "title": "Hudson Tunnel Project Frequently Asked Questions: New Jersey Key Terms",
+      "date": "2026-01-01",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/08/NJ-CEC-Key-Terms-FAQs-2026-V7-2.pdf"
+    },
+    {
+      "title": "NJ Surface Alignment Update: Test Pit Work on Secaucus Road",
+      "date": "2026-01-01",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/08/NJ-Surface-Alignment-Update-2026-V1-3.pdf"
+    },
+    {
+      "title": "Hudson Tunnel Project Frequently Asked Questions: New York Key Terms",
+      "date": "2026-01-01",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/08/NY-CEC-Key-Terms-FAQs-2026-V4.pdf"
+    },
+    {
+      "title": "Site Mobilization Near & Under Willow Avenue (Hudson River Tunnel Section Update)",
+      "date": "2026-01-01",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/08/Willow-Ave-Site-Mobilization-2026-V3-1.pdf"
+    },
+    {
+      "title": "Construction Notice: 18-Hour Concrete Pour for Hudson Yards Concrete Casing-Section 3 Project (July 21-22, 2026)",
+      "date": "2026-01-01",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/07/CN-18-Hour-Concrete-Pour-2026-V3.pdf"
+    },
+    {
+      "title": "Construction Notice: 18-Hour Concrete Pours for Hudson Yards Concrete Casing-Section 3 Project (July 24-25 and July 31-August 1, 2026)",
+      "date": "2026-01-01",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/07/CN-18-Hour-Concrete-Pour-2026-V4.pdf"
     },
     {
       "title": "Temporary Parking Restriction Notice: Paterson Plank Road, North Bergen (Palisades Tunnel Project)",
@@ -1622,19 +1752,24 @@
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/11/11.12.2025_Gateway-Development-Commission-Construction-Notice-Rock-Chopping-Sundays.pdf"
     },
     {
-      "title": "Long-Term Closure of 29th Street Between 11th and 12th Avenues - Updated Construction Notice",
-      "date": "2025-10-10",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/10.10.2025_Gateway-Development-Commission-Construction-Notice-29th-Closure.pdf"
-    },
-    {
       "title": "Gateway Development Commission Construction Notice: Temporary Fence Reconfiguration and Public Art Removal at Hudson River Park",
       "date": "2025-10-27",
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/10.27.2025_Gateway-Development-Commission-Construction-Notice-HRP-Fence-Art.pdf"
     },
     {
+      "title": "Long-Term Closure of 29th Street Between 11th and 12th Avenues - Updated Construction Notice",
+      "date": "2025-10-10",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/10.10.2025_Gateway-Development-Commission-Construction-Notice-29th-Closure.pdf"
+    },
+    {
       "title": "Gateway Development Commission Construction Notice: 12th Avenue Lane and Pedestrian Shifts",
       "date": "2025-10-08",
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/10.8.2025_Gateway-Development-Commission-Construction-Notice-Lane-Ped-Shifts.pdf"
+    },
+    {
+      "title": "Construction Notice: Preliminary Work at Hudson County Shaft (Palisades Tunnel Project)",
+      "date": "2025-10-01",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/Preliminary-Construction-Hudson-County-Shaft.pdf"
     }
   ],
   "youtubeVideos": [

@@ -26,10 +26,23 @@
   --color-text-secondary: #4B5768;
   --color-border: #DDE2E8;
 
+  /* Dashboard */
+  --color-text-tertiary: #7A8596;    /* footnotes, units */
+  --color-line: #EEF1F5;             /* table rows, bar tracks */
+  --color-ok: #2F7D4F;               /* done, complete */
+  --color-ok-bg: #E7F3EC;
+  --color-alert: #B4442E;            /* freeze, errors */
+  --color-alert-bg: #FBEFEA;
+  --color-fund-paid: #1D4F86;
+  --color-fund-released: #8DB8E8;
+  --color-fund-amtrak: #8DB8E8;
+
   /* Public Sans (US Web Design System) for text, Source Serif for headlines */
   --font-family-base: "Public Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
                        "Helvetica Neue", Arial, sans-serif;
   --font-family-display: "Source Serif 4", Georgia, "Times New Roman", serif;
+  /* Numbers on the dashboard */
+  --font-family-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
   --font-weight-semibold: 600;
   --font-size-xl: 48px;
   --font-size-lg: 36px;
@@ -56,9 +69,8 @@
   --spacing-3xl: 60px;
 
   /* Layout */
-  --container-max-width: 1600px;
-  --sidebar-width: 460px;
-  --content-gap: 40px;
+  /* Dashboard: header, footer and content share these edges */
+  --container-max-width: 2560px;
 
   /* Border Radius */
   --radius-sm: 4px;
@@ -128,6 +140,16 @@
   --color-text-secondary: #9AA8BA;
   --color-border: #263752;
 
+  --color-text-tertiary: #7C8BA0;
+  --color-line: #1C2D47;
+  --color-ok: #6CC08F;
+  --color-ok-bg: rgba(108, 192, 143, 0.12);
+  --color-alert: #EE8C76;
+  --color-alert-bg: rgba(238, 140, 118, 0.1);
+  --color-fund-paid: #8DB8E8;
+  --color-fund-released: #3D6A9E;
+  --color-fund-amtrak: #3D6A9E;
+
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
@@ -167,6 +189,16 @@
     --color-text-primary: #E7ECF2;
     --color-text-secondary: #9AA8BA;
     --color-border: #263752;
+
+    --color-text-tertiary: #7C8BA0;
+    --color-line: #1C2D47;
+    --color-ok: #6CC08F;
+    --color-ok-bg: rgba(108, 192, 143, 0.12);
+    --color-alert: #EE8C76;
+    --color-alert-bg: rgba(238, 140, 118, 0.1);
+    --color-fund-paid: #8DB8E8;
+    --color-fund-released: #3D6A9E;
+    --color-fund-amtrak: #3D6A9E;
 
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -274,12 +306,12 @@ main {
 .container {
   max-width: var(--container-max-width);
   margin: 0 auto;
-  padding: 0 var(--spacing-3xl);
+  padding: 0 var(--spacing-md);
 }
 
 @media (max-width: 768px) {
   .container {
-    padding: 0 var(--spacing-md);
+    padding: 0 var(--spacing-sm);
   }
 }
 
@@ -313,6 +345,47 @@ main {
 
 .img-hover:hover img {
   filter: brightness(0.88);
+}
+
+/* "Show more" buttons under the gallery and the feed */
+.show-more {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 7px 12px;
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.show-more:hover {
+  color: var(--color-primary-dark);
+  border-color: var(--color-primary);
+  background: var(--color-primary-muted);
+}
+
+.show-more:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Full-screen backdrop for the photo and camera dialogs; click it to close */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-md);
+  background: var(--color-lightbox-overlay);
+  cursor: pointer;
 }
 
 /* Tabular figures wherever numbers line up */

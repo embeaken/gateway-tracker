@@ -12,7 +12,12 @@ Usage:
     uv run scripts/update_data.py
 
 uv automatically creates an isolated environment with the required packages.
-Set HUDSON_TUBE_ANTHROPIC_API_KEY for LLM-powered title/date extraction from PDFs.
+Set HUDSON_TUBE_ANTHROPIC_API_KEY for LLM-powered title/date extraction and
+classification of PDFs whose filenames don't match any known pattern.
+
+Options:
+    --force               ignore all caches and re-enrich everything
+    --summary-file PATH   also write the run summary as Markdown (used as the PR body)
 """
 
 import html as html_module
@@ -40,6 +45,10 @@ VIDEO_GALLERY_URL = "https://www.gatewayprogram.org/video-gallery.html"
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 DATA_FILE = SCRIPT_DIR.parent / "src" / "assets" / "activityData.json"
+# Title/date/category for every PDF read so far (see "PDF index" below)
+PDF_INDEX_FILE = SCRIPT_DIR / "data" / "pdf-index.json"
+
+LLM_MODEL = "claude-sonnet-5-5"
 
 
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".avif"}
@@ -47,9 +56,11 @@ IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".avif"}
 FEED_ITEM_LIMIT = 100
 MAX_MONTHS_LOOKBACK = 60
 
-# PDF filename substrings matched against lowercase filename.
-# Order matters in fetch_pdfs: press releases checked first, then construction
-# notices, then ignore list. Anything unmatched lands in "unclassified".
+# PDF filename substrings matched against lowercase filename. These are a fast
+# path only. Order matters in fetch_pdfs: press releases checked first, then
+# construction notices, then the ignore list. Anything unmatched is read and
+# classified by the LLM (GDC's filenames are inconsistent: "CN-...",
+# "TBM-Mining-Starting_...", "...-Look-Ahead-..." all slipped past these lists).
 PRESS_RELEASE_PATTERNS = (
     "release",        # GDC press releases
     "statement",      # GDC statements
@@ -67,7 +78,7 @@ CONSTRUCTION_NOTICE_PATTERNS = (
     "trenching",             # activity-named notices (e.g. Utility-Trenching)
 )
 
-# Silently ignored (not reported as unclassified): governance docs and HR listings
+# Skipped without an LLM call: governance docs, HR listings, forms
 IGNORED_PDF_PATTERNS = (
     "board",          # board meetings, agendas, presentations, minutes
     "agenda",
@@ -105,9 +116,12 @@ def normalize(text: str) -> str:
 
 # ── HTTP ──────────────────────────────────────────────────────────────────────
 
+# Identify ourselves to every upstream (GDC, Bluesky, YouTube, EarthCam, ...)
+USER_AGENT = "hudson.tube"
+
 def fetch_url(url, as_json=False):
     """Fetch a URL as text or JSON. Returns (content, error_string)."""
-    req = Request(url, headers={"User-Agent": "gateway-tracker-updater/1.0"})
+    req = Request(url, headers={"User-Agent": USER_AGENT})
     try:
         with urlopen(req, timeout=20) as resp:
             raw = resp.read().decode("utf-8", errors="replace")
@@ -127,7 +141,7 @@ def fetch_url(url, as_json=False):
 
 def fetch_bytes(url):
     """Fetch a URL as raw bytes. Returns (bytes, error_string)."""
-    req = Request(url, headers={"User-Agent": "gateway-tracker-updater/1.0"})
+    req = Request(url, headers={"User-Agent": USER_AGENT})
     try:
         with urlopen(req, timeout=30) as resp:
             return resp.read(), None
@@ -413,7 +427,16 @@ def pdf_filename_to_title(filename):
     return " ".join(name.split()).title()
 
 
-# ── PDF enrichment via LLM ────────────────────────────────────────────────────
+# ── PDF index ─────────────────────────────────────────────────────────────────
+#
+# Every PDF the script has read, keyed by URL:
+#   {"category", "title", "date", "dateIsFallback", "classifiedBy"}
+# category is one of PDF_CATEGORIES. classifiedBy is "filename" when a pattern
+# above decided it, "llm" when the model did. "other" entries never reach
+# activityData.json; they're kept so each file is only downloaded and read once.
+
+PDF_CATEGORIES = ("press_release", "construction_notice", "other")
+
 
 def extract_pdf_text(pdf_bytes):
     """Extract plain text from the first few pages of a PDF."""
@@ -421,17 +444,46 @@ def extract_pdf_text(pdf_bytes):
     return "\n".join(page.extract_text() or "" for page in reader.pages[:4])
 
 
-def llm_extract_pdf_metadata(client, text, filename):
-    """Ask Claude to extract title and date from PDF text. Returns a dict."""
-    prompt = f"""Extract the title and date from this PDF document.
+def llm_text(message):
+    """The text of a Messages API response, skipping any thinking blocks."""
+    return next(b.text for b in message.content if b.type == "text").strip()
+
+
+CATEGORY_GUIDE = """Categories:
+- "construction_notice": community-facing notices about construction work and its
+  local impacts. Includes work notices, monthly look-aheads, site mobilization and
+  upcoming-activity notices, start-of-tunneling notices, lane/road/sidewalk closures,
+  parking restrictions, boater safety alerts, and FAQs about construction impacts.
+- "press_release": press releases, official statements, newsletters, and court
+  filings announced by GDC.
+- "other": everything else. Includes board meeting materials (agendas, decks,
+  minutes, resolutions), procurement documents (RFQs, shortlists, DBE goals),
+  reports, budgets, policies, explainers, job postings, forms, and Spanish-only
+  duplicates of English documents."""
+
+
+def llm_read_pdf(client, text, filename, classify):
+    """Ask the LLM for a PDF's title and date, plus its category when `classify`.
+
+    Returns a dict with "title", "date" and (when classifying) "category".
+    """
+    category_field = (
+        '- "category": one of "construction_notice", "press_release", "other"\n'
+        if classify else ""
+    )
+    prompt = f"""This PDF was posted on the Gateway Development Commission's website
+(the agency building the Hudson Tunnel Project). Extract its {"category, " if classify else ""}title
+and date for a public activity feed.
 
 Filename: {filename}
 
 Document text:
-{text[:3000]}
+{text[:4000]}
 
-Return a JSON object with exactly two fields:
-- "title": a concise, human-readable title that identifies the document well enough
+{CATEGORY_GUIDE if classify else ""}
+
+Return a JSON object with exactly these fields:
+{category_field}- "title": a concise, human-readable title that identifies the document well enough
   to stand alone in a list. Use title case. Prefer the document's own subject
   heading over the filename. AVOID bare generic labels like "Complaint",
   "Statement", "Press Release", or "Notice" - expand them so the reader can
@@ -442,20 +494,92 @@ Return a JSON object with exactly two fields:
       Example: "Complaint: Gateway Development Commission v. United States (U.S. Court of Federal Claims)".
     * For press releases and statements (including those about lawsuits),
       use the headline if present; otherwise summarize the subject.
-- "date": the date the document was issued, in YYYY-MM-DD format.
+- "date": the date the document was issued, in YYYY-MM-DD format, or null if the
+  document doesn't state one. Don't guess.
 
-Return only the JSON object, no other text. Use null if a value cannot be determined."""
+Return only the JSON object, no other text."""
 
     message = client.messages.create(
-        model="claude-haiku-4-5-20251001",
-        max_tokens=256,
+        model=LLM_MODEL,
+        max_tokens=1024,
         messages=[{"role": "user", "content": prompt}],
     )
-    raw = message.content[0].text.strip()
+    raw = llm_text(message)
     m = re.search(r"\{.*\}", raw, re.DOTALL)
     if not m:
         raise ValueError(f"no JSON in LLM response: {raw!r}")
-    return json.loads(m.group())
+    result = json.loads(m.group())
+    if classify and result.get("category") not in PDF_CATEGORIES:
+        raise ValueError(f"unknown category in LLM response: {raw!r}")
+    return result
+
+
+def pattern_category(fname_lower):
+    """Category from filename patterns: a PDF_CATEGORIES value, "skip", or None."""
+    if any(p in fname_lower for p in PRESS_RELEASE_PATTERNS):
+        return "press_release"
+    if any(p in fname_lower for p in CONSTRUCTION_NOTICE_PATTERNS):
+        return "construction_notice"
+    if any(p in fname_lower for p in IGNORED_PDF_PATTERNS):
+        return "skip"
+    return None
+
+
+def read_pdf(furl, category, client):
+    """Download a PDF and build its index entry. Returns None on failure."""
+    fname = furl.rsplit("/", 1)[-1]
+    year, month = year_month_from_url(furl)
+    print(f"  reading:   {fname}")
+    try:
+        pdf_bytes, err = fetch_bytes(furl)
+        if err:
+            raise RuntimeError(f"download failed: {err}")
+        result = llm_read_pdf(client, extract_pdf_text(pdf_bytes), fname, classify=category is None)
+    except Exception as e:
+        print(f"    WARNING: {e}")
+        return None
+    date = result.get("date") or ""
+    has_date = bool(re.match(r"^\d{4}-\d{2}-\d{2}$", date))
+    return {
+        "category": category or result["category"],
+        "title": normalize(result.get("title") or pdf_filename_to_title(fname)),
+        "date": date if has_date else f"{year:04d}-{month:02d}-01",
+        "dateIsFallback": not has_date,
+        "classifiedBy": "filename" if category else "llm",
+    }
+
+
+def load_pdf_index():
+    """Load the PDF index, seeding it from activityData.json on first run."""
+    if PDF_INDEX_FILE.exists():
+        try:
+            return json.loads(PDF_INDEX_FILE.read_text())
+        except Exception as e:
+            print(f"  WARNING: could not parse {PDF_INDEX_FILE.name}: {e}")
+            return {}
+    if not DATA_FILE.exists():
+        return {}
+    data = json.loads(DATA_FILE.read_text())
+    index = {}
+    for key, category in (("pressReleases", "press_release"), ("constructionNotices", "construction_notice")):
+        for item in data.get(key, []):
+            index[item["link"]] = {
+                "category": category,
+                "title": item["title"],
+                "date": item["date"],
+                "dateIsFallback": is_folder_date_fallback(item),
+                "classifiedBy": "filename",
+            }
+    return index
+
+
+def save_pdf_index(index):
+    clean = {
+        url: {k: v for k, v in entry.items() if not k.startswith("_")}
+        for url, entry in sorted(index.items())
+    }
+    PDF_INDEX_FILE.parent.mkdir(parents=True, exist_ok=True)
+    PDF_INDEX_FILE.write_text(json.dumps(clean, indent=2) + "\n")
 
 
 def llm_infer_dates_from_filenames(client, filenames):
@@ -476,11 +600,11 @@ Return a JSON array with one object per filename (in the same order):
 Return only the JSON array, no other text."""
 
     message = client.messages.create(
-        model="claude-haiku-4-5-20251001",
-        max_tokens=4096,
+        model=LLM_MODEL,
+        max_tokens=8192,
         messages=[{"role": "user", "content": prompt}],
     )
-    raw = message.content[0].text.strip()
+    raw = llm_text(message)
     match = re.search(r"\[.*\]", raw, re.DOTALL)
     if not match:
         raise ValueError(f"no JSON array in LLM response: {raw!r}")
@@ -488,11 +612,11 @@ Return only the JSON array, no other text."""
     return [(r.get("date"), not r.get("exact", False)) for r in results]
 
 
-def fill_dates_from_filenames(entries, client):
+def fill_dates_from_filenames(entries, client, index):
     """For entries still using folder-date fallback, try extracting a better
     date from the filename. Many PDFs encode the issue date in the filename
     (e.g. `3.24.2026_...`, `2026.3.30_...`, `3_9_26-PPR.pdf`) even when the
-    PDF body lacks an explicit issue date. Mutates entries in-place.
+    PDF body lacks an explicit issue date. Mutates entries and the index in-place.
     """
     if not client:
         return entries
@@ -510,6 +634,8 @@ def fill_dates_from_filenames(entries, client):
         if date and re.match(r"^\d{4}-\d{2}-\d{2}$", date):
             entries[i]["date"] = date
             entries[i]["_is_fallback"] = is_fallback
+            if not is_fallback and entries[i]["link"] in index:
+                index[entries[i]["link"]].update(date=date, dateIsFallback=False)
     return entries
 
 
@@ -522,46 +648,14 @@ def is_folder_date_fallback(entry):
     return entry.get("date") == f"{folder_year:04d}-{folder_month:02d}-01"
 
 
-def enrich_pdfs(entries, client, existing):
-    """Download each PDF and use an LLM to replace filename-derived title and date.
+def fetch_pdfs(client, index, n_press=FEED_ITEM_LIMIT, n_notices=FEED_ITEM_LIMIT):
+    """Walk backward through monthly upload folders collecting press releases and
+    construction notices, reading any PDF not already in the index.
 
-    Skips LLM calls for entries whose link is already in the existing data cache.
+    Whole folders are processed even once the caps are reached, because GDC
+    sometimes re-uploads years of old documents into a single month. The caller
+    sorts by date and trims, so the newest items win.
     """
-    if not client:
-        print("  (skipping — HUDSON_TUBE_ANTHROPIC_API_KEY not set)")
-        return entries
-
-    enriched = []
-    for entry in entries:
-        fname = entry["link"].rsplit("/", 1)[-1]
-        result = dict(entry)
-        if entry["link"] in existing:
-            print(f"  cached:    {fname}")
-            result["title"] = existing[entry["link"]]["title"]
-            result["date"] = existing[entry["link"]]["date"]
-            result["_is_fallback"] = is_folder_date_fallback(result)
-        else:
-            print(f"  enriching: {fname}")
-            try:
-                pdf_bytes, err = fetch_bytes(entry["link"])
-                if err:
-                    raise RuntimeError(f"download failed: {err}")
-                text = extract_pdf_text(pdf_bytes)
-                metadata = llm_extract_pdf_metadata(client, text, fname)
-                if metadata.get("title"):
-                    result["title"] = normalize(metadata["title"])
-                if metadata.get("date") and re.match(r"^\d{4}-\d{2}-\d{2}$", metadata["date"]):
-                    result["date"] = metadata["date"]
-                    result["_is_fallback"] = False
-            except Exception as e:
-                print(f"    WARNING: {e}")
-        enriched.append(result)
-
-    return enriched
-
-
-def fetch_pdfs(n_press=FEED_ITEM_LIMIT, n_notices=FEED_ITEM_LIMIT):
-    """Walk backward through months to collect press releases and construction notices."""
     print("Fetching press releases and construction notices...")
     press, notices, unclassified = [], [], []
 
@@ -576,35 +670,64 @@ def fetch_pdfs(n_press=FEED_ITEM_LIMIT, n_notices=FEED_ITEM_LIMIT):
             fname = furl.rsplit("/", 1)[-1]
             fname_lower = fname.lower()
 
-            # Once both caps are filled, stop collecting unclassified items.
-            # The list exists to help surface new categorizations in recent
-            # months; once the script walks deep enough to fill caps, the
-            # remaining files are mostly historical archive dumps (board
-            # minutes, old RFQs, etc.) and not useful categorization signal.
-            caps_full = len(press) >= n_press and len(notices) >= n_notices
-
             if not fname_lower.endswith(".pdf"):
+                # Videos, zips etc. are worth a human look, but only in recent
+                # folders; older ones are mostly archive dumps.
                 ext = "." + fname.rsplit(".", 1)[-1].lower() if "." in fname else ""
-                if ext not in IMAGE_EXTENSIONS and fname and not caps_full:
+                if ext not in IMAGE_EXTENSIONS and fname and now.year * 12 + now.month - (year * 12 + month) <= 2:
                     unclassified.append(furl)
                 continue
 
-            folder_date = f"{year:04d}-{month:02d}-01"
-            if any(p in fname_lower for p in PRESS_RELEASE_PATTERNS):
-                if len(press) < n_press:
-                    press.append({"title": pdf_filename_to_title(fname), "date": folder_date, "link": furl, "_is_fallback": True})
-            elif any(p in fname_lower for p in CONSTRUCTION_NOTICE_PATTERNS):
-                if len(notices) < n_notices:
-                    notices.append({"title": pdf_filename_to_title(fname), "date": folder_date, "link": furl, "_is_fallback": True})
-            elif not caps_full and not any(p in fname_lower for p in IGNORED_PDF_PATTERNS):
+            category = pattern_category(fname_lower)
+            if category == "skip":
+                continue
+
+            if furl in index:
+                entry = index[furl]
+            elif client:
+                entry = read_pdf(furl, category, client)
+                if entry is None:
+                    unclassified.append(furl)
+                    continue
+                index[furl] = {**entry, "_new": True}
+            elif category:
+                entry = {
+                    "category": category,
+                    "title": pdf_filename_to_title(fname),
+                    "date": f"{year:04d}-{month:02d}-01",
+                    "dateIsFallback": True,
+                }
+            else:
                 unclassified.append(furl)
+                continue
+
+            item = {"title": entry["title"], "date": entry["date"], "link": furl, "_is_fallback": entry["dateIsFallback"]}
+            if entry["category"] == "press_release":
+                press.append(item)
+            elif entry["category"] == "construction_notice":
+                notices.append(item)
 
         month -= 1
         if month == 0:
             month, year = 12, year - 1
 
-    print(f"  → {len(press)} press releases, {len(notices)} construction notices")
+    print(f"  → {len(press)} press releases, {len(notices)} construction notices found")
     return press, notices, unclassified
+
+
+def newest(entries, limit):
+    """Newest `limit` entries, dropping re-uploads (same title and date).
+
+    GDC often posts the same document twice (`foo.pdf` and `foo-1.pdf`). The
+    walk goes newest folder first, so the first copy seen is kept.
+    """
+    seen, unique = set(), []
+    for e in entries:
+        key = (e["title"].casefold(), e["date"])
+        if key not in seen:
+            seen.add(key)
+            unique.append(e)
+    return sorted(unique, key=lambda e: e["date"], reverse=True)[:limit]
 
 
 # ── Video gallery ─────────────────────────────────────────────────────────────
@@ -682,17 +805,6 @@ def fetch_videos(existing, limit=FEED_ITEM_LIMIT):
 
 # ── JSON writer ───────────────────────────────────────────────────────────────
 
-def write_data_file(photos, posts, press_releases, notices, videos):
-    data = {
-        "images": photos,
-        "blueskyPosts": posts,
-        "pressReleases": press_releases,
-        "constructionNotices": notices,
-        "youtubeVideos": videos,
-    }
-    DATA_FILE.write_text(json.dumps(data, indent=2) + "\n")
-
-
 def diff_data(old_json, new_data):
     """Compare old JSON (dict from file) with new data dict.
 
@@ -743,7 +855,8 @@ def diff_data(old_json, new_data):
 def main():
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("--force", action="store_true", help="Ignore cache and re-enrich all entries")
+    parser.add_argument("--force", action="store_true", help="Ignore caches and re-enrich all entries")
+    parser.add_argument("--summary-file", type=Path, help="Also write the run summary as Markdown")
     args = parser.parse_args()
 
     if not DATA_FILE.parent.exists():
@@ -752,6 +865,7 @@ def main():
 
     client = anthropic.Anthropic(api_key=os.environ["HUDSON_TUBE_ANTHROPIC_API_KEY"]) if os.environ.get("HUDSON_TUBE_ANTHROPIC_API_KEY") else None
     existing = {} if args.force else load_existing_data()
+    pdf_index = {} if args.force else load_pdf_index()
 
     posts = fetch_bluesky_posts(limit=FEED_ITEM_LIMIT)
     videos = fetch_videos(existing, limit=FEED_ITEM_LIMIT)
@@ -786,19 +900,14 @@ def main():
             dates_needing_review.append(("photo", p["url"], date_str))
         photos.append({"url": p["url"], "caption": p.get("caption", ""), "date": date_str})
 
-    press_releases, notices, unclassified = fetch_pdfs(
-        n_press=FEED_ITEM_LIMIT,
-        n_notices=FEED_ITEM_LIMIT,
-    )
+    press_releases, notices, unclassified = fetch_pdfs(client, pdf_index)
 
-    print("Enriching press releases...")
-    press_releases = enrich_pdfs(press_releases, client, existing)
-    press_releases = fill_dates_from_filenames(press_releases, client)
-    press_releases = filter_date_mismatches(press_releases, "press releases")
-    print("Enriching construction notices...")
-    notices = enrich_pdfs(notices, client, existing)
-    notices = fill_dates_from_filenames(notices, client)
-    notices = filter_date_mismatches(notices, "construction notices")
+    print("Dating press releases...")
+    press_releases = fill_dates_from_filenames(press_releases, client, pdf_index)
+    press_releases = newest(filter_date_mismatches(press_releases, "press releases"), FEED_ITEM_LIMIT)
+    print("Dating construction notices...")
+    notices = fill_dates_from_filenames(notices, client, pdf_index)
+    notices = newest(filter_date_mismatches(notices, "construction notices"), FEED_ITEM_LIMIT)
 
     # Flag any PDF whose date is still a fallback after enrichment
     for kind, entries in (("press", press_releases), ("notice", notices)):
@@ -821,46 +930,81 @@ def main():
         "constructionNotices": notices,
         "youtubeVideos": videos,
     }
-    write_data_file(photos, posts, press_releases, notices, videos)
+    DATA_FILE.write_text(json.dumps(new_data, indent=2) + "\n")
+    save_pdf_index(pdf_index)
     print("  → Done")
+
+    newly_read = [(url, v) for url, v in pdf_index.items() if v.get("_new")]
 
     change_lines = diff_data(old_json, new_data)
 
+    report = build_report(
+        counts={
+            "Bluesky posts": len(posts),
+            "Photos": len(photos),
+            "Press releases": len(press_releases),
+            "Construction notices": len(notices),
+            "YouTube videos": len(videos),
+        },
+        change_lines=change_lines,
+        newly_read=newly_read,
+        dates_needing_review=dates_needing_review,
+        unclassified=unclassified,
+    )
     print()
-    print("=" * 60)
-    print("SUMMARY")
-    print("=" * 60)
-    print(f"  Bluesky posts:         {len(posts)}")
-    print(f"  Photos:                {len(photos)}")
-    print(f"  Press releases:        {len(press_releases)}")
-    print(f"  Construction notices:  {len(notices)}")
-    print(f"  YouTube videos:        {len(videos)}")
+    print(report)
+    if args.summary_file:
+        args.summary_file.write_text(report + "\n")
 
-    print()
+
+def build_report(counts, change_lines, newly_read, dates_needing_review, unclassified):
+    """Markdown-flavored run summary, printed to stdout and used as the PR body."""
+    out = ["## Summary", ""]
+    out += [f"- {label}: {n}" for label, n in counts.items()]
+
+    out += ["", "## Changes", ""]
     if change_lines:
-        print(f"CHANGES  ({sum(1 for l in change_lines if l.lstrip().startswith(('+', '-', '~')))} item(s))")
-        print("\n".join(change_lines))
+        out += ["```", *change_lines, "```"]
     else:
-        print("No changes — data is up to date.")
+        out.append("No changes. Data is up to date.")
+
+    by_llm = [(u, v) for u, v in newly_read if v["classifiedBy"] == "llm"]
+    if by_llm:
+        labels = {"press_release": "press release", "construction_notice": "construction notice", "other": "not in feed (other)"}
+        out += [
+            "",
+            f"## Classified by the LLM ({len(by_llm)})",
+            "",
+            "These filenames matched no pattern, so the model read them and decided.",
+            f"Fix a wrong verdict by editing its `category` in `scripts/data/{PDF_INDEX_FILE.name}`.",
+            "",
+        ]
+        for url, v in by_llm:
+            date = "no date" if v["dateIsFallback"] else v["date"]
+            out.append(f"- **{labels[v['category']]}**: [{v['title']}]({url}) ({date})")
 
     if dates_needing_review:
-        print()
-        print(f"DATES NEEDING REVIEW  ({len(dates_needing_review)} item(s))")
-        print("  Date was inferred from the month folder only — verify and correct manually.")
+        out += [
+            "",
+            f"## Dates needing review ({len(dates_needing_review)})",
+            "",
+            "Date was inferred from the month folder only. Verify and correct manually.",
+            "",
+        ]
         for kind, url, date in dates_needing_review:
-            print(f"  [{kind:7s}] {url.rsplit('/', 1)[-1]}")
-            print(f"             → set to {date}")
+            out.append(f"- [{kind}] `{url.rsplit('/', 1)[-1]}` → {date}")
 
     if unclassified:
-        print()
-        print(f"UNCLASSIFIED FILES  ({len(unclassified)} item(s))")
-        print("  Found in upload directories but not matched to any category.")
-        for u in unclassified:
-            print(f"  {u}")
+        out += [
+            "",
+            f"## Unclassified files ({len(unclassified)})",
+            "",
+            "Found in upload directories but not classified (no API key, a failed download, or not a PDF).",
+            "",
+        ]
+        out += [f"- {u}" for u in unclassified]
 
-    print()
-    print("Data changed." if change_lines else "No data changes.")
-    print()
+    return "\n".join(out)
 
 
 if __name__ == "__main__":
