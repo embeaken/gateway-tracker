@@ -126,7 +126,7 @@ export const routeSegments: RouteSegment[] = [
 ];
 
 export const routeStops: RouteStop[] = [
-  { id: "portal", label: "Tonnelle Avenue", ft: 0, cam: "launch-box" },
+  { id: "portal", label: "Tunnel Portal", ft: 0, cam: "launch-box" },
   { id: "hudson-county-shaft", label: "Hudson County access shaft", ft: HC_SHAFT_FT, cam: "hudson-county-shaft" },
   {
     id: "river",

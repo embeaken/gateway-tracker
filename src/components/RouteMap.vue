@@ -517,9 +517,9 @@ const vrows = routeStops.map((stop) => ({
         <details class="estimate">
           <summary>About this graphic</summary>
           <p>
-            This is to scale horizontally but not vertically. TBM positions are a best estimate, not an
-            official figure. GDC expects the machines to bore the {{ formatFt(PALISADES_DRIVE.lengthFt) }}
-            Palisades Tunnel in about a year.
+            TBM positions are an estimate, not an
+            official figure. GDC expects the machines to finish boring the {{ formatFt(PALISADES_DRIVE.lengthFt) }}
+            Palisades Tunnel "about a year" after the October 2026 launch.
             GDC also quotes a rate of {{ PALISADES_DRIVE.quotedFtPerDay }} feet per day while the machines are running.
             <a :href="PALISADES_DRIVE.sourceUrl" target="_blank" rel="noopener">Source</a>
           </p>

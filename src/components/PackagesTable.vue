@@ -34,7 +34,7 @@ const money = (n: number) => (n >= 1e9 ? `$${(n / 1e9).toFixed(2)}B` : `$${(n / 
     </table>
   </div>
   <p class="note">
-    Shows packages that are under way or complete. Budget is the board-approved estimate for the whole package, including
+    Budget is the board-approved estimate for the whole package, including
     contingency. Jobs are full-time-equivalent jobs supported over the contract, from GDC's economic model (Jan 2026),
     not people on site today.
   </p>

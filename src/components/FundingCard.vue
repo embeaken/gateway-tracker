@@ -102,7 +102,7 @@ const barTitle = (m: Month) => {
 
 <template>
   <div class="funding">
-    <h3 class="q">Funding sources</h3>
+    <h3 class="q">Funding split</h3>
     <div class="split" role="img" :aria-label="shares.map((s) => `${s.label} ${billions(s.amount)}`).join(', ')">
       <div v-for="s in shares" :key="s.key" :class="`split--${s.key}`" :style="{ flex: s.amount }" />
     </div>
