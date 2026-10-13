@@ -40,10 +40,10 @@ const tbmProgress = useTbmProgress()
       </DashCard>
 
       <div class="pair">
-        <DashCard id="funding" title="Paying for the tunnel" title-id="funding-title" meta="$16B budget">
+        <DashCard id="funding" title="Financing" title-id="funding-title" meta="">
           <FundingCard />
         </DashCard>
-        <DashCard id="photos" title="Photos" title-id="photos-title" :meta="`${images.length} from GDC, newest first`">
+        <DashCard id="photos" title="Photos" title-id="photos-title" meta="">
           <PhotoGallery />
         </DashCard>
       </div>

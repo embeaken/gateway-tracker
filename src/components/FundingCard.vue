@@ -102,7 +102,7 @@ const barTitle = (m: Month) => {
 
 <template>
   <div class="funding">
-    <h3 class="q">Who pays</h3>
+    <h3 class="q">Funding sources</h3>
     <div class="split" role="img" :aria-label="shares.map((s) => `${s.label} ${billions(s.amount)}`).join(', ')">
       <div v-for="s in shares" :key="s.key" :class="`split--${s.key}`" :style="{ flex: s.amount }" />
     </div>
@@ -114,7 +114,7 @@ const barTitle = (m: Month) => {
       </div>
     </div>
 
-    <h3 class="q">Federal grants so far</h3>
+    <h3 class="q">Federal grant reimburesment status</h3>
     <div class="fedbar" role="img" :aria-label="`${billions(paid)} paid, ${billions(obligated - paid)} released, ${billions(committed - obligated)} to come`">
       <div class="fedbar-paid" :style="{ width: pct(paid, committed) }" />
       <div class="fedbar-released" :style="{ width: pct(obligated - paid, committed) }" />
@@ -122,22 +122,19 @@ const barTitle = (m: Month) => {
     <div class="fed-labels">
       <div>
         <b class="paid">{{ billions(paid) }} paid</b>
-        <span>for work already done</span>
       </div>
       <div>
         <b class="released">{{ billions(obligated - paid) }} released</b>
-        <span>available, not yet paid</span>
       </div>
       <div>
-        <b class="to-come">{{ billions(committed - obligated) }} to come</b>
-        <span>promised in signed agreements, released year by year</span>
+        <b class="to-come">{{ billions(committed - obligated) }} remaining</b>
       </div>
     </div>
 
-    <h3 class="q">Federal payments by month</h3>
+    <h3 class="q">Federal grant reimburesments by month</h3>
     <div class="legend">
-      <span><i class="swatch swatch--gdc" />To GDC for the tunnel</span>
-      <span><i class="swatch swatch--amtrak" />To Amtrak for the Hudson Yards casing</span>
+      <span><i class="swatch swatch--gdc" />Tunnel</span>
+      <span><i class="swatch swatch--amtrak" />Hudson Yards Concrete Casing</span>
     </div>
     <div ref="chart" class="chart">
       <svg :width="width" :height="H" :viewBox="`0 0 ${width} ${H}`" role="img" aria-label="Federal grant payments by month">

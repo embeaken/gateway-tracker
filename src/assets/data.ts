@@ -188,28 +188,21 @@ export const fundingShares = [
   { key: "amtrak", label: "Amtrak", amount: 1_016_000_000, note: "" },
 ] as const;
 
-const tbm2 = tbms.find((t) => t.id === "tbm-2")!;
-
 /**
  * What's done, then what GDC has scheduled, in order. Only facts and dates GDC
  * has stated; no estimates. Flip `done` by hand as things happen (TBM 2 follows
  * `tbms` automatically), never by date.
  */
 export const milestones: { when: string; text: string; done: boolean }[] = [
-  { when: "May 2021", text: "Federal environmental approval (Record of Decision)", done: true },
-  { when: "Nov 2023", text: "Construction begins at Tonnelle Avenue", done: true },
-  { when: "Jul 2024", text: "Full funding agreements signed", done: true },
+  { when: "May 2021", text: "Federal approval", done: true },
+  { when: "Nov 2023", text: "Construction begins", done: true },
+  { when: "Jul 2024", text: "Funding secured", done: true },
   { when: "Oct 2025", text: "Tonnelle Avenue bridge substantially complete", done: true },
-  { when: "Feb 2026", text: "Federal funding freeze pauses construction for about two weeks", done: true },
-  { when: "Jun 2026", text: "All tunnel boring and heavy civil work under contract", done: true },
-  { when: "Oct 8, 2026", text: "TBM 1 starts mining", done: true },
-  tbm2.launched
-    ? { when: formatLongDate(parseDate(tbm2.launched)), text: "TBM 2 starts mining", done: true }
-    : { when: "Fall 2026", text: "TBM 2 launches", done: false },
+  { when: "Oct 2026", text: "Palisades Tunnel boring starts", done: true },
   { when: "2026", text: "Hudson Yards concrete casing finished", done: false },
-  { when: "Fall 2027", text: "TBMs reach the Hudson County shaft", done: false },
-  { when: "2028", text: "Riverbed pile removal complete", done: false },
-  { when: "Apr 2030", text: "Manhattan Tunnel package complete", done: false },
+  { when: "2027", text: "Palisades Tunnel boring finished", done: false },
+  { when: "2028", text: "Pier 68 pile removal complete", done: false },
+  { when: "2030", text: "Manhattan Tunnel boring finished", done: false },
   { when: "2035", text: "New tunnel opens for service", done: false },
   { when: "2038", text: "North River Tunnel rehabilitation complete", done: false },
 ];
