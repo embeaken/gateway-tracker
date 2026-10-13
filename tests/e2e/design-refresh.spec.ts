@@ -34,6 +34,8 @@ test.describe('dashboard smoke', () => {
       }),
     )
     await page.route('**/api/cam-frame/**', (route) => route.fulfill({ body: PIXEL, contentType: 'image/jpeg' }))
+    // GDC photos go through hudson.tube's Image CDN; keep the tests off the network.
+    await page.route('**/.netlify/images**', (route) => route.fulfill({ body: PIXEL, contentType: 'image/jpeg' }))
     await page.route('https://share.earthcam.net/**', (route) => route.fulfill({ body: '<html></html>', contentType: 'text/html' }))
 
     await page.goto('/')
@@ -52,12 +54,17 @@ test.describe('dashboard smoke', () => {
 
   test('renders the dashboard', async ({ page }, testInfo) => {
     await expect(page.getByRole('link', { name: 'hudson.tube home' })).toBeVisible()
-    await expect(page.locator('.route-card')).toBeVisible()
-    await expect(page.getByText('About this graphic')).toBeVisible()
+    if (testInfo.project.name !== 'desktop') {
+      // The route map is hidden on phones and tablets for now
+      await expect(page.locator('#route')).toBeHidden()
+    } else {
+      await expect(page.locator('.route-card')).toBeVisible()
+      await expect(page.getByText('About this graphic')).toBeVisible()
+    }
     await expect(page.locator('.tbm-card')).toHaveCount(2)
     await expect(page.getByRole('heading', { name: 'Construction cameras' })).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Construction packages' })).toBeVisible()
-    await expect(page.getByRole('heading', { name: 'Paying for the tunnel' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Financing' })).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Timeline' })).toBeVisible()
     await expect(page.getByRole('heading', { name: /Updates from the GDC/i })).toBeVisible()
 

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { routeStops, routeSegments, PALISADES_DRIVE, ROUTE } from "../assets/data";
-import { formatMonthYear } from "../dates";
 import { useTbmProgress, formatFt, formatPct } from "../useTbmProgress";
 
 // Side view of the route, west → east. Horizontal is to scale; vertical is
@@ -170,11 +169,6 @@ const stateLineX = computed(() => (x(R0) + x(R1)) / 2 + 30);
 // --- TBMs ---
 
 const progress = useTbmProgress();
-
-const leadArrival = computed(() => {
-  const lead = progress.value.find((p) => p.status === "mining");
-  return lead?.arrival && { label: lead.tbm.label, month: formatMonthYear(lead.arrival) };
-});
 
 /** Keep a machine at 0 ft visibly inside the portal */
 const MIN_INSIDE_PX = 22;

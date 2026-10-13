@@ -12,7 +12,6 @@ import PhotoGallery from './components/PhotoGallery.vue'
 import ProjectTimeline from './components/ProjectTimeline.vue'
 import ActivityTimeline from './components/ActivityTimeline.vue'
 import AppFooter from './components/AppFooter.vue'
-import { images } from './assets/activityData'
 import { useTbmProgress } from './useTbmProgress'
 
 if (import.meta.env.VITE_PLAYWRIGHT) {
@@ -29,7 +28,7 @@ const tbmProgress = useTbmProgress()
 
   <main class="dashboard container">
     <div class="dash-main">
-      <RouteMap />
+      <RouteMap class="route-map" />
 
       <div class="tbms">
         <TbmCard v-for="p in tbmProgress" :key="p.tbm.id" :progress="p" />
@@ -95,6 +94,13 @@ const tbmProgress = useTbmProgress()
   gap: var(--spacing-sm);
 }
 
+/* Hidden on phones and tablets (where it would switch to the vertical list) until it's redesigned */
+@media (max-width: 1024px) {
+  .route-map {
+    display: none;
+  }
+}
+
 @media (min-width: 900px) {
   .tbms {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -137,11 +143,23 @@ const tbmProgress = useTbmProgress()
   }
 }
 
-/* Narrower: rail content below, with the feed capped */
+/* Narrower: one column. Flatten the main column and rail so their cards can
+   be reordered together. The feed grows with the page (it has its own "Show
+   more"): a scroll box inside a scrolling page traps touch scrolling. */
 @media (max-width: 1199px) {
-  .feed-scroll {
-    max-height: 900px;
-    overflow-y: auto;
+  .dash-main,
+  .dash-rail,
+  .pair {
+    display: contents;
   }
+
+  .route-map { order: 0; }
+  .tbms { order: 1; }
+  #cameras { order: 2; }
+  #photos { order: 3; }
+  #activity { order: 4; }
+  #timeline { order: 5; }
+  #funding { order: 6; }
+  #packages { order: 7; }
 }
 </style>

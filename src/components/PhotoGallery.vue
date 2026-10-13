@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { images } from '../assets/activityData'
 import { formatShortDate, parseDate } from '../dates'
 import { cdnImage } from '../imageCdn'
 import type { LightboxPhoto } from '../types'
 import PhotoLightbox from './PhotoLightbox.vue'
 
-// Every GDC photo, newest first, in a grid that scrolls inside the card; the
-// newest is big. Each opens in the lightbox, which can step through the whole set.
+// Every GDC photo, newest first; the newest is big. Each opens in the
+// lightbox, which can step through the whole set.
 
 const photos = computed<LightboxPhoto[]>(() =>
   [...images]
@@ -17,15 +17,29 @@ const photos = computed<LightboxPhoto[]>(() =>
 
 const openAt = ref<number | null>(null)
 
-// Thumbnails load as they scroll into the grid. Native loading="lazy" doesn't
-// help inside a scroll container (Chrome fetches all 100 at once), so watch
-// the grid itself and only set `src` once a tile is near its visible area.
+// Wide screens: every photo, in a grid that scrolls inside the card. Narrower,
+// where the page is one column, a scroll box inside the scrolling page traps
+// touch scrolling, so the grid grows with the page and pages with a button.
+const NARROW = '(max-width: 1199px)'
+const INITIAL = 15
+const PAGE_SIZE = 24
+
+const narrowQuery = window.matchMedia(NARROW)
+const narrow = ref(narrowQuery.matches)
+const onNarrowChange = (e: MediaQueryListEvent) => (narrow.value = e.matches)
+const count = ref(INITIAL)
+const visible = computed(() => (narrow.value ? photos.value.slice(0, count.value) : photos.value))
+
+// Thumbnails load as they come near view. Native loading="lazy" doesn't help
+// inside a scroll container (Chrome fetches all 100 at once), so watch tiles
+// with an IntersectionObserver: rooted on the grid when it scrolls, on the
+// viewport when it doesn't.
 const grid = ref<HTMLElement | null>(null)
 const loaded = ref(new Set<number>())
 let observer: IntersectionObserver | undefined
 
-onMounted(() => {
-  if (!grid.value) return
+const makeObserver = () => {
+  observer?.disconnect()
   observer = new IntersectionObserver(
     (entries) => {
       const next = new Set(loaded.value)
@@ -36,21 +50,46 @@ onMounted(() => {
       }
       loaded.value = next
     },
-    { root: grid.value, rootMargin: '300px 0px' },
+    { root: narrow.value ? null : grid.value, rootMargin: '300px 0px' },
   )
-  grid.value.querySelectorAll('li').forEach((li) => observer!.observe(li))
+  grid.value?.querySelectorAll('li').forEach((li) => {
+    if (!loaded.value.has(Number(li.dataset.index))) observer!.observe(li)
+  })
+}
+
+/** Function ref: observe tiles as they render (including after "Show more"). */
+const observe = (el: unknown) => {
+  if (el instanceof HTMLElement && !loaded.value.has(Number(el.dataset.index))) observer?.observe(el)
+}
+
+onMounted(() => {
+  makeObserver()
+  narrowQuery.addEventListener('change', onNarrowChange)
 })
-onBeforeUnmount(() => observer?.disconnect())
+watch(narrow, () => nextTick(makeObserver))
+onBeforeUnmount(() => {
+  observer?.disconnect()
+  narrowQuery.removeEventListener('change', onNarrowChange)
+})
 </script>
 
 <template>
-  <ul ref="grid" class="gallery" tabindex="0" aria-label="Photos, newest first">
-    <li v-for="(photo, i) in photos" :key="photo.url" :data-index="i" :class="i === 0 && 'gallery-lead'">
+  <ul ref="grid" class="gallery" :tabindex="narrow ? undefined : 0" aria-label="Photos, newest first">
+    <li
+      v-for="(photo, i) in visible"
+      :key="photo.url"
+      :ref="observe"
+      :data-index="i"
+      :class="i === 0 && 'gallery-lead'"
+    >
       <button type="button" class="gallery-tile img-hover" :aria-label="`Open photo: ${photo.caption}`" @click="openAt = i">
         <img v-if="loaded.has(i)" :src="cdnImage(photo.url, i === 0 ? 720 : 320)" :alt="photo.caption" />
       </button>
     </li>
   </ul>
+  <button v-if="visible.length < photos.length" type="button" class="gallery-more" @click="count += PAGE_SIZE">
+    Show more photos
+  </button>
 
   <PhotoLightbox v-if="openAt !== null" :photos="photos" :start-index="openAt" @close="openAt = null" />
 </template>
@@ -68,6 +107,39 @@ onBeforeUnmount(() => observer?.disconnect())
   grid-auto-rows: 84px;
   grid-auto-flow: dense;
   gap: 6px;
+}
+
+@media (max-width: 1199px) {
+  .gallery {
+    max-height: none;
+    overflow-y: visible;
+    margin-right: 0;
+    padding-right: 0;
+  }
+}
+
+.gallery-more {
+  margin-top: 12px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 7px 12px;
+  cursor: pointer;
+}
+
+.gallery-more:hover {
+  color: var(--color-primary-dark);
+  border-color: var(--color-primary);
+  background: var(--color-primary-muted);
+}
+
+.gallery-more:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 .gallery-lead {
