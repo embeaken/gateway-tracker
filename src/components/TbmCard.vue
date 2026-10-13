@@ -14,24 +14,29 @@ const status = computed(
   () => ({ upcoming: 'Not launched', mining: 'Mining', arrived: 'Arrived' })[props.progress.status],
 )
 
+const title = computed(() => `${tbm.value.tube} tube TBM`)
+
 const subtitle = computed(() => {
-  const tube = `${tbm.value.tube} tube · Palisades drive`
-  if (tbm.value.launched) return `${tube} · launched ${formatLongDate(parseDate(tbm.value.launched))}`
-  return tbm.value.expected ? `${tube} · expected to launch in ${tbm.value.expected}` : tube
+  const { launched, expected } = tbm.value
+  if (!launched) return expected ? `Expected to launch in ${expected}` : ''
+  const parts = [`Launched ${formatLongDate(parseDate(launched))}`]
+  const { status, arrival } = props.progress
+  if (status === 'mining' && arrival) parts.push(`expected done in ${formatMonthYear(arrival)}`)
+  return parts.join(', ')
 })
 </script>
 
 <template>
-  <section class="tbm-card" :aria-label="`${tbm.label}, ${status}`">
+  <section class="tbm-card" :aria-label="`${title}, ${status}`">
     <header class="tbm-head">
-      <h2 class="tbm-name">{{ tbm.label }}</h2>
+      <h2 class="tbm-name">{{ title }}</h2>
       <span class="tbm-status" :class="`tbm-status--${progress.status}`">{{ status }}</span>
     </header>
-    <p class="tbm-sub">{{ subtitle }}</p>
+    <p v-if="subtitle" class="tbm-sub">{{ subtitle }}</p>
 
     <p class="tbm-ft">
-      <template v-if="progress.status === 'mining'">~</template>{{ ft.toLocaleString('en-US') }}<span class="unit">
-        ft{{ progress.status === 'mining' ? ' estimated' : '' }}</span
+      {{ ft.toLocaleString('en-US') }}<span class="unit">
+        ft bored{{ progress.status === 'mining' ? ' (estimated)' : '' }}</span
       >
     </p>
 
@@ -41,26 +46,14 @@ const subtitle = computed(() => {
       :aria-valuenow="Math.round(pct)"
       aria-valuemin="0"
       aria-valuemax="100"
-      :aria-label="`${tbm.label} progress`"
+      :aria-label="`${title} progress`"
     >
       <b :style="{ width: `${progress.status === 'upcoming' ? 0 : Math.max(0.6, pct)}%` }" />
     </div>
     <div class="tbm-ends">
-      <span>Tonnelle Ave portal</span>
-      <span v-if="progress.status === 'mining' && progress.arrival">
-        {{ pct.toFixed(1) }}% · expected at the Hudson County shaft {{ formatMonthYear(progress.arrival) }}
-      </span>
+      <span v-if="progress.status === 'mining'">{{ pct.toFixed(1) }}%</span>
       <span>{{ PALISADES_DRIVE.lengthFt.toLocaleString('en-US') }} ft</span>
     </div>
-
-    <p v-if="progress.status === 'mining'" class="tbm-note">
-      Estimate assumes an even pace over GDC's
-      <a :href="PALISADES_DRIVE.sourceUrl" target="_blank" rel="noopener">"approximately one year"</a>
-      schedule. GDC hasn't published measured footage yet.
-    </p>
-    <p v-else-if="progress.status === 'upcoming'" class="tbm-note">
-      After the Palisades drive, two mixed-ground TBMs bore the 7,250 ft river section from the Hudson County shaft.
-    </p>
   </section>
 </template>
 
@@ -149,17 +142,7 @@ const subtitle = computed(() => {
   line-height: 1.4;
 }
 
-.tbm-note {
-  margin-top: auto;
-  padding-top: 10px;
-  font-size: 12px;
-  line-height: 1.5;
-  color: var(--color-text-tertiary);
-}
-
-@media (max-width: 520px) {
-  .tbm-ends span:nth-child(2) {
-    display: none;
-  }
+.tbm-ends span:last-child {
+  margin-left: auto;
 }
 </style>

@@ -39,10 +39,6 @@ const tbmProgress = useTbmProgress()
         <CameraWall />
       </DashCard>
 
-      <DashCard id="packages" title="Construction packages" title-id="packages-title">
-        <PackagesTable />
-      </DashCard>
-
       <div class="pair">
         <DashCard id="funding" title="Paying for the tunnel" title-id="funding-title" meta="$16B budget">
           <FundingCard />
@@ -51,6 +47,10 @@ const tbmProgress = useTbmProgress()
           <PhotoGallery />
         </DashCard>
       </div>
+
+      <DashCard id="packages" title="Construction packages" title-id="packages-title">
+        <PackagesTable />
+      </DashCard>
     </div>
 
     <aside class="dash-rail">

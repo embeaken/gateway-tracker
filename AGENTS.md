@@ -14,7 +14,7 @@ This file provides guidance for agents working in this repository.
 Vue 3 single-page dashboard tracking the Gateway Hudson River tunnel project. No router, no state management library. Data is static JSON written by scripts, plus one live feed (cameras) served by Netlify Functions.
 
 **Layout (`App.vue`):** `AppHeader` ("What is this?" opens the `OverviewExplainer` drawer), then a two-column grid inside `.container`:
-- **Main column:** `RouteMap` (route side view with estimated TBM positions), two `TbmCard`s, `CameraWall`, `PackagesTable`, then `FundingCard` beside `PhotoGallery`.
+- **Main column:** `RouteMap` (route side view with estimated TBM positions), two `TbmCard`s, `CameraWall`, `FundingCard` beside `PhotoGallery`, then `PackagesTable`.
 - **Right rail:** `ProjectTimeline` and `ActivityTimeline` (the GDC feed, photos excluded because the gallery covers them). On wide screens the rail is sticky and the feed scrolls inside it.
 
 Cards other than the route map and TBM cards use `DashCard` (small uppercase title, optional right-aligned meta). Camera tiles open `CameraModal` (EarthCam's interactive player). Photos open `PhotoLightbox`, which both the gallery and the feed use.
