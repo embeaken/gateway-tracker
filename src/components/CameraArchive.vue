@@ -685,6 +685,7 @@ const atEnd = computed(() => date.value >= props.today && index.value >= lastInd
 }
 
 .view-tab {
+  touch-action: manipulation;
   padding: 4px 10px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
@@ -736,6 +737,7 @@ const atEnd = computed(() => date.value >= props.today && index.value >= lastInd
 }
 
 .fs-btn {
+  touch-action: manipulation;
   position: absolute;
   top: 8px;
   right: 8px;
@@ -824,6 +826,8 @@ const atEnd = computed(() => date.value >= props.today && index.value >= lastInd
 }
 
 .controls {
+  /* Fast taps on the step buttons must not double-tap zoom the page */
+  touch-action: manipulation;
   display: grid;
   gap: 14px;
   margin-top: 14px;
