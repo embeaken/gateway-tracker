@@ -149,7 +149,7 @@ watch(frames, (list) => {
 // it), so the size steps up as the photo is enlarged past what each can fill.
 // Panoramas are far wider: their "half" size is ~11,000px.
 const src = (f: CamFrame, zoomLevel: number, isPano: boolean) => {
-  if (isPano) return cdnSiteImage(`${f.frame}?size=half`, zoomLevel > 1 ? 6000 : 2560)
+  if (isPano) return cdnSiteImage(`${f.frame}?size=half`, zoomLevel > 1 || photo.value.w > 2400 ? 6000 : 2560)
   if (zoomLevel <= 1) return cdnSiteImage(f.frame, 1440)
   return photo.value.w * zoomLevel <= 1920 ? cdnSiteImage(`${f.frame}?size=half`, 1920) : cdnSiteImage(`${f.frame}?size=full`, 3840)
 }
@@ -627,6 +627,13 @@ const atEnd = computed(() => date.value >= props.today && index.value >= lastInd
   aspect-ratio: var(--aspect, 16 / 9);
   max-height: none;
   margin-inline: 0;
+}
+
+/* Panoramas are far wider than a screen: fill it and pan sideways, rather than letterbox */
+.viewer-card.full.wide .stage {
+  width: 100cqw;
+  height: 100cqh;
+  aspect-ratio: auto;
 }
 
 .full .note {
