@@ -115,7 +115,7 @@ test.describe('dashboard smoke', () => {
     await page.locator('#app').screenshot({ path: testInfo.outputPath('dashboard-dark.png') })
   })
 
-  test('browses the camera archive', async ({ page }) => {
+  test('browses the camera archive', async ({ page }, testInfo) => {
     const asked: string[] = []
     await page.route('**/api/cam-archive/**', (route) => {
       const url = new URL(route.request().url())
@@ -184,6 +184,30 @@ test.describe('dashboard smoke', () => {
     await expect.poll(() => asked.some((u) => u.includes('ref=r2') && u.includes('date='))).toBe(true)
     await card.getByRole('button', { name: 'Earlier photo' }).click()
     await expect(card.locator('.control-label b')).toContainText('12:00 PM')
+
+    if (testInfo.project.name === 'mobile') {
+      // Upright, the stage is taller than wide and the photo is dragged sideways;
+      // the hint goes once it has been
+      const s = (await card.locator('.stage').boundingBox())!
+      expect(s.height).toBeGreaterThan(s.width)
+      await expect(card.locator('.pan-hint')).toBeVisible()
+      const before = (await card.locator('.pan').getAttribute('style'))!
+      await page.mouse.move(s.x + s.width / 2, s.y + s.height / 2)
+      await page.mouse.down()
+      await page.mouse.move(s.x + s.width / 2 - 80, s.y + s.height / 2, { steps: 4 })
+      await page.mouse.up()
+      await expect(card.locator('.pan')).not.toHaveAttribute('style', before)
+      await expect(card.locator('.pan-hint')).toHaveCount(0)
+
+      // Sideways, it's back to the photo's shape, at full width
+      await page.setViewportSize({ width: 750, height: 342 })
+      await expect.poll(async () => (await card.locator('.stage').boundingBox())!.width).toBeGreaterThan(600)
+      const cardBox = (await card.boundingBox())!
+      const wide = (await card.locator('.stage').boundingBox())!
+      expect(wide.width).toBeGreaterThan(cardBox.width - 30)
+      expect(wide.width / wide.height).toBeCloseTo(16 / 9, 1)
+      await page.setViewportSize({ width: 390, height: 844 })
+    }
 
     // Scrolling over the photo zooms in around the pointer; double click resets
     const stage = card.locator('.stage')

@@ -144,20 +144,18 @@ watch(frames, (list) => {
 // fading in over the old one, so scrubbing never flashes or shows a blank. It's
 // fetched at the size the current zoom will display, or the visible image would
 // still have to load after the swap.
-const WIDTH = window.matchMedia('(max-width: 768px)').matches ? 960 : 1440
 // Zoomed in, larger originals are fetched. EarthCam serves stills at 1440
 // (medium), 1920 (half) and 3840 (full, the original: there is nothing above
 // it), so the size steps up as the photo is enlarged past what each can fill.
 // Panoramas are far wider: their "half" size is ~11,000px.
 const src = (f: CamFrame, zoomLevel: number, isPano: boolean) => {
   if (isPano) return cdnSiteImage(`${f.frame}?size=half`, zoomLevel > 1 ? 6000 : 2560)
-  if (zoomLevel <= 1) return cdnSiteImage(f.frame, WIDTH)
-  const onScreen = (stage.value?.clientWidth ?? 0) * zoomLevel
-  return onScreen <= 1920 ? cdnSiteImage(`${f.frame}?size=half`, 1920) : cdnSiteImage(`${f.frame}?size=full`, 3840)
+  if (zoomLevel <= 1) return cdnSiteImage(f.frame, 1440)
+  return photo.value.w * zoomLevel <= 1920 ? cdnSiteImage(`${f.frame}?size=half`, 1920) : cdnSiteImage(`${f.frame}?size=full`, 3840)
 }
 /** What's on screen. `pano` is kept so it still renders right while a switch to the other kind fades in. */
 const shown = ref<{ f: CamFrame; pano: boolean } | null>(null)
-/** The stage's shape: 16:9 for stills, the photo's own for panoramas */
+/** The photo's shape: 16:9 for stills, its own for panoramas. The stage matches it, except on phones (see .stage). */
 const aspect = ref(16 / 9)
 
 watch(frame, async (f) => {
@@ -189,16 +187,49 @@ watch(frame, async (f) => {
 const maxZoom = () => (shown.value?.pano ? 12 : 6)
 const resetHint = window.matchMedia('(pointer: coarse)').matches ? 'double-tap' : 'double-click'
 const stage = ref<HTMLElement | null>(null)
+const stageSize = ref({ w: 0, h: 0 })
 const zoom = ref(1)
 const pan = ref({ x: 0, y: 0 })
 const dragging = ref(false)
+/** Set once the visitor has dragged, to drop the "drag to look around" hint */
+const dragged = ref(false)
+
+let resizeObserver: ResizeObserver | undefined
+onMounted(() => {
+  resizeObserver = new ResizeObserver(([e]) => {
+    if (!e) return
+    const { width: w, height: h } = e.contentRect
+    // Only a real change: a new object would recentre the photo
+    if (w !== stageSize.value.w || h !== stageSize.value.h) stageSize.value = { w, h }
+  })
+  if (stage.value) resizeObserver.observe(stage.value)
+})
+onBeforeUnmount(() => resizeObserver?.disconnect())
+
+/**
+ * The photo's size at 100%: just covering the stage. That's the whole stage
+ * when their shapes match; on a phone's taller stage it's wider than the stage
+ * and can be dragged sideways.
+ */
+const photo = computed(() => {
+  const { w, h } = stageSize.value
+  return w / h > aspect.value ? { w, h: w / aspect.value } : { w: h * aspect.value, h }
+})
+/** At 100%, the photo is wider (or taller) than the stage */
+const croppedAtFit = computed(() => photo.value.w > stageSize.value.w + 1 || photo.value.h > stageSize.value.h + 1)
+const canPan = computed(() => zoom.value > 1 || croppedAtFit.value)
 
 /** Keep the photo covering the stage */
 const clampPan = (x: number, y: number) => {
-  const w = stage.value?.clientWidth ?? 0
-  const h = stage.value?.clientHeight ?? 0
-  return { x: Math.min(0, Math.max(w * (1 - zoom.value), x)), y: Math.min(0, Math.max(h * (1 - zoom.value), y)) }
+  const { w, h } = stageSize.value
+  return {
+    x: Math.min(0, Math.max(w - photo.value.w * zoom.value, x)),
+    y: Math.min(0, Math.max(h - photo.value.h * zoom.value, y)),
+  }
 }
+const centre = () => ({ x: (stageSize.value.w - photo.value.w) / 2, y: (stageSize.value.h - photo.value.h) / 2 })
+// A new stage or photo shape: recentre at 100%, or keep the zoomed view in bounds
+watch(photo, () => (pan.value = zoom.value > 1 ? clampPan(pan.value.x, pan.value.y) : centre()))
 
 /** Zoom by `factor`, keeping the point (cx, cy) in the stage where it is */
 function zoomAt(factor: number, cx: number, cy: number) {
@@ -212,7 +243,7 @@ function zoomAt(factor: number, cx: number, cy: number) {
 
 function resetZoom() {
   zoom.value = 1
-  pan.value = { x: 0, y: 0 }
+  pan.value = centre()
 }
 
 /** Zoomed out: nudge in, so people see zoom is there. Zoomed in: back to 100%. */
@@ -239,6 +270,8 @@ const pointers = new Map<number, { x: number; y: number }>()
 let pinchStart: { dist: number; zoom: number } | null = null
 let lastTap = 0
 let lastTouch = -Infinity
+/** Where a one-finger drag started, until it has moved far enough to count (not a tap) */
+let dragStart: { x: number; y: number } | null = null
 
 const pinchDistance = () => {
   const [a, b] = [...pointers.values()]
@@ -249,7 +282,8 @@ function onPointerDown(e: PointerEvent) {
   stage.value?.setPointerCapture(e.pointerId)
   pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
   if (pointers.size === 2) pinchStart = { dist: pinchDistance(), zoom: zoom.value }
-  dragging.value = pointers.size === 1 && zoom.value > 1
+  dragging.value = pointers.size === 1 && canPan.value
+  dragStart = dragged.value ? null : { x: e.clientX, y: e.clientY }
 }
 
 function onPointerMove(e: PointerEvent) {
@@ -261,8 +295,9 @@ function onPointerMove(e: PointerEvent) {
     const [a, b] = [...pointers.values()]
     const mid = stagePoint({ clientX: (a!.x + b!.x) / 2, clientY: (a!.y + b!.y) / 2 })
     zoomAt((pinchStart.zoom * pinchDistance()) / pinchStart.dist / zoom.value, mid.x, mid.y)
-  } else if (pointers.size === 1 && zoom.value > 1) {
+  } else if (pointers.size === 1 && canPan.value) {
     pan.value = clampPan(pan.value.x + cur.x - prev.x, pan.value.y + cur.y - prev.y)
+    if (dragStart && Math.hypot(cur.x - dragStart.x, cur.y - dragStart.y) > 5) dragged.value = true
   }
 }
 
@@ -379,8 +414,8 @@ const atEnd = computed(() => date.value >= props.today && index.value >= lastInd
     <div
       ref="stage"
       class="stage"
-      :class="{ zoomed: zoom > 1, dragging }"
-      :style="{ aspectRatio: aspect }"
+      :class="{ zoomed: zoom > 1, pannable: canPan, dragging }"
+      :style="{ '--aspect': aspect }"
       :aria-busy="loading"
       @wheel.prevent="onWheel"
       @dblclick="onDoubleClick"
@@ -393,7 +428,7 @@ const atEnd = computed(() => date.value >= props.today && index.value >= lastInd
         name="fade"
         tag="div"
         class="pan"
-        :style="{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }"
+        :style="{ width: `${photo.w}px`, height: `${photo.h}px`, transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }"
       >
         <img
           v-if="shown"
@@ -404,6 +439,7 @@ const atEnd = computed(() => date.value >= props.today && index.value >= lastInd
         />
       </TransitionGroup>
       <p v-if="zoom > 1" class="zoom-badge">{{ zoom.toFixed(1) }}× · {{ resetHint }} to reset</p>
+      <p v-else-if="shown && croppedAtFit && !dragged" class="pan-hint" aria-hidden="true">← Drag to look around →</p>
       <p v-if="shown" class="sr-only" aria-live="polite">{{ shownLabel }}</p>
       <p v-else-if="failed || error" class="stage-msg stage-msg--error">Couldn't load this camera right now.</p>
       <p v-else-if="loading || !view || !near || frames.length" class="stage-msg">Loading…</p>
@@ -464,6 +500,7 @@ const atEnd = computed(() => date.value >= props.today && index.value >= lastInd
 
 <style scoped>
 .viewer-card {
+  --pad: 16px;
   /* Wide enough to be big, narrow enough that the controls still fit */
   width: 100%;
   max-width: 1100px;
@@ -472,7 +509,7 @@ const atEnd = computed(() => date.value >= props.today && index.value >= lastInd
   background: var(--color-card-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  padding: 14px 16px 16px;
+  padding: 14px var(--pad) var(--pad);
 }
 
 /* Panoramas are wide and short, so they can use the room (a 16:9 photo this wide wouldn't fit on screen) */
@@ -528,7 +565,7 @@ const atEnd = computed(() => date.value >= props.today && index.value >= lastInd
   position: relative;
   display: grid;
   place-items: center;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: var(--aspect, 16 / 9);
   overflow: hidden;
   border-radius: var(--radius-sm);
   background: var(--color-navy);
@@ -537,9 +574,12 @@ const atEnd = computed(() => date.value >= props.today && index.value >= lastInd
   user-select: none;
 }
 
+.stage.pannable {
+  cursor: grab;
+}
+
 .stage.zoomed {
   touch-action: none;
-  cursor: grab;
 }
 
 .stage.dragging {
@@ -548,12 +588,14 @@ const atEnd = computed(() => date.value >= props.today && index.value >= lastInd
 
 .pan {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
   transform-origin: 0 0;
   will-change: transform;
 }
 
-.zoom-badge {
+.zoom-badge,
+.pan-hint {
   position: absolute;
   right: 8px;
   bottom: 8px;
@@ -619,21 +661,6 @@ const atEnd = computed(() => date.value >= props.today && index.value >= lastInd
   display: flex;
   align-items: center;
   gap: 8px;
-}
-
-@media (max-width: 480px) {
-  .control-row {
-    gap: 4px;
-  }
-
-  .control-label b {
-    font-size: 12px;
-  }
-
-  .step {
-    width: 32px;
-    height: 32px;
-  }
 }
 
 .control-main {
@@ -709,6 +736,53 @@ const atEnd = computed(() => date.value >= props.today && index.value >= lastInd
 .step:disabled {
   opacity: 0.35;
   cursor: default;
+}
+
+/* Phones: the date and slider get the full width, with the step buttons underneath */
+@media (max-width: 768px) {
+  .viewer-card {
+    --pad: 12px;
+    padding-top: var(--pad);
+  }
+
+  .viewer-name {
+    font-size: 20px;
+  }
+
+  .control-row {
+    flex-wrap: wrap;
+    row-gap: 10px;
+  }
+
+  .control-main {
+    order: -1;
+    flex-basis: 100%;
+  }
+
+  /* The first "later" button: the forward buttons sit on the right */
+  .control-main + .step {
+    margin-left: auto;
+  }
+
+  .step {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+/* Held upright, a 16:9 strip is cramped: the stage is taller, running to the
+   card's edges, and the photo fills it (drag sideways for the rest). Only
+   upright, because a wide, short stage would crop the top and bottom, which
+   can't be dragged to (a vertical swipe scrolls the page). The width is set so
+   the height cap can't shrink it (as it would with aspect-ratio alone). */
+@media (max-width: 768px) and (orientation: portrait) {
+  .stage {
+    width: calc(100% + 2 * var(--pad));
+    aspect-ratio: 4 / 5;
+    max-height: 70svh;
+    margin-inline: calc(-1 * var(--pad));
+    border-radius: 0;
+  }
 }
 
 input[type='range'] {
