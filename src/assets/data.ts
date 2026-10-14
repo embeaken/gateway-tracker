@@ -39,6 +39,7 @@ export const projects: Project[] = [
     featuredView: 1,
     status: tbmStatus,
     location: "North Bergen, NJ",
+    map: "https://maps.app.goo.gl/wYrm3djXomvTeWvu8",
   },
   {
     id: "hudson-county-shaft",
@@ -49,6 +50,7 @@ export const projects: Project[] = [
     featuredView: 0,
     status: "Shaft excavation in progress",
     location: "Hudson County, NJ",
+    map: "https://maps.app.goo.gl/MRVpEswV6roRhxMh8",
   },
   {
     id: "river",
@@ -58,6 +60,7 @@ export const projects: Project[] = [
       "https://share.earthcam.net/public/tJ90CoLmq7TzrY396Yd88NgWcY4qcaFR1ARpUFeGtWU/311_-_11th_ave",
     status: "80% complete",
     location: "Hudson River near 30th Street",
+    map: "https://maps.app.goo.gl/SzVXB3nGNhqxt1e58",
   },
   {
     id: "manhattan-shaft",
@@ -67,6 +70,7 @@ export const projects: Project[] = [
       "https://share.earthcam.net/public/tJ90CoLmq7TzrY396Yd88O0s3ogRDpd-gZcv_VlnrGM/311_-_11th_ave",
     status: "Shaft excavation in progress",
     location: "12th Avenue & 30th Street",
+    map: "https://maps.app.goo.gl/3e7tpkFuDY5ao3ys8",
   },
   {
     id: "hudson-yards",
@@ -75,6 +79,7 @@ export const projects: Project[] = [
     earthcam: "https://share.earthcam.net/public/edgenyc/hudson_yards/camera",
     status: "Tunnel roof installation in progress. Substantial completion is expected by the end of 2026.",
     location: "Hudson Yards between 11th and 12th Avenues",
+    map: "https://maps.app.goo.gl/1s5KFj3Ep6N4QQjk8",
   },
 ];
 

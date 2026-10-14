@@ -52,7 +52,7 @@ const frameStyle = computed(() => {
       >
         <header class="cam-modal-head">
           <div>
-            <p class="kicker">{{ project.location }}</p>
+            <p class="kicker"><a class="map-link" :href="project.map" target="_blank" rel="noopener">{{ project.location }}</a></p>
             <h2 class="cam-modal-title">{{ project.name }}</h2>
           </div>
           <button ref="closeBtn" type="button" class="cam-modal-close" aria-label="Close" @click="close">×</button>
@@ -157,5 +157,17 @@ const frameStyle = computed(() => {
 
 .cam-modal-body strong {
   font-weight: var(--font-weight-semibold);
+}
+
+.map-link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--color-border);
+  text-underline-offset: 3px;
+}
+
+.map-link:hover {
+  color: var(--color-primary);
+  text-decoration-color: currentColor;
 }
 </style>

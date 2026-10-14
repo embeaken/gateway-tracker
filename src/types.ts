@@ -8,6 +8,8 @@ export type Project = {
   featuredView?: number
   status: string
   location: string
+  /** Google Maps link for the location */
+  map: string
 }
 
 /** Project id of the construction camera at a route section or stop */

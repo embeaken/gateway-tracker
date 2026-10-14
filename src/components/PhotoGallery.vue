@@ -36,6 +36,9 @@ const visible = computed(() => (narrow.value ? photos.value.slice(0, count.value
 // viewport when it doesn't.
 const grid = ref<HTMLElement | null>(null)
 const loaded = ref(new Set<number>())
+/** Thumbnails that have finished downloading: they fade in over the grey tile */
+const ready = ref(new Set<string>())
+const onReady = (url: string) => (ready.value = new Set(ready.value).add(url))
 let observer: IntersectionObserver | undefined
 
 const makeObserver = () => {
@@ -83,7 +86,14 @@ onBeforeUnmount(() => {
       :class="i === 0 && 'gallery-lead'"
     >
       <button type="button" class="gallery-tile img-hover" :aria-label="`Open photo: ${photo.caption}`" @click="openAt = i">
-        <img v-if="loaded.has(i)" :src="cdnImage(photo.url, i === 0 ? 720 : 320)" :alt="photo.caption" />
+        <img
+          v-if="loaded.has(i)"
+          :class="{ ready: ready.has(photo.url) }"
+          :src="cdnImage(photo.url, i === 0 ? 720 : 320)"
+          :alt="photo.caption"
+          @load="onReady(photo.url)"
+          @error="onReady(photo.url)"
+        />
       </button>
     </li>
   </ul>
@@ -144,6 +154,19 @@ onBeforeUnmount(() => {
   height: 100%;
   object-fit: cover;
   display: block;
+  /* Hidden until loaded, so the alt text doesn't flash in the empty tile */
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.gallery-tile img.ready {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gallery-tile img {
+    transition: none;
+  }
 }
 
 .gallery-tile:focus-visible {

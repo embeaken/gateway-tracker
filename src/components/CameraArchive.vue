@@ -463,7 +463,7 @@ const atEnd = computed(() => date.value >= props.today && index.value >= lastInd
   <section :id="project.id" ref="root" class="viewer-card" :class="{ wide: !!pano, full: isFull, pinned }" :aria-label="`${project.name} archive`">
     <header class="viewer-head">
       <h2 class="viewer-name">{{ project.name }}</h2>
-      <p class="viewer-loc">{{ project.location }}</p>
+      <p class="viewer-loc"><a class="map-link" :href="project.map" target="_blank" rel="noopener">{{ project.location }}</a></p>
     </header>
 
     <div v-if="views.length > 1 || panoramas.length" class="view-tabs" role="group" aria-label="Camera view">
@@ -1036,5 +1036,17 @@ input[type='range'] {
   font-size: 12px;
   line-height: 1.5;
   color: var(--color-text-tertiary);
+}
+
+.map-link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--color-border);
+  text-underline-offset: 3px;
+}
+
+.map-link:hover {
+  color: var(--color-primary);
+  text-decoration-color: currentColor;
 }
 </style>
