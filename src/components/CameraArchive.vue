@@ -148,7 +148,12 @@ watch(frames, (list) => {
 // (medium), 1920 (half) and 3840 (full, the original: there is nothing above
 // it), so the size steps up as the photo is enlarged past what each can fill.
 // Panoramas are far wider: their "half" size is ~11,000px.
+// Full screen always uses the best there is: the original still, and the
+// panorama at its full width. `maxQuality` follows `isFull` once that quality
+// has loaded (see below), so entering full screen doesn't blank the photo.
+const maxQuality = ref(false)
 const src = (f: CamFrame, zoomLevel: number, isPano: boolean) => {
+  if (maxQuality.value) return isPano ? cdnSiteImage(`${f.frame}?size=half`, 11000) : cdnSiteImage(`${f.frame}?size=full`, 3840)
   if (isPano) return cdnSiteImage(`${f.frame}?size=half`, zoomLevel > 1 || photo.value.w > 2400 ? 6000 : 2560)
   if (zoomLevel <= 1) return cdnSiteImage(f.frame, 1440)
   return photo.value.w * zoomLevel <= 1920 ? cdnSiteImage(`${f.frame}?size=half`, 1920) : cdnSiteImage(`${f.frame}?size=full`, 3840)
@@ -332,6 +337,29 @@ function onPointerUp(e: PointerEvent) {
 const fullscreen = ref(false)
 const pinned = ref(false)
 const isFull = computed(() => fullscreen.value || pinned.value)
+
+watch(isFull, async (full) => {
+  const f = shown.value
+  if (!full || !f) {
+    maxQuality.value = full
+    return
+  }
+  maxQuality.value = true
+  const best = src(f.f, zoom.value, f.pano)
+  maxQuality.value = false
+  try {
+    await new Promise((resolve, reject) => {
+      const img = new Image()
+      img.onload = resolve
+      img.onerror = reject
+      img.src = best
+    })
+  } catch {
+    // Not available: keep what's on screen
+    return
+  }
+  if (isFull.value) maxQuality.value = true
+})
 
 const onFullscreenChange = () => (fullscreen.value = !!root.value && document.fullscreenElement === root.value)
 const onKeydown = (e: KeyboardEvent) => e.key === 'Escape' && pinned.value && (pinned.value = false)
