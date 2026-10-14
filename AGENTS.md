@@ -40,6 +40,8 @@ Types are in `src/types.ts`, `src/assets/activityDataTypes.ts` and `src/assets/f
 
 All styling uses CSS custom properties defined in `src/assets/main.css`. No Tailwind, no component library.
 
+**Palette** follows gatewayprogram.org: slate `--color-chrome` (header, footer, camera stages), Gateway lime `--color-accent`, teal `--color-primary` for links. Dark mode is neutral charcoal, not green; keep green for the chrome, accent and status colours. The logo (`BrandMark`) uses `--color-tbm` and `--color-tbm-hub` in both themes.
+
 **Dark mode requires dual selectors** — both must be present for any dark override:
 ```css
 [data-theme="dark"] .element { ... }
@@ -48,7 +50,7 @@ All styling uses CSS custom properties defined in `src/assets/main.css`. No Tail
 }
 ```
 
-**Card pattern:** `background: var(--color-card-bg)`, `border: 1px solid var(--color-border)`, `border-radius: var(--radius-md)`, `padding: var(--spacing-xl)`. Use `--color-card-bg` (not `--color-background`) — the page background is warm off-white (`#F7F5F0`), cards stay white.
+**Card pattern:** `background: var(--color-card-bg)`, `border: 1px solid var(--color-border)`, `border-radius: var(--radius-md)`, `padding: var(--spacing-xl)`. Use `--color-card-bg` (not `--color-background`) — the page background is pale sage (`#F1F4EF`), cards stay white.
 
 **Breakpoints:** 768px (mobile), 900px (TBM cards side by side), 1024px (route map switches to the vertical list), 1200px (rail moves beside the main column), 1700px (funding and photos side by side). The camera wall picks its column count with container queries.
 

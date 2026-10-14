@@ -133,7 +133,7 @@ const open = ref<Project | null>(null)
   border: 0;
   border-radius: var(--radius-sm);
   overflow: hidden;
-  background: var(--color-navy);
+  background: var(--color-chrome);
   cursor: pointer;
   font: inherit;
   text-align: left;

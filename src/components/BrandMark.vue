@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // The Palisades TBM cutterhead, face-on: centre plate, eight muck buckets near
-// the rim, and two disc-cutter housings between each pair.
+// the rim, and two disc-cutter housings between each pair. Coloured like the
+// real machine: green cutterhead, lime GDC sign on the hub.
 // Reference: gatewayprogram.org/wp-content/uploads/2025/12/S-1432-PEP-109.jpg
 const BUCKETS = [0, 45, 90, 135, 180, 225, 270, 315]
 const CUTTERS = BUCKETS.map((a) => a + 22.5)
@@ -30,7 +31,8 @@ const CUTTERS = BUCKETS.map((a) => a + 22.5)
         <circle cx="20" cy="20" r="7" fill="none" stroke="black" stroke-width="1.3" />
       </mask>
     </defs>
-    <circle cx="20" cy="20" r="19" fill="currentColor" mask="url(#cutterhead-mask)" />
+    <circle class="cutterhead" cx="20" cy="20" r="19" mask="url(#cutterhead-mask)" />
+    <circle class="hub" cx="20" cy="20" r="6.35" />
   </svg>
 </template>
 
@@ -41,6 +43,14 @@ const CUTTERS = BUCKETS.map((a) => a + 22.5)
   height: 34px;
   flex-shrink: 0;
   animation: cutterhead-spin 48s linear infinite;
+}
+
+.cutterhead {
+  fill: var(--color-tbm);
+}
+
+.hub {
+  fill: var(--color-tbm-hub);
 }
 
 @keyframes cutterhead-spin {
