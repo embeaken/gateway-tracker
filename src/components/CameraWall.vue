@@ -1,43 +1,20 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { projects } from '../assets/data'
-import type { CamsResponse } from '../earthcam'
 import { cdnSiteImage, cdnSiteSrcset } from '../imageCdn'
 import type { Project } from '../types'
+import { useCams } from '../useCams'
 import CameraModal from './CameraModal.vue'
 
 // The latest still from each project's featured camera view, via /api/cams
 // (see src/earthcam.ts). Click a tile for EarthCam's live player.
 
-const REFRESH_MS = 5 * 60_000
-
-const data = ref<CamsResponse | null>(null)
-const failed = ref(false)
+const { data, failed } = useCams()
 const now = ref(Date.now())
 
-async function load() {
-  try {
-    const res = await fetch('/api/cams')
-    if (!res.ok) throw new Error(`HTTP ${res.status}`)
-    data.value = (await res.json()) as CamsResponse
-    failed.value = false
-  } catch {
-    // Keep showing the last good stills if a refresh fails
-    if (!data.value) failed.value = true
-  }
-}
-
-let refresh: number | undefined
 let tick: number | undefined
-onMounted(() => {
-  load()
-  refresh = window.setInterval(load, REFRESH_MS)
-  tick = window.setInterval(() => (now.value = Date.now()), 30_000)
-})
-onUnmounted(() => {
-  window.clearInterval(refresh)
-  window.clearInterval(tick)
-})
+onMounted(() => (tick = window.setInterval(() => (now.value = Date.now()), 30_000)))
+onUnmounted(() => window.clearInterval(tick))
 
 type Tile = { project: Project; frame?: string; takenAt?: string }
 
@@ -67,7 +44,7 @@ const open = ref<Project | null>(null)
     <p v-if="failed" class="cam-error">Couldn't reach the cameras right now. Open a site below to try EarthCam directly.</p>
 
     <ul class="cam-grid">
-      <li v-for="tile in tiles" :id="`cam-${tile.project.id}`" :key="tile.project.id" class="cam-tile">
+      <li v-for="tile in tiles" :key="tile.project.id" class="cam-tile">
         <button
           type="button"
           class="cam-button"
@@ -145,15 +122,6 @@ const open = ref<Project | null>(null)
   .cam-tile:nth-child(n) {
     grid-column: auto;
   }
-}
-
-.cam-tile {
-  scroll-margin-top: var(--spacing-lg);
-}
-
-.cam-tile:target .cam-button {
-  outline: 3px solid var(--color-accent);
-  outline-offset: 2px;
 }
 
 .cam-button {

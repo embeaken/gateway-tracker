@@ -8,10 +8,15 @@ const emit = defineEmits<{ (e: 'open-explainer'): void }>()
 <template>
   <header class="app-header">
     <div class="container header-content">
-      <a href="/" class="brand-lockup" aria-label="hudson.tube home">
+      <RouterLink to="/" class="brand-lockup" aria-label="hudson.tube home">
         <BrandMark class="brand-icon" />
         <span class="brand-name">hudson.tube</span>
-      </a>
+      </RouterLink>
+
+      <nav class="header-nav" aria-label="Main">
+        <RouterLink to="/" class="nav-link">Overview</RouterLink>
+        <RouterLink to="/cameras" class="nav-link">Cameras</RouterLink>
+      </nav>
 
       <button
         type="button"
@@ -68,8 +73,31 @@ const emit = defineEmits<{ (e: 'open-explainer'): void }>()
   line-height: 1;
 }
 
+.header-nav {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-left: var(--spacing-sm);
+}
+
+.nav-link,
+.nav-link:visited {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 14px;
+  font-weight: var(--font-weight-semibold);
+}
+
+.nav-link:hover,
+.nav-link.router-link-exact-active {
+  color: #fff;
+  text-decoration: underline;
+  text-decoration-color: var(--color-accent);
+  text-underline-offset: 6px;
+  text-decoration-thickness: 2px;
+}
+
 .explainer-btn {
   flex: none;
+  margin-left: auto;
   padding: 7px 14px;
   border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 999px;
@@ -98,10 +126,6 @@ const emit = defineEmits<{ (e: 'open-explainer'): void }>()
     flex-wrap: wrap;
     row-gap: 6px;
   }
-
-  .brand-lockup {
-    flex: 1;
-  }
 }
 
 @media (max-width: 640px) {
@@ -109,8 +133,16 @@ const emit = defineEmits<{ (e: 'open-explainer'): void }>()
     gap: 12px;
   }
 
+  /* The links drop to their own row under the logo and button */
   .brand-lockup {
+    flex: 1;
     gap: 9px;
+  }
+
+  .header-nav {
+    order: 3;
+    flex-basis: 100%;
+    margin-left: 0;
   }
 
   .brand-icon {

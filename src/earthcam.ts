@@ -14,18 +14,33 @@
 
 export const USER_AGENT = 'hudson.tube'
 
-/** One camera view's latest still */
-export type CamView = {
-  /** Our cached proxy path for the frame, e.g. /api/cam-frame/resource6/AbC… */
+/** A still: our cached proxy path for it, and when it was taken */
+export type CamFrame = {
+  /** e.g. /api/cam-frame/resource6/AbC… */
   frame: string
   /** ISO timestamp the still was taken */
   takenAt: string
 }
 
+/** One camera view's latest still, plus what's needed to browse its archive */
+export type CamView = CamFrame & {
+  /** EarthCam camera short name, e.g. "camera_1" (or just "camera") */
+  camera: string
+  /** Archive reference for this view */
+  ref: string
+  /** ISO timestamp of the view's first archived still */
+  since: string
+}
+
+/** GET /api/cam-archive/:site/:camera (a day's stills) and /api/cam-panoramas/:site/:camera (every capture), oldest first */
+export type CamFramesResponse = { frames: CamFrame[] }
+
 export type CamSite = {
   /** Project id from src/assets/data.ts */
   projectId: string
   views: CamView[]
+  /** Short names of the cameras with a regular (near-daily) panorama */
+  panoramas: string[]
   /** Set when EarthCam couldn't be reached for this site */
   error?: string
 }
@@ -34,6 +49,35 @@ export type CamsResponse = {
   fetchedAt: string
   sites: CamSite[]
 }
+
+/** The parts of EarthCam's page API response we use */
+export type EarthCamPage = {
+  cameras: {
+    short_name: string
+    archives: {
+      type: string
+      ref?: string
+      start_datetime?: string
+      image?: { url: string; datetime: string }
+    }[]
+  }[]
+}
+
+/** GET from EarthCam's page API; `path` starts with an earthcamPage() */
+export const fetchEarthcam = (path: string, timeout = 10_000) =>
+  fetch(`https://share.earthcam.net/api/v2/public/page/${path}`, {
+    headers: { 'User-Agent': USER_AGENT, Accept: 'application/json' },
+    signal: AbortSignal.timeout(timeout),
+  })
+
+/** A JSON response with the same caching in browsers and at Netlify's CDN */
+export const jsonResponse = (body: unknown, status: number, cache: string) =>
+  Response.json(body, { status, headers: { 'Cache-Control': cache, 'Netlify-CDN-Cache-Control': cache } })
+
+export const errorMessage = (e: unknown) => (e instanceof Error ? e.message : String(e))
+
+/** "2026-10-10T20:32:00-0400" → ISO 8601 with a colon in the offset */
+export const isoDate = (s: string) => new Date(s.replace(/([+-]\d\d)(\d\d)$/, '$1:$2')).toISOString()
 
 /** "tJ90…/tonnelle_ave_bridge" from a share.earthcam.net player URL */
 export const earthcamPage = (playerUrl: string) => {
@@ -50,8 +94,17 @@ export const framePath = (objectUrl: string) => {
   return m ? `/api/cam-frame/${m[1]}/${m[2]}` : null
 }
 
-/** Reverse of framePath: the EarthCam URL for a validated host and object id, at medium size */
-export const earthcamFrameUrl = (host: string, id: string) =>
-  /^resource\d{1,2}$/.test(host) && /^[\w-]+$/.test(id)
-    ? `https://${host}.earthcam.net/v0/object/${id}?Size:medium`
+/** EarthCam's suffixes for the sizes /api/cam-frame serves (?size=, default medium) */
+const FRAME_SIZES = new Map([
+  ['medium', 'medium'],
+  ['half', 'Half'],
+  ['full', 'Full'],
+])
+
+/** Reverse of framePath: the EarthCam URL for a validated host, object id and size */
+export const earthcamFrameUrl = (host: string, id: string, size = 'medium') => {
+  const suffix = FRAME_SIZES.get(size)
+  return suffix && /^resource\d{1,2}$/.test(host) && /^[\w-]+$/.test(id)
+    ? `https://${host}.earthcam.net/v0/object/${id}?Size:${suffix}`
     : null
+}

@@ -18,8 +18,7 @@ const money = (n: number) => (n >= 1e9 ? `$${(n / 1e9).toFixed(2)}B` : `$${(n / 
       <tbody>
         <tr v-for="pkg in constructionPackages" :key="pkg.name">
           <th scope="row">
-            <a v-if="pkg.cam" :href="`#cam-${pkg.cam}`" :title="`Jump to the ${pkg.name} camera`">{{ pkg.name }}</a>
-            <span v-else>{{ pkg.name }}</span>
+            {{ pkg.name }}
             <span v-if="pkg.complete" class="done">✓ Complete</span>
             <span class="who-inline">{{ pkg.contractor }}</span>
           </th>

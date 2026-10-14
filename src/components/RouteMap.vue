@@ -297,8 +297,8 @@ const vrows = routeStops.map((stop) => ({
 
 <template>
   <section id="route" class="route" aria-labelledby="route-title">
-    <h2 id="route-title" class="sr-only">Construction map</h2>
       <div class="route-card">
+        <h2 id="route-title" class="route-title">Project overview</h2>
         <!-- Side view (desktop) -->
         <div ref="strip" class="strip" :style="{ height: `${H}px` }">
           <svg class="profile" :width="W" :height="H" :viewBox="`0 0 ${W} ${H}`" aria-hidden="true">
@@ -533,6 +533,18 @@ const vrows = routeStops.map((stop) => ({
   background: var(--color-card-bg);
   border: 1px solid var(--color-border);
   overflow: hidden;
+}
+
+/* Matches DashCard's title */
+.route-title {
+  padding: 14px 16px 0;
+  font-family: var(--font-family-base);
+  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  line-height: 1.3;
 }
 
 /* =========== Profile strip =========== */

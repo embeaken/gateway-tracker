@@ -72,6 +72,7 @@ const frameStyle = computed(() => {
         <div class="cam-modal-body">
           <p>{{ project.desc }}</p>
           <p><strong>Status:</strong> {{ project.status }}</p>
+          <p><RouterLink :to="{ name: 'cameras', hash: `#${project.id}` }" @click="close">Browse past photos from this camera →</RouterLink></p>
         </div>
       </div>
     </div>

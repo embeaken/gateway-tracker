@@ -162,18 +162,16 @@ export type ConstructionPackage = {
   /** Board-approved Market Case Estimate, $ */
   budget: number;
   complete?: boolean;
-  /** Project id of its camera */
-  cam?: string;
 };
 
 // Contractors and budgets: GDC board resolutions (Market Case Estimates, incl.
 // the Jul 2026 HRGS change order). Jobs: Jan 2026 board deck.
 export const constructionPackages: ConstructionPackage[] = [
   { name: "Tonnelle Avenue Bridge & Utility Relocation", contractor: "Conti Civil", jobs: 400, budget: 47_300_000, complete: true },
-  { name: "Palisades Tunnel & Hudson County Shaft", contractor: "Schiavone Lane Dragados JV", jobs: 5_500, budget: 744_791_972, cam: "launch-box" },
-  { name: "Hudson River Ground Stabilization", contractor: "Weeks Marine", jobs: 2_300, budget: 443_188_130, cam: "river" },
-  { name: "Manhattan Tunnel & 12th Avenue Shaft", contractor: "Frontier-Kemper / Tutor Perini JV", jobs: 7_200, budget: 1_835_009_534, cam: "manhattan-shaft" },
-  { name: "Hudson Yards Concrete Casing – Section 3", contractor: "Amtrak", jobs: 4_800, budget: 692_700_000, cam: "hudson-yards" },
+  { name: "Palisades Tunnel & Hudson County Shaft", contractor: "Schiavone Lane Dragados JV", jobs: 5_500, budget: 744_791_972 },
+  { name: "Hudson River Ground Stabilization", contractor: "Weeks Marine", jobs: 2_300, budget: 443_188_130 },
+  { name: "Manhattan Tunnel & 12th Avenue Shaft", contractor: "Frontier-Kemper / Tutor Perini JV", jobs: 7_200, budget: 1_835_009_534 },
+  { name: "Hudson Yards Concrete Casing – Section 3", contractor: "Amtrak", jobs: 4_800, budget: 692_700_000 },
   { name: "Hudson River Tunnel Section", contractor: "Traylor / Walsh / Skanska JV", jobs: null, budget: 2_079_867_631 },
   { name: "New Jersey Surface Alignment", contractor: "Skanska Creamer Sanzari JV", jobs: null, budget: 1_424_252_294 },
 ];

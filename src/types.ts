@@ -1,5 +1,5 @@
 export type Project = {
-  /** Used for #cam-{id} anchors */
+  /** Also the id of its camera card on the archive page (#id) */
   id: string
   name: string
   desc: string
