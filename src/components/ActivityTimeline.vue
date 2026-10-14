@@ -295,7 +295,7 @@ const badgeLabel = (type: TimelineItemType): string =>
   border-left-color: var(--color-accent);
 }
 .timeline-item-video {
-  border-left-color: #B42318;
+  border-left-color: var(--color-alert);
 }
 
 /* =============================================

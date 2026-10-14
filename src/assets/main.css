@@ -30,12 +30,13 @@
   --color-border: #D5DDD3;
 
   /* Dashboard */
-  --color-text-tertiary: #737672;    /* footnotes, units */
+  --color-text-tertiary: #686B67;    /* footnotes, units */
   --color-line: #E9EEE7;             /* table rows, bar tracks */
   --color-ok: #2A7034;               /* done, complete */
   --color-ok-bg: #E4EFE0;
   --color-alert: #B4442E;            /* freeze, errors */
   --color-alert-bg: #FBEFEA;
+  --color-alert-soft: #FFC7B8;       /* error text on the always-dark camera stages */
   --color-fund-paid: #005E71;
   --color-fund-released: #7FB8C4;   /* light tint of paid */
   --color-fund-amtrak: #94BD85;

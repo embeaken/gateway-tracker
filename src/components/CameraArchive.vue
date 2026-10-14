@@ -822,7 +822,7 @@ const atEnd = computed(() => date.value >= props.today && index.value >= lastInd
 }
 
 .stage-msg--error {
-  color: #ffc7b8;
+  color: var(--color-alert-soft);
 }
 
 .controls {

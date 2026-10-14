@@ -113,7 +113,7 @@ const emit = defineEmits<{ (e: 'open-explainer'): void }>()
 }
 
 .explainer-btn:focus-visible {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid #fff;
   outline-offset: 2px;
 }
 

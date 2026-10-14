@@ -10,6 +10,10 @@ function getSystemPreference(): boolean {
 function applyTheme(dark: boolean) {
   isDark.value = dark
   document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light')
+  // Browser UI colour follows the chosen theme, which can differ from the system's
+  document.querySelectorAll('meta[name="theme-color"]').forEach((meta) => {
+    meta.setAttribute('content', dark ? '#2C332E' : '#4B544D')
+  })
 }
 
 function toggle() {
@@ -80,7 +84,7 @@ onMounted(() => {
 }
 
 .theme-toggle:focus-visible {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid #fff;
   outline-offset: 2px;
 }
 </style>

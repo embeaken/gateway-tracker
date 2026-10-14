@@ -204,6 +204,6 @@ const open = ref<Project | null>(null)
 }
 
 .cam-age--stale {
-  color: #ffc7b8;
+  color: var(--color-alert-soft);
 }
 </style>
