@@ -2,16 +2,19 @@
 // Cached at Netlify's CDN, so EarthCam sees one request per site every few
 // minutes no matter how many people load the dashboard. See src/earthcam.ts.
 import { projects } from '../../src/assets/data'
-import { USER_AGENT, earthcamPage, framePath, type CamSite, type CamView, type CamsResponse } from '../../src/earthcam'
+import { USER_AGENT, earthcamPage, framePath, isoDate, type CamPano, type CamSite, type CamView, type CamsResponse } from '../../src/earthcam'
 
 type EarthCamPage = {
   cameras: {
-    archives: { type: string; image?: { url: string; datetime: string } }[]
+    short_name: string
+    archives: {
+      type: string
+      ref?: string
+      start_datetime?: string
+      image?: { url: string; datetime: string }
+    }[]
   }[]
 }
-
-/** "2026-10-10T20:32:00-0400" → ISO 8601 with a colon in the offset */
-const isoDate = (s: string) => new Date(s.replace(/([+-]\d\d)(\d\d)$/, '$1:$2')).toISOString()
 
 async function fetchSite(projectId: string, playerUrl: string): Promise<CamSite> {
   try {
@@ -22,15 +25,24 @@ async function fetchSite(projectId: string, playerUrl: string): Promise<CamSite>
     if (!res.ok) throw new Error(`EarthCam returned HTTP ${res.status}`)
     const page = (await res.json()) as EarthCamPage
 
-    const views: CamView[] = page.cameras
-      .flatMap((camera) => camera.archives)
-      .flatMap((a) => {
-        const frame = a.type === 'archive' && a.image && framePath(a.image.url)
-        return frame ? [{ frame, takenAt: isoDate(a.image!.datetime) }] : []
-      })
-    return { projectId, views }
+    const views: CamView[] = page.cameras.flatMap((camera) =>
+      camera.archives.flatMap((a) => {
+        const frame = a.type === 'archive' && a.image && a.ref && a.start_datetime && framePath(a.image.url)
+        return frame
+          ? [{ frame, takenAt: isoDate(a.image!.datetime), camera: camera.short_name, ref: a.ref!, since: isoDate(a.start_datetime!) }]
+          : []
+      }),
+    )
+    const panoramas: CamPano[] = page.cameras.flatMap((camera) =>
+      camera.archives.flatMap((a) =>
+        a.type === 'panorama' && a.ref === 'regular' && a.image && a.start_datetime
+          ? [{ camera: camera.short_name, since: isoDate(a.start_datetime), takenAt: isoDate(a.image.datetime) }]
+          : [],
+      ),
+    )
+    return { projectId, views, panoramas }
   } catch (e) {
-    return { projectId, views: [], error: e instanceof Error ? e.message : String(e) }
+    return { projectId, views: [], panoramas: [], error: e instanceof Error ? e.message : String(e) }
   }
 }
 

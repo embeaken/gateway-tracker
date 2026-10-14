@@ -4,3 +4,10 @@
 
 [images]
   remote_images = ["https://www.gatewayprogram.org/.*"]
+
+# Single-page app: any other path serves the app. Static files and functions
+# (including /api/*) take precedence over this rule.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

@@ -8,10 +8,14 @@ const emit = defineEmits<{ (e: 'open-explainer'): void }>()
 <template>
   <header class="app-header">
     <div class="container header-content">
-      <a href="/" class="brand-lockup" aria-label="hudson.tube home">
+      <RouterLink to="/" class="brand-lockup" aria-label="hudson.tube home">
         <BrandMark class="brand-icon" />
         <span class="brand-name">hudson.tube</span>
-      </a>
+      </RouterLink>
+
+      <nav class="header-nav" aria-label="Main">
+        <RouterLink to="/cameras" class="nav-link">Cameras</RouterLink>
+      </nav>
 
       <button
         type="button"
@@ -66,6 +70,26 @@ const emit = defineEmits<{ (e: 'open-explainer'): void }>()
   font-size: 23px;
   font-weight: var(--font-weight-semibold);
   line-height: 1;
+}
+
+.header-nav {
+  margin-left: auto;
+}
+
+.nav-link,
+.nav-link:visited {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 14px;
+  font-weight: var(--font-weight-semibold);
+}
+
+.nav-link:hover,
+.nav-link.router-link-active {
+  color: #fff;
+  text-decoration: underline;
+  text-decoration-color: var(--color-accent);
+  text-underline-offset: 6px;
+  text-decoration-thickness: 2px;
 }
 
 .explainer-btn {
