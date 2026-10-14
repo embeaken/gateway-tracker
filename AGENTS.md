@@ -16,7 +16,7 @@ Vue 3 single-page app tracking the Gateway Hudson River tunnel project, with `vu
 **Routes (`src/router.ts`):** `/` is the dashboard (`src/views/DashboardView.vue`), `/cameras` is the camera archive (`src/views/CamerasView.vue`: one `CameraArchive` card per site, with sticky chips that scroll to `#site-id`; state is local, not in the URL). `App.vue` holds the header, explainer, `<RouterView>` and footer. The router sets each page's title and canonical URL; `netlify.toml` rewrites unknown paths to `index.html`, and `public/sitemap.xml` lists the pages (update it when adding routes or sites).
 
 **Dashboard layout (`DashboardView.vue`):** `AppHeader` ("What is this?" opens the `OverviewExplainer` drawer), then a two-column grid inside `.container`:
-- **Main column:** `RouteMap` (route side view with estimated TBM positions), two `TbmCard`s, `CameraWall`, `FundingCard` beside `PhotoGallery`, then `PackagesTable`.
+- **Main column:** `RouteMap` (route side view with estimated TBM positions), two `TbmCard`s, `CameraWall`, `PhotoGallery` beside `FundingCard`, then `PackagesTable`.
 - **Right rail:** `ProjectTimeline` and `ActivityTimeline` (the GDC feed, photos excluded because the gallery covers them). On wide screens the rail is sticky and the feed scrolls inside it.
 
 Cards other than the route map and TBM cards use `DashCard` (small uppercase title, optional right-aligned meta). Camera tiles open `CameraModal` (EarthCam's interactive player). Photos open `PhotoLightbox`, which both the gallery and the feed use.
@@ -52,7 +52,7 @@ All styling uses CSS custom properties defined in `src/assets/main.css`. No Tail
 
 **Card pattern:** `background: var(--color-card-bg)`, `border: 1px solid var(--color-border)`, `border-radius: var(--radius-md)`, `padding: var(--spacing-xl)`. Use `--color-card-bg` (not `--color-background`) — the page background is pale cool grey (`#F3F5F5`), cards stay white.
 
-**Breakpoints:** 768px (mobile), 900px (TBM cards side by side), 1024px (route map switches to the vertical list), 1200px (rail moves beside the main column), 1700px (funding and photos side by side). The camera wall picks its column count with container queries.
+**Breakpoints:** 768px (mobile), 900px (TBM cards side by side), 1024px (route map switches to the vertical list), 1200px (rail moves beside the main column), 1700px (photos and funding side by side). The camera wall picks its column count with container queries.
 
 **Numbers** on the dashboard use `--font-family-mono` (JetBrains Mono). Dashboard colors (`--color-line`, `--color-ok`, `--color-alert`, `--color-fund-*`, `--color-text-tertiary`) have dark-mode values in both dark blocks of `main.css`.
 

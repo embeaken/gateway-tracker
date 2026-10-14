@@ -30,11 +30,11 @@ const tbmProgress = useTbmProgress()
       </DashCard>
 
       <div class="pair">
-        <DashCard id="funding" title="Financing" title-id="funding-title" >
-          <FundingCard />
-        </DashCard>
         <DashCard id="photos" title="Photos" title-id="photos-title" >
           <PhotoGallery />
+        </DashCard>
+        <DashCard id="funding" title="Financing" title-id="funding-title" >
+          <FundingCard />
         </DashCard>
       </div>
 
@@ -98,7 +98,7 @@ const tbmProgress = useTbmProgress()
 
 @media (min-width: 1700px) {
   .pair {
-    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
     align-items: start;
   }
 }

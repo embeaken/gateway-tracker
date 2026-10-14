@@ -99,8 +99,8 @@
   /* Lightbox */
   --color-lightbox-overlay: rgba(0, 0, 0, 0.9);
   --color-lightbox-bg: white;
-  --color-lightbox-close-bg: rgba(0, 0, 0, 0.5);
-  --color-lightbox-close-hover-bg: rgba(0, 0, 0, 0.8);
+  --color-lightbox-close-bg: rgba(0, 0, 0, 0.65);
+  --color-lightbox-close-hover-bg: rgba(0, 0, 0, 0.85);
 }
 
 /* Responsive adjustments */
@@ -164,8 +164,8 @@
 
   --color-lightbox-overlay: rgba(0, 0, 0, 0.95);
   --color-lightbox-bg: #191C1F;
-  --color-lightbox-close-bg: rgba(255, 255, 255, 0.15);
-  --color-lightbox-close-hover-bg: rgba(255, 255, 255, 0.25);
+  --color-lightbox-close-bg: rgba(0, 0, 0, 0.65);
+  --color-lightbox-close-hover-bg: rgba(0, 0, 0, 0.85);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -213,8 +213,8 @@
 
     --color-lightbox-overlay: rgba(0, 0, 0, 0.95);
     --color-lightbox-bg: #191C1F;
-    --color-lightbox-close-bg: rgba(255, 255, 255, 0.15);
-    --color-lightbox-close-hover-bg: rgba(255, 255, 255, 0.25);
+    --color-lightbox-close-bg: rgba(0, 0, 0, 0.65);
+    --color-lightbox-close-hover-bg: rgba(0, 0, 0, 0.85);
   }
 }
 
