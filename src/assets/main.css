@@ -121,34 +121,34 @@
   --color-primary: #6FC3D3;
   --color-primary-dark: #A3DCE6;
   --color-primary-muted: rgba(111, 195, 211, 0.08);
-  --color-navy: #0B100D;
-  --color-accent: #9BCB45;
-  --color-accent-ink: #B5DA70;
-  --color-river: #12333A;
+  --color-navy: #0D0F11;
+  --color-accent: #A2C653;
+  --color-accent-ink: #BAD77F;
+  --color-river: #15303A;
   --color-glow: rgba(111, 195, 211, 0.35);
   --river-waves: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='16'%3E%3Cg fill='none' stroke='%236FC3D3' stroke-opacity='0.13' stroke-width='1.1'%3E%3Cpath d='M0 4 Q8 0 16 4 T32 4'/%3E%3Cpath d='M-8 12 Q0 8 8 12 T24 12 T40 12'/%3E%3C/g%3E%3C/svg%3E");
-  --color-ground: #232A24;
-  --color-ground-edge: #3C463E;
-  --color-ground-ink: #858F84;
-  --color-band: #2F3B1E;
-  --color-map-line: #CCD6CC;
-  --color-map-shaft: #CCD6CC;
+  --color-ground: #24272A;
+  --color-ground-edge: #3D4246;
+  --color-ground-ink: #8A8F94;
+  --color-band: #30352A;
+  --color-map-line: #D2D7DB;
+  --color-map-shaft: #D2D7DB;
 
-  --color-background: #111712;
-  --color-background-alt: #19211B;
-  --color-text-primary: #E6ECE4;
-  --color-text-secondary: #A3AFA4;
-  --color-border: #2B362E;
+  --color-background: #111315;
+  --color-background-alt: #1A1D20;
+  --color-text-primary: #E8EAEC;
+  --color-text-secondary: #A5ABB0;
+  --color-border: #2D3236;
 
-  --color-text-tertiary: #7E8A80;
-  --color-line: #222C25;
+  --color-text-tertiary: #80878D;
+  --color-line: #24282C;
   --color-ok: #7FC98B;
   --color-ok-bg: rgba(127, 201, 139, 0.12);
   --color-alert: #EE8C76;
   --color-alert-bg: rgba(238, 140, 118, 0.1);
   --color-fund-paid: #6FC3D3;
-  --color-fund-released: #557A4A;
-  --color-fund-amtrak: #557A4A;
+  --color-fund-released: #6F8A68;
+  --color-fund-amtrak: #6F8A68;
 
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -156,10 +156,10 @@
 
 
 
-  --color-card-bg: #18201B;
+  --color-card-bg: #191C1F;
 
   --color-lightbox-overlay: rgba(0, 0, 0, 0.95);
-  --color-lightbox-bg: #18201B;
+  --color-lightbox-bg: #191C1F;
   --color-lightbox-close-bg: rgba(255, 255, 255, 0.15);
   --color-lightbox-close-hover-bg: rgba(255, 255, 255, 0.25);
 }
@@ -171,44 +171,44 @@
     --color-primary: #6FC3D3;
     --color-primary-dark: #A3DCE6;
     --color-primary-muted: rgba(111, 195, 211, 0.08);
-    --color-navy: #0B100D;
-    --color-accent: #9BCB45;
-    --color-accent-ink: #B5DA70;
-    --color-river: #12333A;
+    --color-navy: #0D0F11;
+    --color-accent: #A2C653;
+    --color-accent-ink: #BAD77F;
+    --color-river: #15303A;
     --color-glow: rgba(111, 195, 211, 0.35);
     --river-waves: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='16'%3E%3Cg fill='none' stroke='%236FC3D3' stroke-opacity='0.13' stroke-width='1.1'%3E%3Cpath d='M0 4 Q8 0 16 4 T32 4'/%3E%3Cpath d='M-8 12 Q0 8 8 12 T24 12 T40 12'/%3E%3C/g%3E%3C/svg%3E");
-    --color-ground: #232A24;
-    --color-ground-edge: #3C463E;
-    --color-ground-ink: #858F84;
-    --color-band: #2F3B1E;
-    --color-map-line: #CCD6CC;
-    --color-map-shaft: #CCD6CC;
+    --color-ground: #24272A;
+    --color-ground-edge: #3D4246;
+    --color-ground-ink: #8A8F94;
+    --color-band: #30352A;
+    --color-map-line: #D2D7DB;
+    --color-map-shaft: #D2D7DB;
 
-    --color-background: #111712;
-    --color-background-alt: #19211B;
-    --color-text-primary: #E6ECE4;
-    --color-text-secondary: #A3AFA4;
-    --color-border: #2B362E;
+    --color-background: #111315;
+    --color-background-alt: #1A1D20;
+    --color-text-primary: #E8EAEC;
+    --color-text-secondary: #A5ABB0;
+    --color-border: #2D3236;
 
-    --color-text-tertiary: #7E8A80;
-    --color-line: #222C25;
+    --color-text-tertiary: #80878D;
+    --color-line: #24282C;
     --color-ok: #7FC98B;
     --color-ok-bg: rgba(127, 201, 139, 0.12);
     --color-alert: #EE8C76;
     --color-alert-bg: rgba(238, 140, 118, 0.1);
     --color-fund-paid: #6FC3D3;
-    --color-fund-released: #557A4A;
-    --color-fund-amtrak: #557A4A;
+    --color-fund-released: #6F8A68;
+    --color-fund-amtrak: #6F8A68;
 
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
     --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
 
 
-    --color-card-bg: #18201B;
+    --color-card-bg: #191C1F;
 
     --color-lightbox-overlay: rgba(0, 0, 0, 0.95);
-    --color-lightbox-bg: #18201B;
+    --color-lightbox-bg: #191C1F;
     --color-lightbox-close-bg: rgba(255, 255, 255, 0.15);
     --color-lightbox-close-hover-bg: rgba(255, 255, 255, 0.25);
   }
