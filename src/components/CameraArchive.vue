@@ -157,12 +157,16 @@ const src = (f: CamFrame, zoomLevel: number, isPano: boolean) => {
 const shown = ref<{ f: CamFrame; pano: boolean } | null>(null)
 /** The photo's shape: 16:9 for stills, its own for panoramas. The stage matches it, except on phones (see .stage). */
 const aspect = ref(16 / 9)
+/** The photo for the current frame is still downloading (it shows once decoded) */
+const imgLoading = ref(false)
 
 watch(frame, async (f) => {
   if (!f) {
     shown.value = null
+    imgLoading.value = false
     return
   }
+  imgLoading.value = true
   const isPano = !!pano.value
   const img = new Image()
   img.src = src(f, zoom.value, isPano)
@@ -171,7 +175,9 @@ watch(frame, async (f) => {
   } catch {
     // Show it anyway: the <img> will surface a broken image rather than hang
   }
+  // A newer frame is loading: leave the spinner to it
   if (frame.value !== f) return
+  imgLoading.value = false
   aspect.value = isPano && img.naturalWidth ? img.naturalWidth / img.naturalHeight : 16 / 9
   shown.value = { f, pano: isPano }
   // Warm the neighbours so stepping either way is instant
@@ -228,8 +234,14 @@ const clampPan = (x: number, y: number) => {
   }
 }
 const centre = () => ({ x: (stageSize.value.w - photo.value.w) / 2, y: (stageSize.value.h - photo.value.h) / 2 })
-// A new stage or photo shape: recentre at 100%, or keep the zoomed view in bounds
-watch(photo, () => (pan.value = zoom.value > 1 ? clampPan(pan.value.x, pan.value.y) : centre()))
+// A new stage or photo shape: recentre at 100%. Zoomed in, keep the same spot
+// of the photo in the middle of the stage (e.g. going full screen), in bounds.
+watch([photo, stageSize], ([p, s], [oldP, oldS]) => {
+  if (zoom.value <= 1 || !oldP?.w || !oldP.h) return (pan.value = centre())
+  const fx = (oldS.w / 2 - pan.value.x) / (oldP.w * zoom.value)
+  const fy = (oldS.h / 2 - pan.value.y) / (oldP.h * zoom.value)
+  pan.value = clampPan(s.w / 2 - fx * p.w * zoom.value, s.h / 2 - fy * p.h * zoom.value)
+})
 
 /** Zoom by `factor`, keeping the point (cx, cy) in the stage where it is */
 function zoomAt(factor: number, cx: number, cy: number) {
@@ -313,6 +325,43 @@ function onPointerUp(e: PointerEvent) {
   }
 }
 
+// --- Full screen ---
+// The whole card goes full screen, so the controls come along. Where the
+// Fullscreen API isn't available for elements (iPhone Safari), the card is
+// pinned over the page instead.
+const fullscreen = ref(false)
+const pinned = ref(false)
+const isFull = computed(() => fullscreen.value || pinned.value)
+
+const onFullscreenChange = () => (fullscreen.value = !!root.value && document.fullscreenElement === root.value)
+const onKeydown = (e: KeyboardEvent) => e.key === 'Escape' && pinned.value && (pinned.value = false)
+onMounted(() => {
+  document.addEventListener('fullscreenchange', onFullscreenChange)
+  document.addEventListener('keydown', onKeydown)
+})
+onBeforeUnmount(() => {
+  document.removeEventListener('fullscreenchange', onFullscreenChange)
+  document.removeEventListener('keydown', onKeydown)
+  if (fullscreen.value) void document.exitFullscreen().catch(() => {})
+  document.documentElement.classList.remove('cam-pinned')
+})
+// No page scrolling behind the pinned card
+watch(pinned, (on) => document.documentElement.classList.toggle('cam-pinned', on))
+
+async function toggleFullscreen() {
+  if (pinned.value) return (pinned.value = false)
+  if (fullscreen.value) return void document.exitFullscreen().catch(() => {})
+  if (root.value?.requestFullscreen && document.fullscreenEnabled) {
+    try {
+      await root.value.requestFullscreen()
+      return
+    } catch {
+      // Fall through to pinning
+    }
+  }
+  pinned.value = true
+}
+
 const dateLabel = computed(() => formatLongDate(parseDate(date.value)))
 const timeLabel = (f?: CamFrame) => (f ? formatNyTime(f.takenAt) : '')
 /** A panorama capture is a date only */
@@ -380,7 +429,7 @@ const atEnd = computed(() => date.value >= props.today && index.value >= lastInd
 </script>
 
 <template>
-  <section :id="project.id" ref="root" class="viewer-card" :class="{ wide: !!pano }" :aria-label="`${project.name} archive`">
+  <section :id="project.id" ref="root" class="viewer-card" :class="{ wide: !!pano, full: isFull, pinned }" :aria-label="`${project.name} archive`">
     <header class="viewer-head">
       <h2 class="viewer-name">{{ project.name }}</h2>
       <p class="viewer-loc">{{ project.location }}</p>
@@ -411,39 +460,55 @@ const atEnd = computed(() => date.value >= props.today && index.value >= lastInd
       </button>
     </div>
 
-    <div
-      ref="stage"
-      class="stage"
-      :class="{ zoomed: zoom > 1, pannable: canPan, dragging }"
-      :style="{ '--aspect': aspect }"
-      :aria-busy="loading"
-      @wheel.prevent="onWheel"
-      @dblclick="onDoubleClick"
-      @pointerdown="onPointerDown"
-      @pointermove="onPointerMove"
-      @pointerup="onPointerUp"
-      @pointercancel="onPointerUp"
-    >
-      <TransitionGroup
-        name="fade"
-        tag="div"
-        class="pan"
-        :style="{ width: `${photo.w}px`, height: `${photo.h}px`, transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }"
+    <div class="stage-wrap">
+      <div
+        ref="stage"
+        class="stage"
+        :class="{ zoomed: zoom > 1, pannable: canPan, dragging }"
+        :style="{ '--aspect': aspect }"
+        :aria-busy="loading"
+        @wheel.prevent="onWheel"
+        @dblclick="onDoubleClick"
+        @pointerdown="onPointerDown"
+        @pointermove="onPointerMove"
+        @pointerup="onPointerUp"
+        @pointercancel="onPointerUp"
       >
-        <img
-          v-if="shown"
-          :key="shown.f.frame"
-          :src="src(shown.f, zoom, shown.pano)"
-          :alt="`${project.name}, ${shownLabel}`"
-          draggable="false"
-        />
-      </TransitionGroup>
-      <p v-if="zoom > 1" class="zoom-badge">{{ zoom.toFixed(1) }}× · {{ resetHint }} to reset</p>
-      <p v-else-if="shown && croppedAtFit && !dragged" class="pan-hint" aria-hidden="true">← Drag to look around →</p>
-      <p v-if="shown" class="sr-only" aria-live="polite">{{ shownLabel }}</p>
-      <p v-else-if="failed || error" class="stage-msg stage-msg--error">Couldn't load this camera right now.</p>
-      <p v-else-if="loading || !view || !near || frames.length" class="stage-msg">Loading…</p>
-      <p v-else class="stage-msg">{{ pano ? 'No panoramas yet.' : 'No photos for this day.' }}</p>
+        <TransitionGroup
+          name="fade"
+          tag="div"
+          class="pan"
+          :style="{ width: `${photo.w}px`, height: `${photo.h}px`, transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }"
+        >
+          <img
+            v-if="shown"
+            :key="shown.f.frame"
+            :src="src(shown.f, zoom, shown.pano)"
+            :alt="`${project.name}, ${shownLabel}`"
+            draggable="false"
+          />
+        </TransitionGroup>
+        <button
+          type="button"
+          class="fs-btn"
+          :aria-label="isFull ? 'Exit full screen' : 'Full screen'"
+          :title="isFull ? 'Exit full screen' : 'Full screen'"
+          @pointerdown.stop
+          @pointerup.stop
+          @pointercancel.stop
+          @dblclick.stop
+          @click="toggleFullscreen"
+        >
+          <svg v-if="isFull" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 2v4H2M10 2v4h4M6 14v-4H2M10 14v-4h4" /></svg>
+          <svg v-else viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4" /></svg>
+        </button>
+        <p v-if="zoom > 1" class="zoom-badge">{{ zoom.toFixed(1) }}× · {{ resetHint }} to reset</p>
+        <p v-else-if="shown && croppedAtFit && !dragged" class="pan-hint" aria-hidden="true">← Drag to look around →</p>
+        <p v-if="shown" class="sr-only" aria-live="polite">{{ shownLabel }}</p>
+        <p v-else-if="failed || error" class="stage-msg stage-msg--error">Couldn't load this camera right now.</p>
+        <p v-else-if="loading || !view || !near || frames.length" class="stage-msg">Loading…</p>
+        <p v-else class="stage-msg">{{ pano ? 'No panoramas yet.' : 'No photos for this day.' }}</p>
+      </div>
     </div>
 
     <div v-if="pano && frames.length" class="controls">
@@ -454,6 +519,7 @@ const atEnd = computed(() => date.value >= props.today && index.value >= lastInd
         <div class="control-main">
           <label class="control-label" :for="`${project.id}-capture`">
             <b>{{ captureLabel(frame) }}</b>
+            <span v-if="loading || imgLoading" class="spinner" aria-hidden="true"></span>
           </label>
           <input :id="`${project.id}-capture`" v-model.number="index" type="range" min="0" :max="lastIndex" :aria-valuetext="captureLabel(frame)" />
           <span class="range-ends">
@@ -474,6 +540,7 @@ const atEnd = computed(() => date.value >= props.today && index.value >= lastInd
         <div class="control-main">
           <label class="control-label" :for="`${project.id}-scrub`">
             <b>{{ dateLabel }}<template v-if="frames.length"> · {{ timeLabel(frame) }}</template></b>
+            <span v-if="loading || imgLoading" class="spinner" aria-hidden="true"></span>
           </label>
           <input
             :id="`${project.id}-scrub`"
@@ -521,6 +588,49 @@ const atEnd = computed(() => date.value >= props.today && index.value >= lastInd
   .viewer-card {
     transition: none;
   }
+}
+
+/* Full screen: the photo takes all the room the header and controls leave */
+.viewer-card.full {
+  display: flex;
+  flex-direction: column;
+  max-width: none;
+  border: 0;
+  border-radius: 0;
+  transition: none;
+}
+
+.viewer-card.pinned {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  height: 100dvh;
+  overflow: auto;
+}
+
+:global(html.cam-pinned) {
+  overflow: hidden;
+}
+
+.full .stage-wrap {
+  flex: 1;
+  /* On a short screen the card scrolls (pinned) or clips rather than squashing the photo to nothing */
+  min-height: min(50dvh, 240px);
+  display: grid;
+  place-items: center;
+  container-type: size;
+}
+
+/* As large as fits, at the photo's shape, so nothing is cropped at 100% */
+.viewer-card.full .stage {
+  width: min(100cqw, 100cqh * var(--aspect, 16 / 9));
+  aspect-ratio: var(--aspect, 16 / 9);
+  max-height: none;
+  margin-inline: 0;
+}
+
+.full .note {
+  display: none;
 }
 
 .viewer-head {
@@ -592,6 +702,37 @@ const atEnd = computed(() => date.value >= props.today && index.value >= lastInd
   left: 0;
   transform-origin: 0 0;
   will-change: transform;
+}
+
+.fs-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  cursor: pointer;
+}
+
+.fs-btn:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.fs-btn svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .zoom-badge,
@@ -681,6 +822,40 @@ const atEnd = computed(() => date.value >= props.today && index.value >= lastInd
 .control-label b {
   font-family: var(--font-family-mono);
   font-weight: 600;
+}
+
+/* Shown only if loading takes a moment, so quick steps don't flicker */
+.spinner {
+  align-self: center;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  opacity: 0;
+  animation:
+    spin 0.7s linear infinite,
+    appear 0.15s ease 0.15s forwards;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes appear {
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation:
+      spin 2s linear infinite,
+      appear 0.15s ease 0.15s forwards;
+  }
 }
 
 .range-ends {
