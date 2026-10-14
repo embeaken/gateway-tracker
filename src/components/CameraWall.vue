@@ -44,7 +44,7 @@ const open = ref<Project | null>(null)
     <p v-if="failed" class="cam-error">Couldn't reach the cameras right now. Open a site below to try EarthCam directly.</p>
 
     <ul class="cam-grid">
-      <li v-for="tile in tiles" :id="`cam-${tile.project.id}`" :key="tile.project.id" class="cam-tile">
+      <li v-for="tile in tiles" :key="tile.project.id" class="cam-tile">
         <button
           type="button"
           class="cam-button"

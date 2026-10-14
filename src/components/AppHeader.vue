@@ -126,7 +126,6 @@ const emit = defineEmits<{ (e: 'open-explainer'): void }>()
     flex-wrap: wrap;
     row-gap: 6px;
   }
-
 }
 
 @media (max-width: 640px) {
@@ -137,16 +136,13 @@ const emit = defineEmits<{ (e: 'open-explainer'): void }>()
   /* The links drop to their own row under the logo and button */
   .brand-lockup {
     flex: 1;
+    gap: 9px;
   }
 
   .header-nav {
     order: 3;
     flex-basis: 100%;
     margin-left: 0;
-  }
-
-  .brand-lockup {
-    gap: 9px;
   }
 
   .brand-icon {

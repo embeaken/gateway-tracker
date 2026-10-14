@@ -5,8 +5,8 @@ import CameraArchive from '../components/CameraArchive.vue'
 import { nyDate } from '../dates'
 import { useCams } from '../useCams'
 
-// Every site's archive on one page. The chips scroll to a site.
 const { data, failed } = useCams()
+const sites = computed(() => new Map(data.value?.sites.map((s) => [s.projectId, s])))
 const today = computed(() => nyDate(new Date(data.value?.fetchedAt ?? Date.now())))
 </script>
 
@@ -24,8 +24,8 @@ const today = computed(() => nyDate(new Date(data.value?.fetchedAt ?? Date.now()
       v-for="p in projects"
       :key="p.id"
       :project="p"
-      :views="data?.sites.find((s) => s.projectId === p.id)?.views ?? []"
-      :panoramas="data?.sites.find((s) => s.projectId === p.id)?.panoramas ?? []"
+      :views="sites.get(p.id)?.views ?? []"
+      :panoramas="sites.get(p.id)?.panoramas ?? []"
       :today="today"
       :failed="failed"
     />

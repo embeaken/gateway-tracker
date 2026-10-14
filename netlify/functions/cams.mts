@@ -2,47 +2,26 @@
 // Cached at Netlify's CDN, so EarthCam sees one request per site every few
 // minutes no matter how many people load the dashboard. See src/earthcam.ts.
 import { projects } from '../../src/assets/data'
-import { USER_AGENT, earthcamPage, framePath, isoDate, type CamPano, type CamSite, type CamView, type CamsResponse } from '../../src/earthcam'
-
-type EarthCamPage = {
-  cameras: {
-    short_name: string
-    archives: {
-      type: string
-      ref?: string
-      start_datetime?: string
-      image?: { url: string; datetime: string }
-    }[]
-  }[]
-}
+import { earthcamPage, errorMessage, fetchEarthcam, framePath, isoDate, type CamSite, type CamView, type CamsResponse, type EarthCamPage } from '../../src/earthcam'
 
 async function fetchSite(projectId: string, playerUrl: string): Promise<CamSite> {
   try {
-    const res = await fetch(`https://share.earthcam.net/api/v2/public/page/${earthcamPage(playerUrl)}`, {
-      headers: { 'User-Agent': USER_AGENT, Accept: 'application/json' },
-      signal: AbortSignal.timeout(8000),
-    })
+    const res = await fetchEarthcam(earthcamPage(playerUrl), 8000)
     if (!res.ok) throw new Error(`EarthCam returned HTTP ${res.status}`)
     const page = (await res.json()) as EarthCamPage
 
-    const views: CamView[] = page.cameras.flatMap((camera) =>
-      camera.archives.flatMap((a) => {
+    const views: CamView[] = []
+    const panoramas: string[] = []
+    for (const { short_name: camera, archives } of page.cameras) {
+      for (const a of archives) {
+        if (a.type === 'panorama' && a.ref === 'regular') panoramas.push(camera)
         const frame = a.type === 'archive' && a.image && a.ref && a.start_datetime && framePath(a.image.url)
-        return frame
-          ? [{ frame, takenAt: isoDate(a.image!.datetime), camera: camera.short_name, ref: a.ref!, since: isoDate(a.start_datetime!) }]
-          : []
-      }),
-    )
-    const panoramas: CamPano[] = page.cameras.flatMap((camera) =>
-      camera.archives.flatMap((a) =>
-        a.type === 'panorama' && a.ref === 'regular' && a.image && a.start_datetime
-          ? [{ camera: camera.short_name, since: isoDate(a.start_datetime), takenAt: isoDate(a.image.datetime) }]
-          : [],
-      ),
-    )
+        if (frame) views.push({ frame, takenAt: isoDate(a.image!.datetime), camera, ref: a.ref!, since: isoDate(a.start_datetime!) })
+      }
+    }
     return { projectId, views, panoramas }
   } catch (e) {
-    return { projectId, views: [], panoramas: [], error: e instanceof Error ? e.message : String(e) }
+    return { projectId, views: [], panoramas: [], error: errorMessage(e) }
   }
 }
 

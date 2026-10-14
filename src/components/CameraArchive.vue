@@ -1,20 +1,19 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { addDays, daysBetween, formatLongDate, formatNyTime, nyDate, nyMinutes, parseDate } from '../dates'
-import type { CamArchiveResponse, CamFrame, CamPano, CamPanoramasResponse, CamView } from '../earthcam'
+import { addDays, daysBetween, formatLongDate, formatNyDate, formatNyTime, nyDate, nyMinutes, parseDate } from '../dates'
+import type { CamFrame, CamFramesResponse, CamView } from '../earthcam'
 import { cdnSiteImage } from '../imageCdn'
 import type { Project } from '../types'
 
-// One site's archive: pick a view, then scrub through its days and the times
-// within them on a single slider, or pick one
-// of its panoramas (dated, not timed). Frames come from /api/cam-archive and
-// /api/cam-panoramas (see src/earthcam.ts). Nothing is fetched until
-// the card is near the screen, since the page has a card for every site.
+// One site's archive: pick a view and scrub through its days and times on one
+// slider, or pick a panorama (dated, not timed). Nothing is fetched until the
+// card is near the screen, since the page has a card for every site.
 
 const props = defineProps<{
   project: Project
   views: CamView[]
-  panoramas: CamPano[]
+  /** Cameras with a panorama series */
+  panoramas: string[]
   /** New York "today" (YYYY-MM-DD) */
   today: string
   /** /api/cams failed, so there are no views to show */
@@ -37,125 +36,89 @@ onMounted(() => {
 })
 onBeforeUnmount(() => observer?.disconnect())
 
-// --- View and day ---
-const viewNo = ref((props.project.featuredView ?? 0) + 1)
-const view = computed(() => props.views[viewNo.value - 1] ?? props.views[0])
+// --- View or panorama, and day ---
+const viewIndex = ref(props.project.featuredView ?? 0)
+const view = computed(() => props.views[viewIndex.value] ?? props.views[0])
+/** The chosen panorama's camera, or null for a view */
+const pano = ref<string | null>(null)
 const first = computed(() => (view.value ? nyDate(new Date(view.value.since)) : props.today))
 const date = ref(props.today)
 const dayCount = computed(() => daysBetween(first.value, props.today))
 const dayIndex = computed(() => daysBetween(first.value, date.value))
+// Another view may start later than the day being shown
+watch(first, (f) => {
+  if (date.value < f) date.value = f
+})
 
 const setDate = (d: string) => {
   if (d >= first.value && d <= props.today) date.value = d
 }
-const pickView = (n: number) => {
-  panoKey.value = null
-  viewNo.value = n
+const pickView = (i: number) => {
+  pano.value = null
+  viewIndex.value = i
   date.value = props.today
   targetMin.value = null
   resetZoom()
 }
-
-// --- Panoramas ---
-const panoKey = ref<string | null>(null)
-const keyOf = (p: CamPano) => p.camera
-const pano = computed(() => props.panoramas.find((p) => keyOf(p) === panoKey.value))
-const panoTabs = computed(() =>
-  props.panoramas.map((p, i) => ({ key: keyOf(p), label: props.panoramas.length > 1 ? `Panorama ${i + 1}` : 'Panorama' })),
-)
-const pickPano = (key: string) => {
-  panoKey.value = key
+const pickPano = (camera: string) => {
+  pano.value = camera
   resetZoom()
 }
-// Another view may start later than the day being shown
-watch(first, (f) => date.value < f && (date.value = f))
 
-// --- Frames for the chosen day ---
+// --- Frames: the chosen view's day, or every capture of the panorama ---
+// Keyed by URL, so the 5-minute refresh of /api/cams (new objects, same view)
+// doesn't reload the day or move the slider.
+const sourceUrl = computed(() => {
+  const v = view.value
+  if (!near.value) return ''
+  if (pano.value) return `/api/cam-panoramas/${props.project.id}/${pano.value}`
+  return v ? `/api/cam-archive/${props.project.id}/${v.camera}?${new URLSearchParams({ ref: v.ref, date: date.value })}` : ''
+})
 const cache = new Map<string, CamFrame[]>()
 const frames = ref<CamFrame[]>([])
 const loading = ref(false)
 const error = ref(false)
-
-// The day to show, as a string, so the 5-minute refresh of /api/cams (new
-// objects, same view) doesn't reload the day or move the time slider.
-const dayKey = computed(() =>
-  near.value && view.value && !pano.value ? `${view.value.camera}/${view.value.ref}/${date.value}` : '',
-)
+const isPanoUrl = (url?: string) => !!url?.startsWith('/api/cam-panoramas/')
 
 watch(
-  dayKey,
-  async (key) => {
-    const v = view.value
-    if (!key || !v) return
-    const hit = cache.get(key)
+  sourceUrl,
+  async (url, prev) => {
+    if (!url) return
+    // Don't show a still as a panorama (or the reverse) while the other loads
+    if (prev && isPanoUrl(url) !== isPanoUrl(prev)) frames.value = []
+    error.value = false
+    const hit = cache.get(url)
+    loading.value = !hit
     if (hit) {
       frames.value = hit
-      error.value = false
       return
     }
-    loading.value = true
     try {
-      const url = `/api/cam-archive/${props.project.id}/${v.camera}?${new URLSearchParams({ ref: v.ref, kind: 'day', date: date.value })}`
       const res = await fetch(url)
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      const list = ((await res.json()) as CamArchiveResponse).frames
-      // Ignore a slow response for a day the visitor has already left
-      if (dayKey.value !== key) return
-      // Today's list keeps growing, so it isn't kept
-      if (date.value !== props.today) cache.set(key, list)
+      const list = ((await res.json()) as CamFramesResponse).frames
+      // Ignore a slow response for something the visitor has already left
+      if (sourceUrl.value !== url) return
+      // Today's photos keep coming, so its list isn't kept
+      if (pano.value || date.value !== props.today) cache.set(url, list)
       frames.value = list
-      error.value = false
     } catch {
-      if (dayKey.value === key) {
+      if (sourceUrl.value === url) {
         frames.value = []
         error.value = true
       }
     } finally {
-      if (dayKey.value === key) loading.value = false
+      if (sourceUrl.value === url) loading.value = false
     }
   },
   { immediate: true },
 )
 
-// Every capture of the chosen panorama, oldest first. A series is fetched once.
-const panoCache = new Map<string, CamFrame[]>()
-const panoLoadKey = computed(() => (near.value && pano.value ? keyOf(pano.value) : ''))
-
-watch(
-  panoLoadKey,
-  async (key) => {
-    const p = pano.value
-    if (!key || !p) return
-    const hit = panoCache.get(key)
-    if (hit) {
-      frames.value = hit
-      error.value = false
-      return
-    }
-    loading.value = true
-    try {
-      const q = new URLSearchParams({ since: nyDate(new Date(p.since)) })
-      const res = await fetch(`/api/cam-panoramas/${props.project.id}/${p.camera}?${q}`)
-      if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      const list = ((await res.json()) as CamPanoramasResponse).captures
-      panoCache.set(key, list)
-      if (panoLoadKey.value !== key) return
-      frames.value = list
-      error.value = false
-    } catch {
-      if (panoLoadKey.value === key) {
-        frames.value = []
-        error.value = true
-      }
-    } finally {
-      if (panoLoadKey.value === key) loading.value = false
-    }
-  },
-)
-
 // --- Time within the day (or which capture of a panorama) ---
 const index = ref(0)
 const frame = computed(() => frames.value[index.value])
+const lastIndex = computed(() => Math.max(0, frames.value.length - 1))
+const minutes = computed(() => frames.value.map((f) => nyMinutes(f.takenAt)))
 /**
  * The time of day (minutes) to show on every day: it stays put as the day
  * changes, so the same moment can be compared across days. Null means "the
@@ -165,15 +128,14 @@ const targetMin = ref<number | null>(null)
 /** Set by stepping past the end of a day: which photo to land on in the next one */
 let landOn: 'first' | 'last' | null = null
 
-const nearest = (list: CamFrame[], min: number) =>
-  list.reduce((best, f, i) => (Math.abs(nyMinutes(f.takenAt) - min) < Math.abs(nyMinutes(list[best]!.takenAt) - min) ? i : best), 0)
+const nearest = (min: number) =>
+  minutes.value.reduce((best, m, i, all) => (Math.abs(m - min) < Math.abs(all[best]! - min) ? i : best), 0)
 
 watch(frames, (list) => {
-  const last = Math.max(0, list.length - 1)
-  if (pano.value || !list.length) index.value = last
-  else if (landOn) index.value = landOn === 'first' ? 0 : last
-  else index.value = targetMin.value === null ? last : nearest(list, targetMin.value)
-  if (landOn && list.length) targetMin.value = nyMinutes(list[index.value]!.takenAt)
+  if (pano.value || !list.length) index.value = lastIndex.value
+  else if (landOn) index.value = landOn === 'first' ? 0 : lastIndex.value
+  else index.value = targetMin.value === null ? lastIndex.value : nearest(targetMin.value)
+  if (landOn && list.length) targetMin.value = minutes.value[index.value]!
   landOn = null
 })
 
@@ -319,11 +281,10 @@ function onPointerUp(e: PointerEvent) {
 const dateLabel = computed(() => formatLongDate(parseDate(date.value)))
 const timeLabel = (f?: CamFrame) => (f ? formatNyTime(f.takenAt) : '')
 /** A panorama capture is a date only */
-const captureLabel = (f?: CamFrame) => (f ? formatLongDate(parseDate(nyDate(new Date(f.takenAt)))) : '')
+const captureLabel = (f?: CamFrame) => (f ? formatNyDate(f.takenAt) : '')
 const shownLabel = computed(() =>
   shown.value ? (shown.value.pano ? captureLabel(shown.value.f) : `${dateLabel.value}, ${timeLabel(shown.value.f)}`) : '',
 )
-const lastIndex = computed(() => Math.max(0, frames.value.length - 1))
 
 // --- One slider for days and times ---
 // Each day is divided into 10-minute slots, so the slider position is
@@ -333,7 +294,7 @@ const SLOTS = 144
 const sliderMax = computed(() => dayCount.value * SLOTS + SLOTS - 1)
 const slotOf = (min: number) => Math.min(SLOTS - 1, Math.round(min / 10))
 const sliderValue = computed(() => {
-  const min = targetMin.value ?? (frame.value ? nyMinutes(frame.value.takenAt) : 24 * 60)
+  const min = targetMin.value ?? minutes.value[index.value] ?? 24 * 60
   return dayIndex.value * SLOTS + slotOf(min)
 })
 /** Where the thumb is while a drag across days is still settling */
@@ -347,7 +308,7 @@ function onScrub(value: number) {
   targetMin.value = min
   if (day === date.value) {
     scrubPos.value = null
-    if (frames.value.length) index.value = nearest(frames.value, min)
+    if (frames.value.length) index.value = nearest(min)
     return
   }
   scrubPos.value = value
@@ -373,7 +334,7 @@ function stepPhoto(n: number) {
   const i = index.value + n
   if (frames.value[i]) {
     index.value = i
-    targetMin.value = nyMinutes(frames.value[i]!.takenAt)
+    targetMin.value = minutes.value[i]!
   } else if (n < 0 ? date.value > first.value : date.value < props.today) {
     landOn = n < 0 ? 'last' : 'first'
     setDate(addDays(date.value, n))
@@ -390,28 +351,28 @@ const atEnd = computed(() => date.value >= props.today && index.value >= lastInd
       <p class="viewer-loc">{{ project.location }}</p>
     </header>
 
-    <div v-if="views.length > 1 || panoTabs.length" class="view-tabs" role="group" aria-label="Camera view">
+    <div v-if="views.length > 1 || panoramas.length" class="view-tabs" role="group" aria-label="Camera view">
       <button
-        v-for="(_, i) in views.length > 1 || panoTabs.length ? views : []"
+        v-for="(_, i) in views"
         :key="i"
         type="button"
         class="view-tab"
-        :class="{ active: !panoKey && i + 1 === viewNo }"
-        :aria-pressed="!panoKey && i + 1 === viewNo"
-        @click="pickView(i + 1)"
+        :class="{ active: !pano && i === viewIndex }"
+        :aria-pressed="!pano && i === viewIndex"
+        @click="pickView(i)"
       >
         {{ views.length > 1 ? `View ${i + 1}` : 'Camera' }}
       </button>
       <button
-        v-for="t in panoTabs"
-        :key="t.key"
+        v-for="(camera, i) in panoramas"
+        :key="camera"
         type="button"
         class="view-tab"
-        :class="{ active: panoKey === t.key }"
-        :aria-pressed="panoKey === t.key"
-        @click="pickPano(t.key)"
+        :class="{ active: pano === camera }"
+        :aria-pressed="pano === camera"
+        @click="pickPano(camera)"
       >
-        {{ t.label }}
+        {{ panoramas.length > 1 ? `Panorama ${i + 1}` : 'Panorama' }}
       </button>
     </div>
 
@@ -508,7 +469,6 @@ const atEnd = computed(() => date.value >= props.today && index.value >= lastInd
   max-width: 1100px;
   margin-inline: auto;
   transition: max-width 0.25s ease;
-  scroll-margin-top: 64px;
   background: var(--color-card-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -572,10 +532,7 @@ const atEnd = computed(() => date.value >= props.today && index.value >= lastInd
   overflow: hidden;
   border-radius: var(--radius-sm);
   background: var(--color-navy);
-}
-
-/* One finger scrolls the page until zoomed in; two fingers pinch */
-.stage {
+  /* One finger scrolls the page until zoomed in; two fingers pinch */
   touch-action: pan-y;
   user-select: none;
 }
@@ -698,7 +655,6 @@ const atEnd = computed(() => date.value >= props.today && index.value >= lastInd
   font-family: var(--font-family-mono);
   font-weight: 600;
 }
-
 
 .range-ends {
   display: flex;

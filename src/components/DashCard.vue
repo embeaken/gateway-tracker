@@ -1,14 +1,14 @@
 <script setup lang="ts">
-// The dashboard's card frame: a small uppercase title, optional right-aligned
-// meta text, then content.
-defineProps<{ title: string; meta?: string; titleId?: string }>()
+// The dashboard's card frame: a small uppercase title, an optional
+// right-aligned #meta slot, then content.
+defineProps<{ title: string; titleId?: string }>()
 </script>
 
 <template>
   <section class="dash-card" :aria-labelledby="titleId">
     <header class="dash-card-head">
       <h2 :id="titleId" class="dash-card-title">{{ title }}</h2>
-      <span v-if="meta || $slots.meta" class="dash-card-meta"><slot name="meta">{{ meta }}</slot></span>
+      <span v-if="$slots.meta" class="dash-card-meta"><slot name="meta" /></span>
     </header>
     <slot />
   </section>

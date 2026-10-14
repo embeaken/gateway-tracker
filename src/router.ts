@@ -1,7 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-const SITE = 'hudson.tube'
-const DEFAULT_TITLE = 'hudson.tube Tunnel Tracker'
+declare module 'vue-router' {
+  interface RouteMeta {
+    title?: string
+    /** Room to leave above a #hash target */
+    scrollOffset?: number
+  }
+}
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -12,22 +17,24 @@ export const router = createRouter({
       name: 'cameras',
       component: () => import('./views/CamerasView.vue'),
       // The sticky site chips cover the top of the page
-      meta: {
-        scrollOffset: 64,
-        title: 'Construction cameras',
-      },
+      meta: { title: 'Construction cameras', scrollOffset: 64 },
     },
     // Old per-site links
     { path: '/cameras/:site', redirect: (to) => ({ name: 'cameras', hash: `#${to.params.site}` }) },
     { path: '/:rest(.*)*', redirect: '/' },
   ],
-  scrollBehavior: (to, from, saved) =>
-    saved ?? (to.hash ? { el: to.hash, top: (to.meta.scrollOffset as number | undefined) ?? 8, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' } : to.path === from.path ? undefined : { top: 0 }),
+  scrollBehavior(to, from, saved) {
+    if (saved) return saved
+    if (to.hash) {
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      return { el: to.hash, top: to.meta.scrollOffset ?? 8, behavior: reduceMotion ? 'auto' : 'smooth' }
+    }
+    return to.path === from.path ? undefined : { top: 0 }
+  },
 })
 
 // Per-page title and canonical URL (a single-page app has one index.html)
 router.afterEach((to) => {
-  const title = to.meta.title as string | undefined
-  document.title = title ? `${title} · ${SITE}` : DEFAULT_TITLE
+  document.title = to.meta.title ? `${to.meta.title} · hudson.tube` : 'hudson.tube Tunnel Tracker'
   document.querySelector('link[rel="canonical"]')?.setAttribute('href', `https://hudson.tube${to.path}`)
 })

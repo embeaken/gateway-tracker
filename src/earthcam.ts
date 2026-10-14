@@ -9,9 +9,7 @@
 //
 // The browser never talks to EarthCam for stills. /api/cams (cached at
 // Netlify's CDN for a few minutes) lists the latest frames, and
-// /api/cam-frame fetches each frame from EarthCam once and caches it forever
-// (medium by default, or ?size=full at 4K for zooming; panoramas, which are far
-// wider, use ?size=half),
+// /api/cam-frame fetches each frame from EarthCam once and caches it forever,
 // so EarthCam's load stays flat however many people visit.
 
 export const USER_AGENT = 'hudson.tube'
@@ -34,27 +32,15 @@ export type CamView = CamFrame & {
   since: string
 }
 
-/** GET /api/cam-panoramas/:site/:camera: every capture, oldest first */
-export type CamPanoramasResponse = { captures: CamFrame[] }
-
-/** GET /api/cam-archive/:site/:camera */
-export type CamArchiveResponse = { frames: CamFrame[] }
-
-/** A camera's panorama series, near-daily. Each capture is a date, not a time. */
-export type CamPano = {
-  /** EarthCam camera short name */
-  camera: string
-  /** ISO timestamp of the first capture */
-  since: string
-  /** ISO timestamp of the latest capture */
-  takenAt: string
-}
+/** GET /api/cam-archive/:site/:camera (a day's stills) and /api/cam-panoramas/:site/:camera (every capture), oldest first */
+export type CamFramesResponse = { frames: CamFrame[] }
 
 export type CamSite = {
   /** Project id from src/assets/data.ts */
   projectId: string
   views: CamView[]
-  panoramas: CamPano[]
+  /** Short names of the cameras with a regular (near-daily) panorama */
+  panoramas: string[]
   /** Set when EarthCam couldn't be reached for this site */
   error?: string
 }
@@ -63,6 +49,32 @@ export type CamsResponse = {
   fetchedAt: string
   sites: CamSite[]
 }
+
+/** The parts of EarthCam's page API response we use */
+export type EarthCamPage = {
+  cameras: {
+    short_name: string
+    archives: {
+      type: string
+      ref?: string
+      start_datetime?: string
+      image?: { url: string; datetime: string }
+    }[]
+  }[]
+}
+
+/** GET from EarthCam's page API; `path` starts with an earthcamPage() */
+export const fetchEarthcam = (path: string, timeout = 10_000) =>
+  fetch(`https://share.earthcam.net/api/v2/public/page/${path}`, {
+    headers: { 'User-Agent': USER_AGENT, Accept: 'application/json' },
+    signal: AbortSignal.timeout(timeout),
+  })
+
+/** A JSON response with the same caching in browsers and at Netlify's CDN */
+export const jsonResponse = (body: unknown, status: number, cache: string) =>
+  Response.json(body, { status, headers: { 'Cache-Control': cache, 'Netlify-CDN-Cache-Control': cache } })
+
+export const errorMessage = (e: unknown) => (e instanceof Error ? e.message : String(e))
 
 /** "2026-10-10T20:32:00-0400" → ISO 8601 with a colon in the offset */
 export const isoDate = (s: string) => new Date(s.replace(/([+-]\d\d)(\d\d)$/, '$1:$2')).toISOString()
@@ -82,12 +94,17 @@ export const framePath = (objectUrl: string) => {
   return m ? `/api/cam-frame/${m[1]}/${m[2]}` : null
 }
 
-/** EarthCam's size suffixes for the sizes /api/cam-frame serves (default medium, 1440w) */
-export const FRAME_SIZES = { medium: 'medium', half: 'Half', full: 'Full' } as const
-export type FrameSize = keyof typeof FRAME_SIZES
+/** EarthCam's suffixes for the sizes /api/cam-frame serves (?size=, default medium) */
+const FRAME_SIZES = new Map([
+  ['medium', 'medium'],
+  ['half', 'Half'],
+  ['full', 'Full'],
+])
 
-/** Reverse of framePath: the EarthCam URL for a validated host and object id */
-export const earthcamFrameUrl = (host: string, id: string, size: FrameSize = 'medium') =>
-  /^resource\d{1,2}$/.test(host) && /^[\w-]+$/.test(id)
-    ? `https://${host}.earthcam.net/v0/object/${id}?Size:${FRAME_SIZES[size]}`
+/** Reverse of framePath: the EarthCam URL for a validated host, object id and size */
+export const earthcamFrameUrl = (host: string, id: string, size = 'medium') => {
+  const suffix = FRAME_SIZES.get(size)
+  return suffix && /^resource\d{1,2}$/.test(host) && /^[\w-]+$/.test(id)
+    ? `https://${host}.earthcam.net/v0/object/${id}?Size:${suffix}`
     : null
+}

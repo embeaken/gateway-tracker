@@ -28,14 +28,12 @@ test.describe('dashboard smoke', () => {
                 { frame: '/api/cam-frame/resource6/test1', takenAt: new Date().toISOString(), camera: 'camera', ref: 'r1', since: '2026-01-01T12:00:00.000Z' },
                 { frame: '/api/cam-frame/resource6/test2', takenAt: new Date().toISOString(), camera: 'camera', ref: 'r2', since: '2026-01-01T12:00:00.000Z' },
               ],
-              panoramas: [
-                { camera: 'camera', since: '2026-01-01T12:00:00.000Z', takenAt: '2026-10-11T16:00:00.000Z' },
-              ],
+              panoramas: ['camera'],
             },
             {
               projectId: 'hudson-yards',
               views: [{ frame: '/api/cam-frame/resource6/test3', takenAt: new Date().toISOString(), camera: 'camera', ref: 'r3', since: '2026-01-01T12:00:00.000Z' }],
-              panoramas: [{ camera: 'camera', since: '2026-01-01T12:00:00.000Z', takenAt: '2026-10-11T16:00:00.000Z' }],
+              panoramas: ['camera'],
             },
           ],
         },
@@ -77,8 +75,7 @@ test.describe('dashboard smoke', () => {
     await expect(page.getByRole('heading', { name: /Updates from the GDC/i })).toBeVisible()
 
     // One tile per project, even when a site has several views
-    await expect(page.locator('#cam-hudson-county-shaft')).toBeVisible()
-    await expect(page.locator('.cam-tile')).toHaveCount(5)
+        await expect(page.locator('.cam-tile')).toHaveCount(5)
 
     await expectNoHorizontalOverflow(page)
     await page.locator('#app').screenshot({ path: testInfo.outputPath('dashboard-light.png') })
@@ -97,8 +94,7 @@ test.describe('dashboard smoke', () => {
     await expect(page.getByRole('dialog', { name: 'What is this?' })).toHaveCount(0)
     await expect(explainerBtn).toBeFocused()
 
-    // Route map sites highlight on hover but don't link anywhere.
-    await expect(page.locator('#route a[href^="#cam-"]')).toHaveCount(0)
+    // Route map sites highlight on hover
     const hit = page.locator('#route .hit:visible').first()
     if (await hit.count()) {
       await hit.hover()
@@ -151,7 +147,7 @@ test.describe('dashboard smoke', () => {
     await page.route('**/api/cam-panoramas/**', (route) =>
       route.fulfill({
         json: {
-          captures: ['2026-08-10', '2026-09-13', '2026-09-29'].map((d, i) => ({
+          frames: ['2026-08-10', '2026-09-13', '2026-09-29'].map((d, i) => ({
             frame: `/api/cam-frame/resource6/pano-${i}`,
             takenAt: `${d}T17:00:00.000Z`,
           })),
@@ -185,7 +181,7 @@ test.describe('dashboard smoke', () => {
     await card.getByRole('button', { name: 'View 2' }).click()
     await expect(card.locator('.stage img').last()).toBeVisible()
     await card.getByRole('button', { name: 'Previous day' }).click()
-    await expect.poll(() => asked.some((u) => u.includes('ref=r2') && u.includes('kind=day'))).toBe(true)
+    await expect.poll(() => asked.some((u) => u.includes('ref=r2') && u.includes('date='))).toBe(true)
     await card.getByRole('button', { name: 'Earlier photo' }).click()
     await expect(card.locator('.control-label b')).toContainText('12:00 PM')
 

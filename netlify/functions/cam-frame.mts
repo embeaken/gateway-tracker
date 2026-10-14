@@ -1,15 +1,14 @@
-// GET /api/cam-frame/:host/:id[?size=full]: one EarthCam still at medium size
-// (1440px), or larger with ?size=half|full (used when zoomed in).
-// Frame URLs are unique per still, so the response is cached forever at the CDN
-// and EarthCam serves each frame once. The site resizes it further through
-// Netlify Image CDN. See src/earthcam.ts.
-import { FRAME_SIZES, USER_AGENT, earthcamFrameUrl, type FrameSize } from '../../src/earthcam'
+// GET /api/cam-frame/:host/:id[?size=half|full]: one EarthCam still, at medium
+// size (1440px) or larger when zoomed in. Frame URLs are unique per still, so
+// the response is cached forever at the CDN and EarthCam serves each frame
+// once. The site resizes it further through Netlify Image CDN. See src/earthcam.ts.
+import { USER_AGENT, earthcamFrameUrl } from '../../src/earthcam'
 
 type Context = { params: Record<string, string> }
 
 export default async (req: Request, context: Context) => {
-  const size = new URL(req.url).searchParams.get('size') ?? 'medium'
-  const url = size in FRAME_SIZES && earthcamFrameUrl(context.params.host ?? '', context.params.id ?? '', size as FrameSize)
+  const size = new URL(req.url).searchParams.get('size') ?? undefined
+  const url = earthcamFrameUrl(context.params.host ?? '', context.params.id ?? '', size)
   if (!url) return new Response('Not found', { status: 404 })
 
   const res = await fetch(url, { headers: { 'User-Agent': USER_AGENT }, signal: AbortSignal.timeout(15000) })
