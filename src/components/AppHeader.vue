@@ -14,6 +14,7 @@ const emit = defineEmits<{ (e: 'open-explainer'): void }>()
       </RouterLink>
 
       <nav class="header-nav" aria-label="Main">
+        <RouterLink to="/" class="nav-link">Overview</RouterLink>
         <RouterLink to="/cameras" class="nav-link">Cameras</RouterLink>
       </nav>
 
@@ -73,7 +74,9 @@ const emit = defineEmits<{ (e: 'open-explainer'): void }>()
 }
 
 .header-nav {
-  margin-left: auto;
+  display: flex;
+  gap: var(--spacing-md);
+  margin-left: var(--spacing-sm);
 }
 
 .nav-link,
@@ -84,7 +87,7 @@ const emit = defineEmits<{ (e: 'open-explainer'): void }>()
 }
 
 .nav-link:hover,
-.nav-link.router-link-active {
+.nav-link.router-link-exact-active {
   color: #fff;
   text-decoration: underline;
   text-decoration-color: var(--color-accent);
@@ -94,6 +97,7 @@ const emit = defineEmits<{ (e: 'open-explainer'): void }>()
 
 .explainer-btn {
   flex: none;
+  margin-left: auto;
   padding: 7px 14px;
   border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 999px;
@@ -123,14 +127,22 @@ const emit = defineEmits<{ (e: 'open-explainer'): void }>()
     row-gap: 6px;
   }
 
-  .brand-lockup {
-    flex: 1;
-  }
 }
 
 @media (max-width: 640px) {
   .header-content {
     gap: 12px;
+  }
+
+  /* The links drop to their own row under the logo and button */
+  .brand-lockup {
+    flex: 1;
+  }
+
+  .header-nav {
+    order: 3;
+    flex-basis: 100%;
+    margin-left: 0;
   }
 
   .brand-lockup {
