@@ -541,51 +541,51 @@ const atEnd = computed(() => date.value >= props.today && index.value >= lastInd
 
     <div v-if="pano && frames.length" class="controls">
       <div class="control-row">
-        <button type="button" class="step" aria-label="Earlier panorama" :disabled="index <= 0" @click="index--">
-          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5" /></svg>
-        </button>
-        <div class="control-main">
-          <label class="control-label" :for="`${project.id}-capture`">
+        <input :id="`${project.id}-capture`" v-model.number="index" type="range" min="0" :max="lastIndex" :aria-valuetext="captureLabel(frame)" />
+        <span class="range-ends">
+          <button type="button" class="end" @click="index = 0">{{ captureLabel(frames[0]) }}</button>
+          <button type="button" class="end" @click="index = lastIndex">Latest</button>
+        </span>
+        <div class="control-nav">
+          <button type="button" class="step" aria-label="Earlier panorama" :disabled="index <= 0" @click="index--">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5" /></svg>
+          </button>
+          <label class="control-label control-label--pano" :for="`${project.id}-capture`">
             <b>{{ captureLabel(frame) }}</b>
             <span v-if="loading || imgLoading" class="spinner" aria-hidden="true"></span>
           </label>
-          <input :id="`${project.id}-capture`" v-model.number="index" type="range" min="0" :max="lastIndex" :aria-valuetext="captureLabel(frame)" />
-          <span class="range-ends">
-            <button type="button" class="end" @click="index = 0">{{ captureLabel(frames[0]) }}</button>
-            <button type="button" class="end" @click="index = lastIndex">Latest</button>
-          </span>
+          <button type="button" class="step" aria-label="Later panorama" :disabled="index >= lastIndex" @click="index++">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3l5 5-5 5" /></svg>
+          </button>
         </div>
-        <button type="button" class="step" aria-label="Later panorama" :disabled="index >= lastIndex" @click="index++">
-          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3l5 5-5 5" /></svg>
-        </button>
       </div>
     </div>
 
     <div v-else-if="view && !pano" class="controls">
       <div class="control-row">
-        <button type="button" class="step step--day" aria-label="Previous day" :disabled="date <= first" @click="stepDay(-1)"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8.5 3 4 8l4.5 5M12.5 3 8 8l4.5 5" /></svg></button>
-        <button type="button" class="step" aria-label="Earlier photo" :disabled="atStart" @click="stepPhoto(-1)"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5" /></svg></button>
-        <div class="control-main">
+        <input
+          :id="`${project.id}-scrub`"
+          type="range"
+          min="0"
+          :max="sliderMax"
+          :value="scrubPos ?? sliderValue"
+          :aria-valuetext="`${dateLabel}${frames.length ? `, ${timeLabel(frame)}` : ''}`"
+          @input="onScrub(Number(($event.target as HTMLInputElement).value))"
+        />
+        <span class="range-ends">
+          <button type="button" class="end" @click="setDate(first)">{{ formatLongDate(parseDate(first)) }}</button>
+          <button type="button" class="end" @click="goToToday">Today</button>
+        </span>
+        <div class="control-nav">
+          <button type="button" class="step step--day" aria-label="Previous day" :disabled="date <= first" @click="stepDay(-1)"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8.5 3 4 8l4.5 5M12.5 3 8 8l4.5 5" /></svg></button>
+          <button type="button" class="step" aria-label="Earlier photo" :disabled="atStart" @click="stepPhoto(-1)"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5" /></svg></button>
           <label class="control-label" :for="`${project.id}-scrub`">
             <b>{{ dateLabel }}<template v-if="frames.length"> · {{ timeLabel(frame) }}</template></b>
             <span v-if="loading || imgLoading" class="spinner" aria-hidden="true"></span>
           </label>
-          <input
-            :id="`${project.id}-scrub`"
-            type="range"
-            min="0"
-            :max="sliderMax"
-            :value="scrubPos ?? sliderValue"
-            :aria-valuetext="`${dateLabel}${frames.length ? `, ${timeLabel(frame)}` : ''}`"
-            @input="onScrub(Number(($event.target as HTMLInputElement).value))"
-          />
-          <span class="range-ends">
-            <button type="button" class="end" @click="setDate(first)">{{ formatLongDate(parseDate(first)) }}</button>
-            <button type="button" class="end" @click="goToToday">Today</button>
-          </span>
+          <button type="button" class="step" aria-label="Later photo" :disabled="atEnd" @click="stepPhoto(1)"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3l5 5-5 5" /></svg></button>
+          <button type="button" class="step step--day" aria-label="Next day" :disabled="date >= today" @click="stepDay(1)"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M7.5 3 12 8l-4.5 5M3.5 3 8 8l-4.5 5" /></svg></button>
         </div>
-        <button type="button" class="step" aria-label="Later photo" :disabled="atEnd" @click="stepPhoto(1)"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3l5 5-5 5" /></svg></button>
-        <button type="button" class="step step--day" aria-label="Next day" :disabled="date >= today" @click="stepDay(1)"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M7.5 3 12 8l-4.5 5M3.5 3 8 8l-4.5 5" /></svg></button>
       </div>
     </div>
 
@@ -833,25 +833,62 @@ const atEnd = computed(() => date.value >= props.today && index.value >= lastInd
   margin-top: 14px;
 }
 
+/* The date and step buttons sit centred above the slider, the date between
+   the earlier and later buttons, so the eye stays in one place. The
+   slider's end labels go underneath. */
 .control-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.control-main {
-  flex: 1;
-  min-width: 0;
   display: grid;
-  gap: 4px;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    'top'
+    'slider'
+    'ends';
+  align-items: center;
+  gap: 2px;
 }
 
-.control-label {
+.control-row input[type='range'] {
+  grid-area: slider;
+}
+
+.control-row .range-ends {
+  grid-area: ends;
+}
+
+.control-nav {
+  grid-area: top;
+  justify-self: center;
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0 10px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+
+/* Wide enough for the longest date ("September 30, 2025 · 12:50 PM"), so
+   the buttons beside it don't move as it changes. The spinner sits in the
+   padding for the same reason. */
+.control-label {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  min-width: calc(30ch + 40px);
+  padding-inline: 20px;
+  font-family: var(--font-family-mono);
   font-size: 14px;
+  white-space: nowrap;
+}
+
+.control-label--pano {
+  min-width: calc(19ch + 40px);
+}
+
+.control-label .spinner {
+  position: absolute;
+  top: calc(50% - 6px);
+  right: 2px;
 }
 
 .control-label b {
@@ -948,7 +985,7 @@ const atEnd = computed(() => date.value >= props.today && index.value >= lastInd
   cursor: default;
 }
 
-/* Phones: the date and slider get the full width, with the step buttons underneath */
+/* Phones: the date gets its own line above the step buttons */
 @media (max-width: 768px) {
   .viewer-card {
     --pad: 12px;
@@ -959,19 +996,10 @@ const atEnd = computed(() => date.value >= props.today && index.value >= lastInd
     font-size: 20px;
   }
 
-  .control-row {
-    flex-wrap: wrap;
-    row-gap: 10px;
-  }
-
-  .control-main {
+  .control-label {
     order: -1;
     flex-basis: 100%;
-  }
-
-  /* The first "later" button: the forward buttons sit on the right */
-  .control-main + .step {
-    margin-left: auto;
+    min-width: 0;
   }
 
   .step {
