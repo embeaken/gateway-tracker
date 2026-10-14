@@ -7,9 +7,9 @@
   --color-primary: #005E71;          /* links, interactive */
   --color-primary-dark: #00475A;
   --color-primary-muted: rgba(0, 94, 113, 0.07);
-  --color-navy: #4B544D;             /* header, footer, map line */
-  --color-accent: #7CAC28;           /* brass: rules, highlights, TBM marker */
-  --color-accent-ink: #4E6E16;       /* brass dark enough for text on light */
+  --color-navy: #4B544D;             /* GDC slate: header, footer, camera stages */
+  --color-accent: #7CAC28;           /* Gateway lime: rules, highlights, TBM marker */
+  --color-accent-ink: #4E6E16;       /* lime dark enough for text on light */
   --color-river: #D6E8EC;
   --color-glow: rgba(0, 140, 160, 0.5);
   --river-waves: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='16'%3E%3Cg fill='none' stroke='%23005E71' stroke-opacity='0.13' stroke-width='1.1'%3E%3Cpath d='M0 4 Q8 0 16 4 T32 4'/%3E%3Cpath d='M-8 12 Q0 8 8 12 T24 12 T40 12'/%3E%3C/g%3E%3C/svg%3E");
@@ -29,12 +29,12 @@
   /* Dashboard */
   --color-text-tertiary: #737672;    /* footnotes, units */
   --color-line: #E9EEE7;             /* table rows, bar tracks */
-  --color-ok: #2F7A3A;               /* done, complete */
+  --color-ok: #2A7034;               /* done, complete */
   --color-ok-bg: #E4EFE0;
   --color-alert: #B4442E;            /* freeze, errors */
   --color-alert-bg: #FBEFEA;
   --color-fund-paid: #005E71;
-  --color-fund-released: #94BD85;
+  --color-fund-released: #7FB8C4;   /* light tint of paid */
   --color-fund-amtrak: #94BD85;
 
   /* Public Sans (US Web Design System) for text, Source Serif for headlines */
@@ -147,7 +147,7 @@
   --color-alert: #EE8C76;
   --color-alert-bg: rgba(238, 140, 118, 0.1);
   --color-fund-paid: #6FC3D3;
-  --color-fund-released: #6F8A68;
+  --color-fund-released: #3A7C88;
   --color-fund-amtrak: #6F8A68;
 
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
@@ -197,7 +197,7 @@
     --color-alert: #EE8C76;
     --color-alert-bg: rgba(238, 140, 118, 0.1);
     --color-fund-paid: #6FC3D3;
-    --color-fund-released: #6F8A68;
+    --color-fund-released: #3A7C88;
     --color-fund-amtrak: #6F8A68;
 
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);

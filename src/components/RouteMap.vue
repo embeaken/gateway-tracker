@@ -796,7 +796,7 @@ const vrows = routeStops.map((stop) => ({
   left: 0;
   padding: 1px 6px;
   border-radius: var(--radius-sm);
-  /* Dark brass + white in light mode; light brass + dark text in dark mode */
+  /* Dark lime + white in light mode; light lime + dark text in dark mode */
   background: var(--color-accent-ink);
   color: var(--color-card-bg);
   font-size: 11px;
