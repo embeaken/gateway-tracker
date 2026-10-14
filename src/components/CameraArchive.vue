@@ -649,19 +649,15 @@ const atEnd = computed(() => date.value >= props.today && index.value >= lastInd
   container-type: size;
 }
 
-/* As large as fits, at the photo's shape, so nothing is cropped at 100% */
+/* Fill the whole stage area. The photo covers it at 100% (see `photo`), so a
+   photo that doesn't match the screen's shape is cropped and can be dragged. */
 .viewer-card.full .stage {
-  width: min(100cqw, 100cqh * var(--aspect, 16 / 9));
-  aspect-ratio: var(--aspect, 16 / 9);
-  max-height: none;
-  margin-inline: 0;
-}
-
-/* Panoramas are far wider than a screen: fill it and pan sideways, rather than letterbox */
-.viewer-card.full.wide .stage {
   width: 100cqw;
   height: 100cqh;
   aspect-ratio: auto;
+  max-height: none;
+  margin-inline: 0;
+  border-radius: 0;
 }
 
 .full .note {
