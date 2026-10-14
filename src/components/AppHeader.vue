@@ -34,7 +34,7 @@ const emit = defineEmits<{ (e: 'open-explainer'): void }>()
 
 <style scoped>
 .app-header {
-  background: var(--color-navy);
+  background: var(--color-chrome);
   color: white;
   border-bottom: 3px solid var(--color-accent);
 }
@@ -60,10 +60,6 @@ const emit = defineEmits<{ (e: 'open-explainer'): void }>()
 .brand-lockup:visited {
   color: white;
   text-decoration: none;
-}
-
-.brand-icon {
-  color: var(--color-accent);
 }
 
 .brand-name {
@@ -117,7 +113,7 @@ const emit = defineEmits<{ (e: 'open-explainer'): void }>()
 }
 
 .explainer-btn:focus-visible {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid #fff;
   outline-offset: 2px;
 }
 

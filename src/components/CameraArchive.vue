@@ -710,7 +710,7 @@ const atEnd = computed(() => date.value >= props.today && index.value >= lastInd
   aspect-ratio: var(--aspect, 16 / 9);
   overflow: hidden;
   border-radius: var(--radius-sm);
-  background: var(--color-navy);
+  background: var(--color-chrome);
   /* One finger scrolls the page until zoomed in; two fingers pinch */
   touch-action: pan-y;
   user-select: none;
@@ -822,7 +822,7 @@ const atEnd = computed(() => date.value >= props.today && index.value >= lastInd
 }
 
 .stage-msg--error {
-  color: #ffc7b8;
+  color: var(--color-alert-soft);
 }
 
 .controls {

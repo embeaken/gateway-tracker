@@ -86,7 +86,7 @@ useModal(() => props.open, closeBtn, () => emit("close"));
 .scrim {
   position: absolute;
   inset: 0;
-  background: rgba(10, 20, 35, 0.45);
+  background: rgba(17, 19, 21, 0.45);
 }
 
 .drawer {

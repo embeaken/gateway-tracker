@@ -3,39 +3,43 @@
    ======================================== */
 
 :root {
-  /* Civic palette: Hudson navy and public-works brass */
-  --color-primary: #1D4F86;          /* links, interactive */
-  --color-primary-dark: #143A66;
-  --color-primary-muted: rgba(29, 79, 134, 0.07);
-  --color-navy: #10284A;             /* header, footer, map line */
-  --color-accent: #B8862B;           /* brass: rules, highlights, TBM marker */
-  --color-accent-ink: #7E5A14;       /* brass dark enough for text on light */
-  --color-river: #DCE8F2;
-  --color-glow: rgba(46, 120, 205, 0.55);
-  --river-waves: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='16'%3E%3Cg fill='none' stroke='%231D4F86' stroke-opacity='0.13' stroke-width='1.1'%3E%3Cpath d='M0 4 Q8 0 16 4 T32 4'/%3E%3Cpath d='M-8 12 Q0 8 8 12 T24 12 T40 12'/%3E%3C/g%3E%3C/svg%3E");
-  --color-ground: #ECE6DB;            /* earth in the route profile */
-  --color-ground-edge: #CBBFAA;
-  --color-ground-ink: #8C7F69;
-  --color-band: #E3D2B0;              /* active work: TBM drive, casing */
-  --color-map-line: #10284A;
-  --color-map-shaft: #4F7FB8;          /* lighter --color-primary; hover deepens to it */
+  /* GDC palette (gatewayprogram.org): blue-grey slate, Gateway lime, teal links */
+  --color-primary: #005E71;          /* links, interactive */
+  --color-primary-dark: #00475A;
+  --color-primary-muted: rgba(0, 94, 113, 0.07);
+  --color-chrome: #425255;           /* GDC blue slate: header, footer, camera stages */
+  --color-accent: #7CAC28;           /* Gateway lime: rules, highlights, TBM marker */
+  --color-accent-ink: #4E6E16;       /* lime dark enough for text on light */
+  /* Logo: the TBM's green cutterhead and the lime GDC hub sign. Same in both themes. */
+  --color-tbm: #3A8F62;
+  --color-tbm-hub: #84C45A;
+  --color-river: #D6E8EC;
+  --color-glow: rgba(0, 140, 160, 0.5);
+  --river-waves: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='16'%3E%3Cg fill='none' stroke='%23005E71' stroke-opacity='0.13' stroke-width='1.1'%3E%3Cpath d='M0 4 Q8 0 16 4 T32 4'/%3E%3Cpath d='M-8 12 Q0 8 8 12 T24 12 T40 12'/%3E%3C/g%3E%3C/svg%3E");
+  --color-ground: #ECE8DE;            /* earth in the route profile */
+  --color-ground-edge: #C9BFAA;
+  --color-ground-ink: #8D7F68;
+  --color-band: #DCE8C4;              /* active work: TBM drive, casing */
+  --color-map-line: #2C3639;
+  --color-map-shaft: #3F8796;          /* lighter --color-primary; hover deepens to it */
 
-  --color-background: #F7F5F0;
-  --color-background-alt: #EEF1F5;
-  --color-text-primary: #16202E;
-  --color-text-secondary: #4B5768;
-  --color-border: #DDE2E8;
+  --color-background: #F3F5F5;
+  --color-background-alt: #E8ECED;
+  --color-text-primary: #1C2427;
+  --color-text-secondary: #4A5559;
+  --color-border: #D8DEE0;
 
   /* Dashboard */
-  --color-text-tertiary: #7A8596;    /* footnotes, units */
-  --color-line: #EEF1F5;             /* table rows, bar tracks */
-  --color-ok: #2F7D4F;               /* done, complete */
-  --color-ok-bg: #E7F3EC;
+  --color-text-tertiary: #687175;    /* footnotes, units */
+  --color-line: #EBEFF0;             /* table rows, bar tracks */
+  --color-ok: #2A7034;               /* done, complete */
+  --color-ok-bg: #E4EFE0;
   --color-alert: #B4442E;            /* freeze, errors */
   --color-alert-bg: #FBEFEA;
-  --color-fund-paid: #1D4F86;
-  --color-fund-released: #8DB8E8;
-  --color-fund-amtrak: #8DB8E8;
+  --color-alert-soft: #FFC7B8;       /* error text on the always-dark camera stages */
+  --color-fund-paid: #005E71;
+  --color-fund-released: #7FB8C4;   /* light tint of paid */
+  --color-fund-amtrak: #9EADB2;   /* neutral slate: keeps lime (states) the only green in the split */
 
   /* Public Sans (US Web Design System) for text, Source Serif for headlines */
   --font-family-base: "Public Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
@@ -79,8 +83,8 @@
 
   /* Shadows */
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 12px rgba(0, 94, 113, 0.1);
-  --shadow-lg: 0 8px 24px rgba(0, 94, 113, 0.15);
+  --shadow-md: 0 4px 12px rgba(28, 36, 39, 0.1);
+  --shadow-lg: 0 8px 24px rgba(28, 36, 39, 0.15);
 
   /* Transitions */
   --transition-fast: 0.15s ease;
@@ -118,37 +122,37 @@
 [data-theme="dark"] {
   color-scheme: dark;
 
-  --color-primary: #8DB8E8;
-  --color-primary-dark: #B3D0F0;
-  --color-primary-muted: rgba(141, 184, 232, 0.08);
-  --color-navy: #0A1A30;
-  --color-accent: #D9AE55;
-  --color-accent-ink: #E6C27A;
-  --color-river: #16304D;
-  --color-glow: rgba(141, 184, 232, 0.35);
-  --river-waves: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='16'%3E%3Cg fill='none' stroke='%238DB8E8' stroke-opacity='0.13' stroke-width='1.1'%3E%3Cpath d='M0 4 Q8 0 16 4 T32 4'/%3E%3Cpath d='M-8 12 Q0 8 8 12 T24 12 T40 12'/%3E%3C/g%3E%3C/svg%3E");
-  --color-ground: #1F2834;
-  --color-ground-edge: #3A4657;
-  --color-ground-ink: #7F8A99;
-  --color-band: #3E3421;
-  --color-map-line: #C9D4E2;
-  --color-map-shaft: #C9D4E2;
+  --color-primary: #6FC3D3;
+  --color-primary-dark: #A3DCE6;
+  --color-primary-muted: rgba(111, 195, 211, 0.08);
+  --color-chrome: #263236;
+  --color-accent: #A2C653;
+  --color-accent-ink: #BAD77F;
+  --color-river: #15303A;
+  --color-glow: rgba(111, 195, 211, 0.35);
+  --river-waves: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='16'%3E%3Cg fill='none' stroke='%236FC3D3' stroke-opacity='0.13' stroke-width='1.1'%3E%3Cpath d='M0 4 Q8 0 16 4 T32 4'/%3E%3Cpath d='M-8 12 Q0 8 8 12 T24 12 T40 12'/%3E%3C/g%3E%3C/svg%3E");
+  --color-ground: #24272A;
+  --color-ground-edge: #3D4246;
+  --color-ground-ink: #8A8F94;
+  --color-band: #30352A;
+  --color-map-line: #D2D7DB;
+  --color-map-shaft: #D2D7DB;
 
-  --color-background: #0D1828;
-  --color-background-alt: #15243A;
-  --color-text-primary: #E7ECF2;
-  --color-text-secondary: #9AA8BA;
-  --color-border: #263752;
+  --color-background: #111315;
+  --color-background-alt: #1A1D20;
+  --color-text-primary: #E8EAEC;
+  --color-text-secondary: #A5ABB0;
+  --color-border: #2D3236;
 
-  --color-text-tertiary: #7C8BA0;
-  --color-line: #1C2D47;
-  --color-ok: #6CC08F;
-  --color-ok-bg: rgba(108, 192, 143, 0.12);
+  --color-text-tertiary: #80878D;
+  --color-line: #24282C;
+  --color-ok: #7FC98B;
+  --color-ok-bg: rgba(127, 201, 139, 0.12);
   --color-alert: #EE8C76;
   --color-alert-bg: rgba(238, 140, 118, 0.1);
-  --color-fund-paid: #8DB8E8;
-  --color-fund-released: #3D6A9E;
-  --color-fund-amtrak: #3D6A9E;
+  --color-fund-paid: #6FC3D3;
+  --color-fund-released: #3A7C88;
+  --color-fund-amtrak: #6B7A80;
 
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -156,10 +160,10 @@
 
 
 
-  --color-card-bg: #132238;
+  --color-card-bg: #191C1F;
 
   --color-lightbox-overlay: rgba(0, 0, 0, 0.95);
-  --color-lightbox-bg: #132238;
+  --color-lightbox-bg: #191C1F;
   --color-lightbox-close-bg: rgba(255, 255, 255, 0.15);
   --color-lightbox-close-hover-bg: rgba(255, 255, 255, 0.25);
 }
@@ -168,47 +172,47 @@
   :root:not([data-theme="light"]) {
     color-scheme: dark;
 
-    --color-primary: #8DB8E8;
-    --color-primary-dark: #B3D0F0;
-    --color-primary-muted: rgba(141, 184, 232, 0.08);
-    --color-navy: #0A1A30;
-    --color-accent: #D9AE55;
-    --color-accent-ink: #E6C27A;
-    --color-river: #16304D;
-    --color-glow: rgba(141, 184, 232, 0.35);
-    --river-waves: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='16'%3E%3Cg fill='none' stroke='%238DB8E8' stroke-opacity='0.13' stroke-width='1.1'%3E%3Cpath d='M0 4 Q8 0 16 4 T32 4'/%3E%3Cpath d='M-8 12 Q0 8 8 12 T24 12 T40 12'/%3E%3C/g%3E%3C/svg%3E");
-    --color-ground: #1F2834;
-    --color-ground-edge: #3A4657;
-    --color-ground-ink: #7F8A99;
-    --color-band: #3E3421;
-    --color-map-line: #C9D4E2;
-    --color-map-shaft: #C9D4E2;
+    --color-primary: #6FC3D3;
+    --color-primary-dark: #A3DCE6;
+    --color-primary-muted: rgba(111, 195, 211, 0.08);
+    --color-chrome: #263236;
+    --color-accent: #A2C653;
+    --color-accent-ink: #BAD77F;
+    --color-river: #15303A;
+    --color-glow: rgba(111, 195, 211, 0.35);
+    --river-waves: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='16'%3E%3Cg fill='none' stroke='%236FC3D3' stroke-opacity='0.13' stroke-width='1.1'%3E%3Cpath d='M0 4 Q8 0 16 4 T32 4'/%3E%3Cpath d='M-8 12 Q0 8 8 12 T24 12 T40 12'/%3E%3C/g%3E%3C/svg%3E");
+    --color-ground: #24272A;
+    --color-ground-edge: #3D4246;
+    --color-ground-ink: #8A8F94;
+    --color-band: #30352A;
+    --color-map-line: #D2D7DB;
+    --color-map-shaft: #D2D7DB;
 
-    --color-background: #0D1828;
-    --color-background-alt: #15243A;
-    --color-text-primary: #E7ECF2;
-    --color-text-secondary: #9AA8BA;
-    --color-border: #263752;
+    --color-background: #111315;
+    --color-background-alt: #1A1D20;
+    --color-text-primary: #E8EAEC;
+    --color-text-secondary: #A5ABB0;
+    --color-border: #2D3236;
 
-    --color-text-tertiary: #7C8BA0;
-    --color-line: #1C2D47;
-    --color-ok: #6CC08F;
-    --color-ok-bg: rgba(108, 192, 143, 0.12);
+    --color-text-tertiary: #80878D;
+    --color-line: #24282C;
+    --color-ok: #7FC98B;
+    --color-ok-bg: rgba(127, 201, 139, 0.12);
     --color-alert: #EE8C76;
     --color-alert-bg: rgba(238, 140, 118, 0.1);
-    --color-fund-paid: #8DB8E8;
-    --color-fund-released: #3D6A9E;
-    --color-fund-amtrak: #3D6A9E;
+    --color-fund-paid: #6FC3D3;
+    --color-fund-released: #3A7C88;
+    --color-fund-amtrak: #6B7A80;
 
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
     --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
 
 
-    --color-card-bg: #132238;
+    --color-card-bg: #191C1F;
 
     --color-lightbox-overlay: rgba(0, 0, 0, 0.95);
-    --color-lightbox-bg: #132238;
+    --color-lightbox-bg: #191C1F;
     --color-lightbox-close-bg: rgba(255, 255, 255, 0.15);
     --color-lightbox-close-hover-bg: rgba(255, 255, 255, 0.25);
   }

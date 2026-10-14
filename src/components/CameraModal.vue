@@ -123,7 +123,7 @@ const frameStyle = computed(() => {
   position: relative;
   aspect-ratio: 16 / 9;
   overflow: hidden;
-  background: var(--color-navy);
+  background: var(--color-chrome);
 }
 
 .monitor-placeholder {

@@ -133,7 +133,7 @@ const open = ref<Project | null>(null)
   border: 0;
   border-radius: var(--radius-sm);
   overflow: hidden;
-  background: var(--color-navy);
+  background: var(--color-chrome);
   cursor: pointer;
   font: inherit;
   text-align: left;
@@ -200,10 +200,10 @@ const open = ref<Project | null>(null)
   font-family: var(--font-family-mono);
   font-size: 11px;
   font-weight: 500;
-  color: #cfe8ff;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .cam-age--stale {
-  color: #ffc7b8;
+  color: var(--color-alert-soft);
 }
 </style>

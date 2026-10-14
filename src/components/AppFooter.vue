@@ -22,7 +22,7 @@ import ThemeToggle from './ThemeToggle.vue'
 .app-footer {
   margin-top: var(--spacing-2xl);
   padding: var(--spacing-xl) 0;
-  background-color: var(--color-navy);
+  background-color: var(--color-chrome);
   border-top: 3px solid var(--color-accent);
 }
 
