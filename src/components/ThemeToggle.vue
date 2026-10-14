@@ -12,7 +12,7 @@ function applyTheme(dark: boolean) {
   document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light')
   // Browser UI colour follows the chosen theme, which can differ from the system's
   document.querySelectorAll('meta[name="theme-color"]').forEach((meta) => {
-    meta.setAttribute('content', dark ? '#2C332E' : '#4B544D')
+    meta.setAttribute('content', dark ? '#263236' : '#425255')
   })
 }
 
