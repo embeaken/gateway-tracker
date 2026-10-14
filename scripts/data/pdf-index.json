@@ -2211,6 +2211,20 @@
     "dateIsFallback": false,
     "classifiedBy": "llm"
   },
+  "https://www.gatewayprogram.org/wp-content/uploads/2026/10/NJ-FAQ_English-Spanish_FV.pdf": {
+    "category": "construction_notice",
+    "title": "Hudson Tunnel Project Frequently Asked Questions (FAQs): New Jersey",
+    "date": "2026-10-01",
+    "dateIsFallback": true,
+    "classifiedBy": "filename"
+  },
+  "https://www.gatewayprogram.org/wp-content/uploads/2026/10/NY-FAQ_English-Spanish_FV.pdf": {
+    "category": "construction_notice",
+    "title": "Hudson Tunnel Project Frequently Asked Questions (FAQs): New York",
+    "date": "2026-10-01",
+    "dateIsFallback": true,
+    "classifiedBy": "filename"
+  },
   "https://www.gatewayprogram.org/wp-content/uploads/2026/10/TBM-Mining-Starting_Eng.-Spa._FV.pdf": {
     "category": "construction_notice",
     "title": "TBM Mining Starting Soon: What to Expect (Hudson Tunnel Project)",
