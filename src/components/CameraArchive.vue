@@ -432,7 +432,10 @@ function onScrub(value: number) {
 onBeforeUnmount(() => window.clearTimeout(settle))
 
 /** The day buttons keep the time of day */
-const stepDay = (n: number) => setDate(addDays(date.value, n))
+function stepDay(n: number) {
+  if (targetMin.value === null && frame.value) targetMin.value = minutes.value[index.value]!
+  setDate(addDays(date.value, n))
+}
 
 /** The latest photo of today */
 function goToToday() {
