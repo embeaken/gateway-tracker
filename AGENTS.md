@@ -73,7 +73,7 @@ HUDSON_TUBE_ANTHROPIC_API_KEY=... uv run scripts/update_data.py [--force] [--sum
 
 `--force` ignores all caches and re-reads everything. `--summary-file` also writes the run summary as Markdown; the `update-data.yml` workflow uses it as the PR body, so read the PR description for anything needing review.
 
-[`uv`](https://docs.astral.sh/uv/) manages deps automatically via inline script metadata, so no virtualenv setup is needed. Without the API key, PDF titles come from filenames, dates fall back to the upload folder (`YYYY-MM-01`), and PDFs that match no filename pattern are listed as unclassified instead of read.
+[`uv`](https://docs.astral.sh/uv/) manages deps automatically via inline script metadata, so no virtualenv setup is needed. Without the API key, PDF titles come from filenames, PDFs aren't downloaded so dates fall back to the upload folder (`YYYY-MM-01`, or today for this month's folder), and PDFs that match no filename pattern are listed as unclassified instead of read.
 
 **Sources:**
 - **Bluesky:** public AT Protocol API, `@gatewayprogram.bsky.social` (no reposts/replies)
@@ -81,10 +81,10 @@ HUDSON_TUBE_ANTHROPIC_API_KEY=... uv run scripts/update_data.py [--force] [--sum
 - **Videos:** scraped from `gatewayprogram.org/video-gallery.html` (YouTube embed iframes). Upload dates come from each video's `youtube.com/watch` page.
 - **Press releases and construction notices:** PDFs from `gatewayprogram.org/wp-content/uploads/YYYY/MM/`. Up to 100 of each, newest first.
 
-**PDF classification:** filename patterns (`PRESS_RELEASE_PATTERNS`, `CONSTRUCTION_NOTICE_PATTERNS`, `IGNORED_PDF_PATTERNS`) are only a fast path. Any other PDF is downloaded and the LLM decides whether it's a press release, a construction notice, or "other" (board materials, procurement, reports, forms). GDC's filenames are too inconsistent for patterns alone: `CN-…`, `TBM-Mining-Starting_…` and `…-Look-Ahead-…` all slipped through before. Whole upload folders are processed, then items are de-duplicated (same title and date), sorted by date, and trimmed, because GDC sometimes re-uploads years of old files into one month.
+**PDF classification:** filename patterns (`PRESS_RELEASE_PATTERNS`, `CONSTRUCTION_NOTICE_PATTERNS`, `IGNORED_PDF_PATTERNS`) are only a fast path. Any other PDF is downloaded and the LLM decides whether it's a press release, a construction notice, or "other" (board materials, procurement, reports, forms). GDC's filenames are too inconsistent for patterns alone: `CN-…`, `TBM-Mining-Starting_…` and `…-Look-Ahead-…` all slipped through before. A PDF that states no date gets, in order: an exact date from its filename; its upload day (the `Last-Modified` header of the download, if it falls in the folder's month; recorded as `dateFrom: "upload"`); else the folder month (`YYYY-MM-01`, or today for this month's folder). A month-only filename guess only replaces the folder month when it's a different month, and a bare year is never a date. All of these are flagged for review. The header is the upload day, usually the publication day, except when GDC bulk re-uploads old files (e.g. Oct 6–7, 2025): nothing detects that, so `--force` would give those files the dump day if they state no date. Whole upload folders are processed, then items are de-duplicated (same title and date), sorted by date, and trimmed, because GDC sometimes re-uploads years of old files into one month.
 
 **Caching:**
-- `scripts/data/pdf-index.json` records category, title, date and `classifiedBy` (`filename` or `llm`) for every PDF ever read, including "other" ones, so each file is downloaded and sent to the LLM once. To fix a misclassified file, edit its `category` there.
+- `scripts/data/pdf-index.json` records category, title, date and `classifiedBy` (`filename` or `llm`) for every PDF ever read, including "other" ones, so each file is downloaded and sent to the LLM once. To fix a misclassified file, edit its `category` there; to fix a date, edit `date`. Cached entries are never re-dated, so to re-read one file, delete its entry.
 - `activityData.json` is the cache for photo and video dates.
 
 **LLM (`LLM_MODEL`, currently Claude Sonnet 5.5):**

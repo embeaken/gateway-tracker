@@ -1717,9 +1717,10 @@
   "https://www.gatewayprogram.org/wp-content/uploads/2026/03/Construction-Notice-North-Bergen-Portal-Upcoming-Activity-Notice.pdf": {
     "category": "construction_notice",
     "title": "Construction Notice: North Bergen Portal Upcoming Activity - Palisades Tunnel Project",
-    "date": "2026-03-01",
+    "date": "2026-03-24",
     "dateIsFallback": true,
-    "classifiedBy": "filename"
+    "classifiedBy": "filename",
+    "dateFrom": "upload"
   },
   "https://www.gatewayprogram.org/wp-content/uploads/2026/03/D627-005-P01-Gateway-Project-Report-Refurbishment-First-Issue.pdf": {
     "category": "other",
@@ -1878,9 +1879,10 @@
   "https://www.gatewayprogram.org/wp-content/uploads/2026/06/GDC-Gazette-Summer-2026.pdf": {
     "category": "press_release",
     "title": "The GDC Gazette: Summer 2026 - Hudson Tunnel Project Construction Updates",
-    "date": "2026-06-01",
+    "date": "2026-06-23",
     "dateIsFallback": true,
-    "classifiedBy": "filename"
+    "classifiedBy": "filename",
+    "dateFrom": "upload"
   },
   "https://www.gatewayprogram.org/wp-content/uploads/2026/06/Hudson-County-Shaft-Upcoming-Excavation-Work-6.15.26.pdf": {
     "category": "construction_notice",
@@ -1894,7 +1896,8 @@
     "title": "GDC Awards Contract for Hudson Tunnel Project Construction Package 3: The New Jersey Surface Alignment",
     "date": "2026-06-01",
     "dateIsFallback": true,
-    "classifiedBy": "filename"
+    "classifiedBy": "filename",
+    "dateFrom": "upload"
   },
   "https://www.gatewayprogram.org/wp-content/uploads/2026/06/NJ-CEC-Opening-Press-Release.pdf": {
     "category": "press_release",
@@ -1934,23 +1937,26 @@
   "https://www.gatewayprogram.org/wp-content/uploads/2026/07/CN-18-Hour-Concrete-Pour-2026-V3.pdf": {
     "category": "construction_notice",
     "title": "Construction Notice: 18-Hour Concrete Pour for Hudson Yards Concrete Casing-Section 3 Project (July 21-22, 2026)",
-    "date": "2026-07-01",
+    "date": "2026-07-16",
     "dateIsFallback": true,
-    "classifiedBy": "llm"
+    "classifiedBy": "llm",
+    "dateFrom": "upload"
   },
   "https://www.gatewayprogram.org/wp-content/uploads/2026/07/CN-18-Hour-Concrete-Pour-2026-V4.pdf": {
     "category": "construction_notice",
     "title": "Construction Notice: 18-Hour Concrete Pours for Hudson Yards Concrete Casing-Section 3 Project (July 24-25 and July 31-August 1, 2026)",
-    "date": "2026-07-01",
+    "date": "2026-07-20",
     "dateIsFallback": true,
-    "classifiedBy": "llm"
+    "classifiedBy": "llm",
+    "dateFrom": "upload"
   },
   "https://www.gatewayprogram.org/wp-content/uploads/2026/07/Damage-Claim-FAQs-for-website.pdf": {
     "category": "construction_notice",
     "title": "Damage Claim FAQs for Palisades Tunnel Project",
-    "date": "2026-07-01",
+    "date": "2026-07-23",
     "dateIsFallback": true,
-    "classifiedBy": "filename"
+    "classifiedBy": "filename",
+    "dateFrom": "upload"
   },
   "https://www.gatewayprogram.org/wp-content/uploads/2026/07/Deputy-CECO-JP.pdf": {
     "category": "other",
@@ -2004,9 +2010,10 @@
   "https://www.gatewayprogram.org/wp-content/uploads/2026/07/P1C-July-2026-Site-Mobilization-Construction-Notice-FV.pdf": {
     "category": "construction_notice",
     "title": "Hudson River Tunnel Section Site Mobilization Construction Notice",
-    "date": "2026-07-01",
+    "date": "2026-07-07",
     "dateIsFallback": true,
-    "classifiedBy": "filename"
+    "classifiedBy": "filename",
+    "dateFrom": "upload"
   },
   "https://www.gatewayprogram.org/wp-content/uploads/2026/07/SP-FAQs_V3_Noise-Abatement-Program_rev07142026.pdf": {
     "category": "construction_notice",
@@ -2032,9 +2039,10 @@
   "https://www.gatewayprogram.org/wp-content/uploads/2026/08/CN-Overnight-Shaft-Excavation-Work-2026-V4.pdf": {
     "category": "construction_notice",
     "title": "Construction Notice: Overnight Shaft Excavation Work at Block 675 (12th Avenue Shaft)",
-    "date": "2026-08-01",
+    "date": "2026-08-14",
     "dateIsFallback": true,
-    "classifiedBy": "llm"
+    "classifiedBy": "llm",
+    "dateFrom": "upload"
   },
   "https://www.gatewayprogram.org/wp-content/uploads/2026/08/Damage-Claims-FAQ_English-Spanish-8.4.26.pdf": {
     "category": "construction_notice",
@@ -2053,16 +2061,18 @@
   "https://www.gatewayprogram.org/wp-content/uploads/2026/08/Hoboken-Open-House-Fence-Sign-V3-web-1-2.pdf": {
     "category": "construction_notice",
     "title": "Hudson River Tunnel Section Open House in Hoboken",
-    "date": "2026-08-01",
+    "date": "2026-08-31",
     "dateIsFallback": true,
-    "classifiedBy": "llm"
+    "classifiedBy": "llm",
+    "dateFrom": "upload"
   },
   "https://www.gatewayprogram.org/wp-content/uploads/2026/08/Hudson-Tunnel-Project-September-Look-Ahead-2026-v5.pdf": {
     "category": "construction_notice",
     "title": "Hudson River Tunnel Section Update: September 2026 Look-Ahead (Pre-Construction Activities Continue)",
-    "date": "2026-08-01",
+    "date": "2026-08-31",
     "dateIsFallback": true,
-    "classifiedBy": "llm"
+    "classifiedBy": "llm",
+    "dateFrom": "upload"
   },
   "https://www.gatewayprogram.org/wp-content/uploads/2026/08/NJ-CEC-Key-Terms-FAQs-2026-V7-2.pdf": {
     "category": "construction_notice",
@@ -2081,9 +2091,10 @@
   "https://www.gatewayprogram.org/wp-content/uploads/2026/08/NJ-Surface-Alignment-Update-2026-V1-3.pdf": {
     "category": "construction_notice",
     "title": "NJ Surface Alignment Update: Test Pit Work on Secaucus Road",
-    "date": "2026-08-01",
+    "date": "2026-08-28",
     "dateIsFallback": true,
-    "classifiedBy": "llm"
+    "classifiedBy": "llm",
+    "dateFrom": "upload"
   },
   "https://www.gatewayprogram.org/wp-content/uploads/2026/08/NY-CEC-Key-Terms-FAQs-2026-V4.pdf": {
     "category": "construction_notice",
@@ -2109,9 +2120,10 @@
   "https://www.gatewayprogram.org/wp-content/uploads/2026/08/P1A_Road-Sidewalk-Maintenance-Notice_FV.pdf": {
     "category": "construction_notice",
     "title": "Upcoming Road & Sidewalk Maintenance at Hudson County Shaft Site (Park Ave. and 19th St.)",
-    "date": "2026-08-01",
+    "date": "2026-08-28",
     "dateIsFallback": true,
-    "classifiedBy": "llm"
+    "classifiedBy": "llm",
+    "dateFrom": "upload"
   },
   "https://www.gatewayprogram.org/wp-content/uploads/2026/08/Sp_Claim-Form_FV.pdf": {
     "category": "other",
@@ -2123,9 +2135,10 @@
   "https://www.gatewayprogram.org/wp-content/uploads/2026/08/Willow-Ave-Site-Mobilization-2026-V3-1.pdf": {
     "category": "construction_notice",
     "title": "Site Mobilization Near & Under Willow Avenue (Hudson River Tunnel Section Update)",
-    "date": "2026-08-01",
+    "date": "2026-08-03",
     "dateIsFallback": true,
-    "classifiedBy": "llm"
+    "classifiedBy": "llm",
+    "dateFrom": "upload"
   },
   "https://www.gatewayprogram.org/wp-content/uploads/2026/09/GDC-Financial-Analyst-Job-Description_draft-9.28.26-clean-MB.pdf": {
     "category": "other",
@@ -2185,10 +2198,11 @@
   },
   "https://www.gatewayprogram.org/wp-content/uploads/2026/10/CN-P1C-October-2026-V3.pdf": {
     "category": "construction_notice",
-    "title": "Micropile and Underpinning Work Moves Forward: Hudson River Tunnel Section (Project Update, October 2026)",
+    "title": "Micropile and Underpinning Work Moves Forward: Hudson River Tunnel Section Project Update",
     "date": "2026-10-01",
     "dateIsFallback": true,
-    "classifiedBy": "llm"
+    "classifiedBy": "llm",
+    "dateFrom": "upload"
   },
   "https://www.gatewayprogram.org/wp-content/uploads/2026/10/GDC-2A-Overall-Project-Goal-Presentation-for-Website.pdf": {
     "category": "other",
@@ -2209,7 +2223,8 @@
     "title": "The GDC Gazette: Fall 2026 Hudson Tunnel Project Newsletter",
     "date": "2026-10-01",
     "dateIsFallback": true,
-    "classifiedBy": "filename"
+    "classifiedBy": "filename",
+    "dateFrom": "upload"
   },
   "https://www.gatewayprogram.org/wp-content/uploads/2026/10/GDC-Senior-Financial-Analyst-Job-Description_draft-9.28.26-clean-MB.pdf": {
     "category": "other",
@@ -2221,23 +2236,26 @@
   "https://www.gatewayprogram.org/wp-content/uploads/2026/10/NJ-FAQ_English-Spanish_FV.pdf": {
     "category": "construction_notice",
     "title": "Hudson Tunnel Project Frequently Asked Questions (FAQs): New Jersey",
-    "date": "2026-10-01",
+    "date": "2026-10-14",
     "dateIsFallback": true,
-    "classifiedBy": "filename"
+    "classifiedBy": "filename",
+    "dateFrom": "upload"
   },
   "https://www.gatewayprogram.org/wp-content/uploads/2026/10/NY-FAQ_English-Spanish_FV.pdf": {
     "category": "construction_notice",
     "title": "Hudson Tunnel Project Frequently Asked Questions (FAQs): New York",
-    "date": "2026-10-01",
+    "date": "2026-10-14",
     "dateIsFallback": true,
-    "classifiedBy": "filename"
+    "classifiedBy": "filename",
+    "dateFrom": "upload"
   },
   "https://www.gatewayprogram.org/wp-content/uploads/2026/10/TBM-Mining-Starting_Eng.-Spa._FV.pdf": {
     "category": "construction_notice",
     "title": "TBM Mining Starting Soon: What to Expect (Hudson Tunnel Project)",
-    "date": "2026-10-01",
+    "date": "2026-10-06",
     "dateIsFallback": true,
-    "classifiedBy": "llm"
+    "classifiedBy": "llm",
+    "dateFrom": "upload"
   },
   "https://www.gatewayprogram.org/wp-content/uploads/2026/10/TBM-Start-of-Mining-Press-Release.pdf": {
     "category": "press_release",

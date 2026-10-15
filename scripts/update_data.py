@@ -27,6 +27,8 @@ import os
 import re
 import sys
 from datetime import datetime
+from email.utils import parsedate_to_datetime
+from zoneinfo import ZoneInfo
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.error import HTTPError, URLError
@@ -140,13 +142,14 @@ def fetch_url(url, as_json=False):
 
 
 def fetch_bytes(url):
-    """Fetch a URL as raw bytes. Returns (bytes, error_string)."""
+    """Fetch a URL as raw bytes. Returns (bytes, last_modified, error_string);
+    last_modified is the Last-Modified header, or None."""
     req = Request(url, headers={"User-Agent": USER_AGENT})
     try:
         with urlopen(req, timeout=30) as resp:
-            return resp.read(), None
+            return resp.read(), resp.headers.get("Last-Modified"), None
     except Exception as e:
-        return None, str(e)
+        return None, None, str(e)
 
 
 # ── Existing data cache ───────────────────────────────────────────────────────
@@ -174,6 +177,29 @@ def load_existing_data():
 
 # ── Date inference ────────────────────────────────────────────────────────────
 
+def folder_fallback_date(year, month):
+    """Date for a file whose date can't be inferred: today (New York) if it sits
+    in this month's upload folder, since it was most likely just published;
+    otherwise the first of its folder's month."""
+    today = datetime.now(ZoneInfo("America/New_York")).date()
+    if (year, month) == (today.year, today.month):
+        return today.isoformat()
+    return f"{year:04d}-{month:02d}-01"
+
+
+def upload_date(last_modified, year, month):
+    """The day (New York) a file was uploaded, from its Last-Modified header.
+    Only trusted when it falls in the file's upload folder month: anything else
+    means the server reset it (or the header is missing). Returns None then."""
+    if not last_modified:
+        return None
+    try:
+        date = parsedate_to_datetime(last_modified).astimezone(ZoneInfo("America/New_York")).date()
+    except (TypeError, ValueError):
+        return None
+    return date.isoformat() if (date.year, date.month) == (year, month) else None
+
+
 def infer_date_from_filename(filename, fallback_year, fallback_month):
     """Fallback date inference used when no API key is set.
 
@@ -186,7 +212,7 @@ def infer_date_from_filename(filename, fallback_year, fallback_month):
         y, mo, d = int(m.group(1)), int(m.group(2)), int(m.group(3))
         if 2010 <= y <= 2040 and 1 <= mo <= 12 and 1 <= d <= 31:
             return f"{y:04d}-{mo:02d}-{d:02d}", False
-    return f"{fallback_year:04d}-{fallback_month:02d}-01", True
+    return folder_fallback_date(fallback_year, fallback_month), True
 
 
 def year_month_from_url(url):
@@ -431,6 +457,8 @@ def pdf_filename_to_title(filename):
 #
 # Every PDF the script has read, keyed by URL:
 #   {"category", "title", "date", "dateIsFallback", "classifiedBy"}
+# plus "dateFrom": "upload" when a fallback date is the file's upload day
+# (its Last-Modified header) rather than a guess from the folder.
 # category is one of PDF_CATEGORIES. classifiedBy is "filename" when a pattern
 # above decided it, "llm" when the model did. "other" entries never reach
 # activityData.json; they're kept so each file is only downloaded and read once.
@@ -531,7 +559,7 @@ def read_pdf(furl, category, client):
     year, month = year_month_from_url(furl)
     print(f"  reading:   {fname}")
     try:
-        pdf_bytes, err = fetch_bytes(furl)
+        pdf_bytes, last_modified, err = fetch_bytes(furl)
         if err:
             raise RuntimeError(f"download failed: {err}")
         result = llm_read_pdf(client, extract_pdf_text(pdf_bytes), fname, classify=category is None)
@@ -540,13 +568,17 @@ def read_pdf(furl, category, client):
         return None
     date = result.get("date") or ""
     has_date = bool(re.match(r"^\d{4}-\d{2}-\d{2}$", date))
-    return {
+    uploaded = None if has_date else upload_date(last_modified, year, month)
+    entry = {
         "category": category or result["category"],
         "title": normalize(result.get("title") or pdf_filename_to_title(fname)),
-        "date": date if has_date else f"{year:04d}-{month:02d}-01",
+        "date": date if has_date else uploaded or folder_fallback_date(year, month),
         "dateIsFallback": not has_date,
         "classifiedBy": "filename" if category else "llm",
     }
+    if uploaded:
+        entry["dateFrom"] = "upload"
+    return entry
 
 
 def load_pdf_index():
@@ -594,7 +626,7 @@ def llm_infer_dates_from_filenames(client, filenames):
 {numbered}
 
 Return a JSON array with one object per filename (in the same order):
-- "date": the date in YYYY-MM-DD format, or null if no date can be determined
+- "date": the date in YYYY-MM-DD format, or null if no date can be determined. A year alone (e.g. "2026" in "Notice-2026-V4") is not a date: return null
 - "exact": true if a full year/month/day was found; false if only year/month (use 01 for the missing day)
 
 Return only the JSON array, no other text."""
@@ -632,10 +664,16 @@ def fill_dates_from_filenames(entries, client, index):
         return entries
     for (i, _), (date, is_fallback) in zip(needs_date, results):
         if date and re.match(r"^\d{4}-\d{2}-\d{2}$", date):
+            if is_fallback and entries[i].get("_date_from") == "upload":
+                continue  # the upload day beats a month-only guess
+            if is_fallback and date[:7] == "%04d-%02d" % year_month_from_url(entries[i]["link"]):
+                continue  # month-only guess in the folder's own month: keep the folder fallback
             entries[i]["date"] = date
             entries[i]["_is_fallback"] = is_fallback
             if not is_fallback and entries[i]["link"] in index:
                 index[entries[i]["link"]].update(date=date, dateIsFallback=False)
+                index[entries[i]["link"]].pop("dateFrom", None)
+            entries[i].pop("_date_from", None)
     return entries
 
 
@@ -694,7 +732,7 @@ def fetch_pdfs(client, index, n_press=FEED_ITEM_LIMIT, n_notices=FEED_ITEM_LIMIT
                 entry = {
                     "category": category,
                     "title": pdf_filename_to_title(fname),
-                    "date": f"{year:04d}-{month:02d}-01",
+                    "date": folder_fallback_date(year, month),
                     "dateIsFallback": True,
                 }
             else:
@@ -702,6 +740,8 @@ def fetch_pdfs(client, index, n_press=FEED_ITEM_LIMIT, n_notices=FEED_ITEM_LIMIT
                 continue
 
             item = {"title": entry["title"], "date": entry["date"], "link": furl, "_is_fallback": entry["dateIsFallback"]}
+            if entry.get("dateFrom"):
+                item["_date_from"] = entry["dateFrom"]
             if entry["category"] == "press_release":
                 press.append(item)
             elif entry["category"] == "construction_notice":
@@ -892,12 +932,14 @@ def main():
         fy, fm = year_month_from_url(p["url"])
         if p["url"] in existing:
             date_str, is_fallback = existing[p["url"]]["date"], False
-        elif i in llm_dates and llm_dates[i][0]:
+        elif i in llm_dates and llm_dates[i][0] and not (
+            llm_dates[i][1] and llm_dates[i][0][:7] == f"{fy:04d}-{fm:02d}"
+        ):
             date_str, is_fallback = llm_dates[i]
         else:
             date_str, is_fallback = infer_date_from_filename(p["url"].rsplit("/", 1)[-1], fy, fm)
         if is_fallback:
-            dates_needing_review.append(("photo", p["url"], date_str))
+            dates_needing_review.append(("photo", p["url"], date_str, "folder month"))
         photos.append({"url": p["url"], "caption": p.get("caption", ""), "date": date_str})
 
     press_releases, notices, unclassified = fetch_pdfs(client, pdf_index)
@@ -913,7 +955,8 @@ def main():
     for kind, entries in (("press", press_releases), ("notice", notices)):
         for entry in entries:
             if entry.get("_is_fallback"):
-                dates_needing_review.append((kind, entry["link"], entry["date"]))
+                source = "upload date" if entry.get("_date_from") == "upload" else "folder month"
+                dates_needing_review.append((kind, entry["link"], entry["date"], source))
 
     # Strip internal tracking fields before rendering
     press_releases = [{k: v for k, v in e.items() if not k.startswith("_")} for e in press_releases]
@@ -988,11 +1031,14 @@ def build_report(counts, change_lines, newly_read, dates_needing_review, unclass
             "",
             f"## Dates needing review ({len(dates_needing_review)})",
             "",
-            "Date was inferred from the month folder only. Verify and correct manually.",
+            "These files state no date. An upload date is the day the file was posted",
+            "(its Last-Modified header): usually right. A folder month is only a guess:",
+            "the first of the month, or the day of the run for this month's folder.",
+            "Verify and correct manually.",
             "",
         ]
-        for kind, url, date in dates_needing_review:
-            out.append(f"- [{kind}] `{url.rsplit('/', 1)[-1]}` → {date}")
+        for kind, url, date, source in dates_needing_review:
+            out.append(f"- [{kind}] `{url.rsplit('/', 1)[-1]}` → {date} ({source})")
 
     if unclassified:
         out += [
