@@ -1,6 +1,31 @@
 {
   "images": [
     {
+      "url": "https://www.gatewayprogram.org/wp-content/uploads/2026/10/PKG1A_PH_20261005_NJ_GatewayPalisadesHoboken_PANYNJ_GDC_DJI_MM-34-1.jpg",
+      "caption": "Excavation of the Hudson County Access Shaft, where the first pair of tunnel boring machines will be removed.",
+      "date": "2026-10-05"
+    },
+    {
+      "url": "https://www.gatewayprogram.org/wp-content/uploads/2026/10/PKG1B_PH_20260929_NY_GatewayManhattanTunnel_Photo_PANYNJ_GDC_MM-81-1.jpg",
+      "caption": "Excavation of the 12th Avenue Access Shaft.",
+      "date": "2026-09-29"
+    },
+    {
+      "url": "https://www.gatewayprogram.org/wp-content/uploads/2026/10/PKG0_PH_20260908_NY_GatewayHYCC-3_Photo_PANYNJ_GDC_EP-6.jpg",
+      "caption": "A construction worker at the HYCC-3 site installs a waterproof membrane.",
+      "date": "2026-09-08"
+    },
+    {
+      "url": "https://www.gatewayprogram.org/wp-content/uploads/2026/10/PKG1A_PH_20260908_NJ_GatewayPalisadesHoboken_PANYNJ_GDC_MM-9.jpg",
+      "caption": "Hudson County Access Shaft excavation.",
+      "date": "2026-09-08"
+    },
+    {
+      "url": "https://www.gatewayprogram.org/wp-content/uploads/2026/10/PKG1B_PH_20260908_NY_GatewayManhattanTunnels_Photo_PANYNJ_GDC_EP-29.jpg",
+      "caption": "Workers inside the 12th Avenue Access Shaft.",
+      "date": "2026-09-08"
+    },
+    {
       "url": "https://www.gatewayprogram.org/wp-content/uploads/2026/10/GDC-TBM-Event-48.jpg",
       "caption": "The tunnel boring machine's cutterhead.",
       "date": "2026-10-01"
@@ -474,34 +499,15 @@
       "url": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/PKG1B_PH_20250908_NY_GatewayManhattanTunnelsPhoto_PANYNJ_GDC_EP-35-1.jpg",
       "caption": "The 12th Avenue Access Shaft is taking shape in Manhattan. This 130-foot-wide, 80-foot-deep shaft will enable underground construction beneath 12th Avenue and W. 30th Street.",
       "date": "2025-09-08"
-    },
-    {
-      "url": "https://www.gatewayprogram.org/wp-content/uploads/2025/09/PKG1A_PH_20250827_NJ_GatewayPalisadesTonnelle_PANYNJ_GDC_MM-38.jpg",
-      "caption": "For the first time ever, you can see daylight under Tonnelle Avenue. The first construction package of the Hudson Tunnel Project is almost done!",
-      "date": "2025-08-27"
-    },
-    {
-      "url": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/PKGEA1_PH_20250729_NY_GatewayHRGSPhoto_PANYNJ_GDC_MM-33-2.jpg",
-      "caption": "The HRGS team started work removing the submerged remains of Pier 68 to clear the path for the tunnel boring machines.",
-      "date": "2025-07-29"
-    },
-    {
-      "url": "https://www.gatewayprogram.org/wp-content/uploads/2025/09/PKG0_PH_20250723_NY_GatewayHYCC-3Photo_PANYNJ_GDC_EP-19.jpg",
-      "caption": "The HYCC-3 team installs struts, tiebacks, and walers to hold up the walls of the trench during excavation and tunnel box construction.",
-      "date": "2025-07-23"
-    },
-    {
-      "url": "https://www.gatewayprogram.org/wp-content/uploads/2025/09/PKG1A_PH_20250804_NJ_GatewayPalisadesHoboken_PANYNJ_GDC_MM-32.jpg",
-      "caption": "We installed a barrier along the edge of the Hudson County Shaft construction site to reduce noise from the work site.",
-      "date": "2025-08-04"
-    },
-    {
-      "url": "https://www.gatewayprogram.org/wp-content/uploads/2025/09/PKG1B_PH_20250826_NY_GatewayManhattanTunnelsPhoto_PANYNJ_GDC_MM-20copy.jpg",
-      "caption": "Guide walls for the 12th Avenue Shaft are being installed, showing the scale of this massive access shaft.",
-      "date": "2025-08-26"
     }
   ],
   "blueskyPosts": [
+    {
+      "text": "Can't get enough of our tunnel boring machines? Check out our newest EarthCam to watch as the first machine begins tunneling and we finish assembling the second. \n\nGo to www.gatewayprogram.org, scroll to the Palisades TBM Launch Box camera, then click on Camera 2. New photos are posted every day!",
+      "date": "2026-10-15T18:44:52.343Z",
+      "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3mxwpsr2q6k2v",
+      "imageUrl": "https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:skgfj7jggympcb2nxuiadj4i/bafkreibacbheanh2apisy7d65tsbvw6ofp3gtzqygf53t7rd54rkg3zzae"
+    },
     {
       "text": "Tunnel boring has started! After years of preparation, our first tunnel boring machine is getting to work, carving through the Palisades to build the first mile of the new rail tunnel's northern tube. A second machine will start building the southern tunnel tube soon.",
       "date": "2026-10-08T19:54:29.400Z",
@@ -1055,12 +1061,6 @@
       "date": "2026-02-05T14:53:44.754Z",
       "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3me4nfhqgts2r",
       "imageUrl": "https://video.bsky.app/watch/did%3Aplc%3Askgfj7jggympcb2nxuiadj4i/bafkreif2x76uqyapl4opedznjquxwuoigw5wjvqc5mp7ggaitmeqhtqcb4/thumbnail.jpg"
-    },
-    {
-      "text": "\"We're already 10,000 yards plus of concrete into this job. Why waste it?\"\n \nAt our Board Meeting, Teamster Raymond Klein highlighted the progress already made by the hundreds of workers who will lose their jobs if funding for the Hudson Tunnel Project isn't restored.",
-      "date": "2026-02-05T00:39:23.349Z",
-      "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3me35nr2h322k",
-      "imageUrl": "https://video.bsky.app/watch/did%3Aplc%3Askgfj7jggympcb2nxuiadj4i/bafkreifczqwsgrmilnfqmzbuge26rigndkxfvx3jlz2abba7zykhwdmjlm/thumbnail.jpg"
     }
   ],
   "pressReleases": [
