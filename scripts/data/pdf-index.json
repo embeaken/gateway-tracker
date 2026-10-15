@@ -2190,6 +2190,13 @@
     "dateIsFallback": true,
     "classifiedBy": "llm"
   },
+  "https://www.gatewayprogram.org/wp-content/uploads/2026/10/GDC-2A-Overall-Project-Goal-Presentation-for-Website.pdf": {
+    "category": "other",
+    "title": "Public Meeting Presentation: Proposed DBE Goal and Methodology on Package 2A",
+    "date": "2026-10-09",
+    "dateIsFallback": false,
+    "classifiedBy": "llm"
+  },
   "https://www.gatewayprogram.org/wp-content/uploads/2026/10/GDC-Draft-DBE-Goal-Methodology-on-P-2A-For-Public-Consultation-09232026rev102-733PM.pdf": {
     "category": "other",
     "title": "DBE Project Goal and Methodology for Package 2A (A-Yard Work and 10th Avenue Cut and Cover Tunnel)",
