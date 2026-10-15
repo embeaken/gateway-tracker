@@ -5,8 +5,13 @@ import { useModal } from '../useModal'
 
 // EarthCam's interactive player for one site, in a dialog.
 
-const props = defineProps<{ project: Project | null }>()
+// `camera` (a short name like "camera_2") opens the player on that view.
+const props = defineProps<{ project: Project | null; camera?: string }>()
 const emit = defineEmits<{ close: [] }>()
+
+const playerUrl = computed(() =>
+  props.project && props.camera ? `${props.project.earthcam}/${props.camera}` : props.project?.earthcam,
+)
 
 const close = () => emit('close')
 const closeBtn = ref<HTMLButtonElement | null>(null)
@@ -61,7 +66,7 @@ const frameStyle = computed(() => {
         <div ref="monitor" class="monitor">
           <div class="monitor-placeholder" aria-hidden="true">Loading live view…</div>
           <iframe
-            :src="project.earthcam"
+            :src="playerUrl"
             allow="fullscreen"
             class="monitor-iframe"
             :style="frameStyle"

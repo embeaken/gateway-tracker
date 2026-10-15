@@ -16,13 +16,13 @@ let tick: number | undefined
 onMounted(() => (tick = window.setInterval(() => (now.value = Date.now()), 30_000)))
 onUnmounted(() => window.clearInterval(tick))
 
-type Tile = { project: Project; frame?: string; takenAt?: string }
+type Tile = { project: Project; frame?: string; takenAt?: string; camera?: string }
 
 const tiles = computed<Tile[]>(() =>
   projects.map((project) => {
     const views = data.value?.sites.find((s) => s.projectId === project.id)?.views ?? []
     const view = views[project.featuredView ?? 0] ?? views[0]
-    return { project, frame: view?.frame, takenAt: view?.takenAt }
+    return { project, frame: view?.frame, takenAt: view?.takenAt, camera: view?.camera }
   }),
 )
 
@@ -36,7 +36,7 @@ const ago = (iso: string) => {
 /** EarthCam refreshes every ~15 min; flag anything well past that */
 const isStale = (iso: string) => now.value - Date.parse(iso) > 2 * 3600_000
 
-const open = ref<Project | null>(null)
+const open = ref<Tile | null>(null)
 </script>
 
 <template>
@@ -49,7 +49,7 @@ const open = ref<Project | null>(null)
           type="button"
           class="cam-button"
           :aria-label="`Open live camera: ${tile.project.name}`"
-          @click="open = tile.project"
+          @click="open = tile"
         >
           <img
             v-if="tile.frame"
@@ -75,7 +75,7 @@ const open = ref<Project | null>(null)
       </li>
     </ul>
 
-    <CameraModal :project="open" @close="open = null" />
+    <CameraModal :project="open?.project ?? null" :camera="open?.camera" @close="open = null" />
   </div>
 </template>
 
