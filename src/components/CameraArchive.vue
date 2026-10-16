@@ -66,15 +66,34 @@ const pickPano = (camera: string) => {
 }
 
 // --- Frames: the chosen view's day, or every capture of the panorama ---
-// Keyed by URL, so the 5-minute refresh of /api/cams (new objects, same view)
-// doesn't reload the day or move the slider.
+const archiveUrl = (v: CamView, day: string) =>
+  `/api/cam-archive/${props.project.id}/${v.camera}?${new URLSearchParams({ ref: v.ref, date: day })}`
 const sourceUrl = computed(() => {
   const v = view.value
   if (!near.value) return ''
   if (pano.value) return `/api/cam-panoramas/${props.project.id}/${pano.value}`
-  return v ? `/api/cam-archive/${props.project.id}/${v.camera}?${new URLSearchParams({ ref: v.ref, date: date.value })}` : ''
+  return v ? archiveUrl(v, date.value) : ''
 })
+// Keyed by URL, so the 5-minute refresh of /api/cams (new objects, same view)
+// doesn't reload the day or move the slider.
 const cache = new Map<string, CamFrame[]>()
+const pending = new Map<string, Promise<CamFrame[]>>()
+function loadFrames(url: string): Promise<CamFrame[]> {
+  const hit = cache.get(url)
+  if (hit) return Promise.resolve(hit)
+  const active = pending.get(url)
+  if (active) return active
+  const request = (async () => {
+    const res = await fetch(url)
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    const list = ((await res.json()) as CamFramesResponse).frames
+    // Today's photos keep coming, so its list is left to the browser's HTTP cache
+    if (new URL(url, window.location.origin).searchParams.get('date') !== props.today) cache.set(url, list)
+    return list
+  })().finally(() => pending.delete(url))
+  pending.set(url, request)
+  return request
+}
 const frames = ref<CamFrame[]>([])
 const loading = ref(false)
 const error = ref(false)
@@ -94,13 +113,9 @@ watch(
       return
     }
     try {
-      const res = await fetch(url)
-      if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      const list = ((await res.json()) as CamFramesResponse).frames
+      const list = await loadFrames(url)
       // Ignore a slow response for something the visitor has already left
       if (sourceUrl.value !== url) return
-      // Today's photos keep coming, so its list isn't kept
-      if (pano.value || date.value !== props.today) cache.set(url, list)
       frames.value = list
     } catch {
       if (sourceUrl.value === url) {
@@ -128,8 +143,9 @@ const targetMin = ref<number | null>(null)
 /** Set by stepping past the end of a day: which photo to land on in the next one */
 let landOn: 'first' | 'last' | null = null
 
-const nearest = (min: number) =>
-  minutes.value.reduce((best, m, i, all) => (Math.abs(m - min) < Math.abs(all[best]! - min) ? i : best), 0)
+const nearestIn = (list: number[], min: number) =>
+  list.reduce((best, m, i, all) => (Math.abs(m - min) < Math.abs(all[best]! - min) ? i : best), 0)
+const nearest = (min: number) => nearestIn(minutes.value, min)
 
 watch(frames, (list) => {
   if (pano.value || !list.length) index.value = lastIndex.value
@@ -457,6 +473,40 @@ function stepPhoto(n: number) {
 }
 const atStart = computed(() => date.value <= first.value && index.value <= 0)
 const atEnd = computed(() => date.value >= props.today && index.value >= lastIndex.value)
+
+// Warm just one matching-time image per adjacent day once the selection settles.
+// At either end of a day, also warm the photo the step buttons land on next door.
+watch([sourceUrl, frame, shown, targetMin, zoom, scrubPos, loading], (_, __, onCleanup) => {
+  if (loading.value || pano.value || !view.value || !frame.value || shown.value?.f !== frame.value || scrubPos.value !== null) return
+  const v = view.value
+  const day = date.value
+  const min = targetMin.value ?? nyMinutes(frame.value.takenAt)
+  const zoomLevel = zoom.value
+  const edges = { [-1]: index.value === 0, [1]: index.value === lastIndex.value }
+  let cancelled = false
+  const timer = window.setTimeout(() => {
+    for (const n of [-1, 1] as const) {
+      const neighbor = addDays(day, n)
+      if (neighbor < first.value || neighbor > props.today) continue
+      loadFrames(archiveUrl(v, neighbor)).then((list) => {
+        if (cancelled || !list.length) return
+        const picks = new Set([nearestIn(list.map((f) => nyMinutes(f.takenAt)), min)])
+        if (edges[n]) picks.add(n < 0 ? list.length - 1 : 0)
+        for (const i of picks) {
+          const img = new Image()
+          img.fetchPriority = 'low'
+          img.src = src(list[i]!, zoomLevel, false)
+        }
+      }).catch(() => {
+        // Speculative failures must not affect the selected day's viewer.
+      })
+    }
+  }, 250)
+  onCleanup(() => {
+    cancelled = true
+    window.clearTimeout(timer)
+  })
+})
 </script>
 
 <template>
