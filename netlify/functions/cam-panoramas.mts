@@ -61,7 +61,8 @@ export default async (_req: Request, context: Context) => {
     if (frame) byFrame.set(frame, { frame, takenAt: isoDate(i.datetime) })
   }
   const frames = [...byFrame.values()].sort((a, b) => a.takenAt.localeCompare(b.takenAt))
-  return jsonResponse({ frames } satisfies CamFramesResponse, 200, 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400')
+  // A new capture lands about daily, so a long stale window would hide it
+  return jsonResponse({ frames } satisfies CamFramesResponse, 200, 'public, max-age=300, s-maxage=3600, stale-while-revalidate=600')
 }
 
 export const config = { path: '/api/cam-panoramas/:site/:camera' }
