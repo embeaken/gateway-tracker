@@ -16,7 +16,7 @@ async function fetchSite(projectId: string, playerUrl: string): Promise<CamSite>
       for (const a of archives) {
         if (a.type === 'panorama' && a.ref === 'regular') panoramas.push(camera)
         const frame = a.type === 'archive' && a.image && a.ref && a.start_datetime && framePath(a.image.url)
-        if (frame) views.push({ frame, takenAt: isoDate(a.image!.datetime), camera, ref: a.ref!, since: isoDate(a.start_datetime!) })
+        if (frame) views.push({ frame, takenAt: isoDate(a.image!.datetime), camera, ref: a.ref!, slug: a.slug, since: isoDate(a.start_datetime!) })
       }
     }
     return { projectId, views, panoramas }

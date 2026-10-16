@@ -1,17 +1,16 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { earthcamPlayerUrl, type CamView } from '../earthcam'
 import type { Project } from '../types'
 import { useModal } from '../useModal'
 
 // EarthCam's interactive player for one site, in a dialog.
 
-// `camera` (a short name like "camera_2") opens the player on that view.
-const props = defineProps<{ project: Project | null; camera?: string }>()
+// `view` opens the player on that camera view instead of the page's first one.
+const props = defineProps<{ project: Project | null; view?: CamView }>()
 const emit = defineEmits<{ close: [] }>()
 
-const playerUrl = computed(() =>
-  props.project && props.camera ? `${props.project.earthcam}/${props.camera}` : props.project?.earthcam,
-)
+const playerUrl = computed(() => props.project ? earthcamPlayerUrl(props.project.earthcam, props.view) : undefined)
 
 const close = () => emit('close')
 const closeBtn = ref<HTMLButtonElement | null>(null)

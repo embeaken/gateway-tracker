@@ -2,6 +2,7 @@
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { projects } from '../assets/data'
 import { cdnSiteImage, cdnSiteSrcset } from '../imageCdn'
+import type { CamView } from '../earthcam'
 import type { Project } from '../types'
 import { useCams } from '../useCams'
 import CameraModal from './CameraModal.vue'
@@ -16,13 +17,12 @@ let tick: number | undefined
 onMounted(() => (tick = window.setInterval(() => (now.value = Date.now()), 30_000)))
 onUnmounted(() => window.clearInterval(tick))
 
-type Tile = { project: Project; frame?: string; takenAt?: string; camera?: string }
+type Tile = { project: Project; view?: CamView }
 
 const tiles = computed<Tile[]>(() =>
   projects.map((project) => {
     const views = data.value?.sites.find((s) => s.projectId === project.id)?.views ?? []
-    const view = views[project.featuredView ?? 0] ?? views[0]
-    return { project, frame: view?.frame, takenAt: view?.takenAt, camera: view?.camera }
+    return { project, view: views[project.featuredView ?? 0] ?? views[0] }
   }),
 )
 
@@ -52,9 +52,9 @@ const open = ref<Tile | null>(null)
           @click="open = tile"
         >
           <img
-            v-if="tile.frame"
-            :src="cdnSiteImage(tile.frame, 640)"
-            :srcset="cdnSiteSrcset(tile.frame, [480, 640, 960])"
+            v-if="tile.view?.frame"
+            :src="cdnSiteImage(tile.view.frame, 640)"
+            :srcset="cdnSiteSrcset(tile.view.frame, [480, 640, 960])"
             sizes="(min-width: 1600px) 20vw, (min-width: 900px) 33vw, 100vw"
             :alt="`Latest view: ${tile.project.name}`"
             loading="lazy"
@@ -63,19 +63,19 @@ const open = ref<Tile | null>(null)
           <span class="cam-cap">
             <span class="cam-name">{{ tile.project.name }}</span>
             <time
-              v-if="tile.takenAt"
+              v-if="tile.view?.takenAt"
               class="cam-age"
-              :class="isStale(tile.takenAt) && 'cam-age--stale'"
-              :datetime="tile.takenAt"
-              :title="new Date(tile.takenAt).toLocaleString()"
-              >{{ ago(tile.takenAt) }}</time
+              :class="isStale(tile.view.takenAt) && 'cam-age--stale'"
+              :datetime="tile.view.takenAt"
+              :title="new Date(tile.view.takenAt).toLocaleString()"
+              >{{ ago(tile.view.takenAt) }}</time
             >
           </span>
         </button>
       </li>
     </ul>
 
-    <CameraModal :project="open?.project ?? null" :camera="open?.camera" @close="open = null" />
+    <CameraModal :project="open?.project ?? null" :view="open?.view" @close="open = null" />
   </div>
 </template>
 

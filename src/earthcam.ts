@@ -28,6 +28,8 @@ export type CamView = CamFrame & {
   camera: string
   /** Archive reference for this view */
   ref: string
+  /** EarthCam's player URL segment for this view, e.g. "view_3_2" */
+  slug?: string
   /** ISO timestamp of the view's first archived still */
   since: string
 }
@@ -57,6 +59,7 @@ export type EarthCamPage = {
     archives: {
       type: string
       ref?: string
+      slug?: string
       start_datetime?: string
       image?: { url: string; datetime: string }
     }[]
@@ -84,6 +87,12 @@ export const earthcamPage = (playerUrl: string) => {
   const path = new URL(playerUrl).pathname.replace(/^\/public\//, '')
   return path.split('/').slice(0, 2).join('/')
 }
+
+/** EarthCam's player opened on one camera view (otherwise it opens on the page's first view) */
+export const earthcamPlayerUrl = (playerUrl: string, view?: Pick<CamView, 'camera' | 'slug'>) =>
+  view?.slug
+    ? `https://share.earthcam.net/public/${earthcamPage(playerUrl)}/${view.camera}/${view.slug}`
+    : playerUrl
 
 /**
  * "https://resource6.earthcam.net/v0/object/AbC…?" → "/api/cam-frame/resource6/AbC…".
