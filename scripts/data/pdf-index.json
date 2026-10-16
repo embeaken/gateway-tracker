@@ -2196,6 +2196,14 @@
     "dateIsFallback": false,
     "classifiedBy": "filename"
   },
+  "https://www.gatewayprogram.org/wp-content/uploads/2026/10/CN-9-Hour-Concrete-Pour-2026-V7.pdf": {
+    "category": "construction_notice",
+    "title": "Construction Notice: 9-Hour Concrete Pour for Hudson Yards Concrete Casing-Section 3 (October 20, 2026)",
+    "date": "2026-10-16",
+    "dateIsFallback": true,
+    "classifiedBy": "llm",
+    "dateFrom": "upload"
+  },
   "https://www.gatewayprogram.org/wp-content/uploads/2026/10/CN-P1C-October-2026-V3.pdf": {
     "category": "construction_notice",
     "title": "Micropile and Underpinning Work Moves Forward: Hudson River Tunnel Section Project Update",
