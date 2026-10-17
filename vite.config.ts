@@ -45,16 +45,6 @@ function netlifyFunctionsDev(): Plugin {
   }
 }
 
-// https://vite.dev/config/
 export default defineConfig({
-  plugins: [
-    vue(),
-    vueDevTools(),
-    netlifyFunctionsDev(),
-  ],
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
-    },
-  },
+  plugins: [vue(), vueDevTools(), netlifyFunctionsDev()],
 })
