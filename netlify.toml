@@ -1,5 +1,5 @@
 [build]
-  command = "pnpm run build-only"
+  command = "pnpm run build"
   publish = "dist/"
 
 [images]
