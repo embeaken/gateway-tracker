@@ -2196,6 +2196,14 @@
     "dateIsFallback": false,
     "classifiedBy": "filename"
   },
+  "https://www.gatewayprogram.org/wp-content/uploads/2026/10/CN-14-Hour-Concrete-Pour-2026-V10.pdf": {
+    "category": "construction_notice",
+    "title": "Construction Notice: 14-Hour Concrete Pour for Hudson Yards Concrete Casing-Section 3",
+    "date": "2026-10-19",
+    "dateIsFallback": true,
+    "classifiedBy": "llm",
+    "dateFrom": "upload"
+  },
   "https://www.gatewayprogram.org/wp-content/uploads/2026/10/CN-9-Hour-Concrete-Pour-2026-V7.pdf": {
     "category": "construction_notice",
     "title": "Construction Notice: 9-Hour Concrete Pour for Hudson Yards Concrete Casing-Section 3 (October 20, 2026)",
