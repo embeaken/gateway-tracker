@@ -49,7 +49,7 @@ const today = computed(() => nyDate(new Date(data.value?.fetchedAt ?? Date.now()
 .cams-title {
   /* Same column as the cards (see CameraArchive) */
   width: 100%;
-  max-width: 1100px;
+  max-width: 1280px;
   margin-inline: auto;
   font-size: 28px;
   line-height: 1.15;
@@ -61,11 +61,11 @@ const today = computed(() => nyDate(new Date(data.value?.fetchedAt ?? Date.now()
   top: 0;
   z-index: 10;
   display: flex;
-  justify-content: safe center;
+  flex-wrap: wrap;
+  justify-content: flex-start;
   gap: 6px;
-  overflow-x: auto;
   margin: 0 calc(-1 * var(--spacing-md));
-  padding: 8px var(--spacing-md);
+  padding: 8px max(var(--spacing-md), calc((100% - 1280px) / 2 + var(--spacing-md)));
   background: var(--color-background);
 }
 

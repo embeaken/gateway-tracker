@@ -651,7 +651,7 @@ watch([sourceUrl, frame, shown, targetMin, zoom, scrubPos, loading], (_, __, onC
   --pad: 16px;
   /* Wide enough to be big, narrow enough that the controls still fit */
   width: 100%;
-  max-width: 1100px;
+  max-width: 1280px;
   margin-inline: auto;
   transition: max-width 0.25s ease;
   background: var(--color-card-bg);

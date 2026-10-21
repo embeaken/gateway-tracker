@@ -74,7 +74,7 @@ export const projects: Project[] = [
   },
   {
     id: "hudson-yards",
-    name: "Hudson Yards Concrete Casing – Section 3",
+    name: "Hudson Yards Concrete Casing",
     desc: "This project will connect the new tunnel to Penn Station.",
     earthcam: "https://share.earthcam.net/public/edgenyc/hudson_yards/camera",
     status: "Tunnel roof installation in progress. Substantial completion is expected by the end of 2026.",
