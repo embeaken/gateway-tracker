@@ -137,11 +137,8 @@ test.describe('dashboard smoke', () => {
     await expect(page.getByRole('heading', { level: 1, name: 'Construction cameras' })).toBeVisible()
     await expect(page).toHaveTitle(/Construction cameras/)
 
-    // Every site is on the page; a chip scrolls to its card
+    // Every site is on the page
     await expect(page.locator('section.viewer-card')).toHaveCount(5)
-    await page.getByRole('link', { name: 'Manhattan Access Shaft' }).click()
-    await expect(page).toHaveURL(/\/cameras#manhattan-shaft$/)
-    await expect(page.locator('#manhattan-shaft')).toBeInViewport()
 
     // Panoramas are tabs next to the views, and are browsed by date
     await page.route('**/api/cam-panoramas/**', (route) =>
@@ -192,11 +189,9 @@ test.describe('dashboard smoke', () => {
       expect(s.height).toBeGreaterThan(s.width)
       await expect(card.locator('.pan-hint')).toBeVisible()
       const before = (await card.locator('.pan').getAttribute('style'))!
-      // Near the bottom: the sticky site chips can cover the top of the stage
-      const y = s.y + s.height - 40
-      await page.mouse.move(s.x + s.width / 2, y)
+      await page.mouse.move(s.x + s.width / 2, s.y + s.height / 2)
       await page.mouse.down()
-      await page.mouse.move(s.x + s.width / 2 - 80, y, { steps: 4 })
+      await page.mouse.move(s.x + s.width / 2 - 80, s.y + s.height / 2, { steps: 4 })
       await page.mouse.up()
       await expect(card.locator('.pan')).not.toHaveAttribute('style', before)
       await expect(card.locator('.pan-hint')).toHaveCount(0)
@@ -218,15 +213,14 @@ test.describe('dashboard smoke', () => {
     await expect(card.locator('.zoom-badge')).toContainText('1.4×')
     await stage.dblclick()
     await expect(card.locator('.zoom-badge')).toHaveCount(0)
-    // Re-measured, and low on the stage: the sticky site chips can cover its top
-    const at = (await stage.boundingBox())!
-    await page.mouse.move(at.x + at.width / 2, at.y + at.height - 40)
+    const box = (await stage.boundingBox())!
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
     await page.mouse.wheel(0, -400)
     await expect(card.locator('.zoom-badge')).toBeVisible()
     // Zoomed in, a larger size is requested (half, then full once enlarged past 1920px)
     await expect(card.locator('.stage img').last()).toHaveAttribute('src', /size=(half|full)/)
     await page.mouse.down()
-    await page.mouse.move(at.x + at.width / 2 + 40, at.y + at.height - 20)
+    await page.mouse.move(box.x + box.width / 2 + 40, box.y + box.height / 2 + 20)
     await page.mouse.up()
     await stage.dblclick()
     await expect(card.locator('.zoom-badge')).toHaveCount(0)

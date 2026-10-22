@@ -14,12 +14,6 @@ const today = computed(() => nyDate(new Date(data.value?.fetchedAt ?? Date.now()
   <main class="cams container">
     <h1 class="cams-title">Construction cameras</h1>
 
-    <nav class="sites" aria-label="Jump to a site">
-      <RouterLink v-for="p in projects" :key="p.id" :to="{ name: 'cameras', hash: `#${p.id}` }" class="site-chip">
-        {{ p.name }}
-      </RouterLink>
-    </nav>
-
     <CameraArchive
       v-for="p in projects"
       :key="p.id"
@@ -53,47 +47,5 @@ const today = computed(() => nyDate(new Date(data.value?.fetchedAt ?? Date.now()
   margin-inline: auto;
   font-size: 28px;
   line-height: 1.15;
-}
-
-/* Stays in reach while scrolling the long page */
-.sites {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  gap: 6px;
-  margin: 0 calc(-1 * var(--spacing-md));
-  padding: 8px max(var(--spacing-md), calc((100% - 1280px) / 2 + var(--spacing-md)));
-  background: var(--color-background);
-}
-
-@media (max-width: 768px) {
-  .sites {
-    margin: 0 calc(-1 * var(--spacing-sm));
-    padding-inline: var(--spacing-sm);
-  }
-}
-
-.site-chip {
-  flex: none;
-  white-space: nowrap;
-  padding: 6px 12px;
-  border: 1px solid var(--color-border);
-  border-radius: 999px;
-  background: var(--color-card-bg);
-  color: var(--color-text-primary);
-  font-size: 13px;
-  font-weight: var(--font-weight-semibold);
-}
-
-.site-chip:visited {
-  color: var(--color-text-primary);
-}
-
-.site-chip:hover {
-  border-color: var(--color-primary);
-  text-decoration: none;
 }
 </style>

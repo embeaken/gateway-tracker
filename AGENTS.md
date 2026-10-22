@@ -13,7 +13,7 @@ This file provides guidance for agents working in this repository.
 
 Vue 3 single-page app tracking the Gateway Hudson River tunnel project, with `vue-router` (history mode) and no state management library. Data is static JSON written by scripts, plus one live feed (cameras) served by Netlify Functions.
 
-**Routes (`src/router.ts`):** `/` is the dashboard (`src/views/DashboardView.vue`), `/cameras` is the camera archive (`src/views/CamerasView.vue`: one `CameraArchive` card per site, with sticky chips that scroll to `#site-id`; state is local, not in the URL). `App.vue` holds the header, explainer, `<RouterView>` and footer. The router sets each page's title and canonical URL; `netlify.toml` rewrites unknown paths to `index.html`, and `public/sitemap.xml` lists the pages (update it when adding routes or sites).
+**Routes (`src/router.ts`):** `/` is the dashboard (`src/views/DashboardView.vue`), `/cameras` is the camera archive (`src/views/CamerasView.vue`: one `CameraArchive` card per site, linkable as `#site-id`; state is local, not in the URL). `App.vue` holds the header, explainer, `<RouterView>` and footer. The router sets each page's title and canonical URL; `netlify.toml` rewrites unknown paths to `index.html`, and `public/sitemap.xml` lists the pages (update it when adding routes or sites).
 
 **Dashboard layout (`DashboardView.vue`):** `AppHeader` ("What is this?" opens the `OverviewExplainer` drawer), then a two-column grid inside `.container`:
 - **Main column:** `RouteMap` (route side view with estimated TBM positions), two `TbmCard`s, `CameraWall`, `PhotoGallery` beside `FundingCard`, then `PackagesTable`.
