@@ -192,9 +192,11 @@ test.describe('dashboard smoke', () => {
       expect(s.height).toBeGreaterThan(s.width)
       await expect(card.locator('.pan-hint')).toBeVisible()
       const before = (await card.locator('.pan').getAttribute('style'))!
-      await page.mouse.move(s.x + s.width / 2, s.y + s.height / 2)
+      // Near the bottom: the sticky site chips can cover the top of the stage
+      const y = s.y + s.height - 40
+      await page.mouse.move(s.x + s.width / 2, y)
       await page.mouse.down()
-      await page.mouse.move(s.x + s.width / 2 - 80, s.y + s.height / 2, { steps: 4 })
+      await page.mouse.move(s.x + s.width / 2 - 80, y, { steps: 4 })
       await page.mouse.up()
       await expect(card.locator('.pan')).not.toHaveAttribute('style', before)
       await expect(card.locator('.pan-hint')).toHaveCount(0)
@@ -211,19 +213,20 @@ test.describe('dashboard smoke', () => {
 
     // Scrolling over the photo zooms in around the pointer; double click resets
     const stage = card.locator('.stage')
-    const box = (await stage.boundingBox())!
     // A double click at 100% nudges in to 1.4×, another resets
     await stage.dblclick()
     await expect(card.locator('.zoom-badge')).toContainText('1.4×')
     await stage.dblclick()
     await expect(card.locator('.zoom-badge')).toHaveCount(0)
-    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
+    // Re-measured, and low on the stage: the sticky site chips can cover its top
+    const at = (await stage.boundingBox())!
+    await page.mouse.move(at.x + at.width / 2, at.y + at.height - 40)
     await page.mouse.wheel(0, -400)
     await expect(card.locator('.zoom-badge')).toBeVisible()
     // Zoomed in, a larger size is requested (half, then full once enlarged past 1920px)
     await expect(card.locator('.stage img').last()).toHaveAttribute('src', /size=(half|full)/)
     await page.mouse.down()
-    await page.mouse.move(box.x + box.width / 2 + 40, box.y + box.height / 2 + 20)
+    await page.mouse.move(at.x + at.width / 2 + 40, at.y + at.height - 20)
     await page.mouse.up()
     await stage.dblclick()
     await expect(card.locator('.zoom-badge')).toHaveCount(0)
