@@ -503,6 +503,12 @@
   ],
   "blueskyPosts": [
     {
+      "text": "The tunnel boring machines building the new rail tunnel between New York and New Jersey are each longer than an entire football field, including both end zones \ud83c\udfc8\n\nNo matter who you cheer for on Sunday, everyone can agree: a modern tunnel that will make train travel better is something to root for!",
+      "date": "2026-10-23T14:31:31.244Z",
+      "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3mykff3txxk2b",
+      "imageUrl": "https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:skgfj7jggympcb2nxuiadj4i/bafkreihe4qv6brrfdmu3elmtvdl5yo5pzf3u5arxpayv7l7fvlvmgivjea"
+    },
+    {
       "text": "The outside of the new tunnel tubes, called the tunnel lining, is made of rings of interlocking concrete segments. It will take more than 4,100 rings - made from over 24,000 segments - to make the lining of both tubes!",
       "date": "2026-10-21T14:35:26.963Z",
       "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3myfeobq3bk2l",
@@ -1055,12 +1061,6 @@
       "date": "2026-02-06T16:27:36.648Z",
       "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3me7d4a6we22r",
       "imageUrl": "https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:skgfj7jggympcb2nxuiadj4i/bafkreigqc6uahuznoeydu6rjsaym652vhqygvmr4a23mkzwiy4ascjj3xy"
-    },
-    {
-      "text": "Nearly 1,000 workers will lose their jobs immediately when construction of the Hudson Tunnel Project pauses tomorrow, and an extended pause will put many more jobs at risk.\n\nFunding must be restored ASAP so these hardworking men and women can get back to work.",
-      "date": "2026-02-05T23:51:50.374Z",
-      "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3me5lhnpijs2r",
-      "imageUrl": "https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:skgfj7jggympcb2nxuiadj4i/bafkreih6sue3op6fj5unxeu6z4oy5t3heljo7th67azj4hn5rmcvet7fti"
     }
   ],
   "pressReleases": [
@@ -1567,9 +1567,14 @@
   ],
   "constructionNotices": [
     {
-      "title": "Construction Notice: 14-Hour Concrete Pour for Hudson Yards Concrete Casing-Section 3",
-      "date": "2026-10-19",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/10/CN-14-Hour-Concrete-Pour-2026-V10.pdf"
+      "title": "Construction Notice: 14-Hour Concrete Pour for Hudson Yards Concrete Casing-Section 3 (Rescheduled, Revised Time)",
+      "date": "2026-10-23",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/10/CN-14-Hour-Concrete-Pour-2026-V11.pdf"
+    },
+    {
+      "title": "Hudson County Shaft Site Construction Update: Controlled Blasting and In-Ground Retaining Wall",
+      "date": "2026-10-23",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/10/CN-HCAS-Update-1026-FV.pdf"
     },
     {
       "title": "Hudson Tunnel Project Frequently Asked Questions (FAQs): New Jersey",

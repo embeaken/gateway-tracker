@@ -2212,6 +2212,14 @@
     "classifiedBy": "llm",
     "dateFrom": "upload"
   },
+  "https://www.gatewayprogram.org/wp-content/uploads/2026/10/CN-14-Hour-Concrete-Pour-2026-V11.pdf": {
+    "category": "construction_notice",
+    "title": "Construction Notice: 14-Hour Concrete Pour for Hudson Yards Concrete Casing-Section 3 (Rescheduled, Revised Time)",
+    "date": "2026-10-23",
+    "dateIsFallback": true,
+    "classifiedBy": "llm",
+    "dateFrom": "upload"
+  },
   "https://www.gatewayprogram.org/wp-content/uploads/2026/10/CN-9-Hour-Concrete-Pour-2026-V7.pdf": {
     "category": "construction_notice",
     "title": "Construction Notice: 9-Hour Concrete Pour for Hudson Yards Concrete Casing-Section 3 (October 20, 2026)",
@@ -2219,6 +2227,13 @@
     "dateIsFallback": true,
     "classifiedBy": "llm",
     "dateFrom": "upload"
+  },
+  "https://www.gatewayprogram.org/wp-content/uploads/2026/10/CN-HCAS-Update-1026-FV.pdf": {
+    "category": "construction_notice",
+    "title": "Hudson County Shaft Site Construction Update: Controlled Blasting and In-Ground Retaining Wall",
+    "date": "2026-10-23",
+    "dateIsFallback": false,
+    "classifiedBy": "llm"
   },
   "https://www.gatewayprogram.org/wp-content/uploads/2026/10/CN-P1C-October-2026-V3.pdf": {
     "category": "construction_notice",
