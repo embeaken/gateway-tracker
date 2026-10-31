@@ -32,7 +32,7 @@ from zoneinfo import ZoneInfo
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.error import HTTPError, URLError
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urljoin, urlparse
 from urllib.request import Request, urlopen
 
 import anthropic
@@ -42,7 +42,7 @@ import pypdf
 
 ACTOR = "gatewayprogram.bsky.social"
 GALLERY_URL = "https://www.gatewayprogram.org/photo-gallery.html"
-UPLOAD_BASE = "https://www.gatewayprogram.org/wp-content/uploads"
+SITE_URL = "https://www.gatewayprogram.org"
 VIDEO_GALLERY_URL = "https://www.gatewayprogram.org/video-gallery.html"
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -359,7 +359,7 @@ class GalleryParser(HTMLParser):
             href = attrs.get("href", "")
             ext = "." + href.rsplit(".", 1)[-1].lower() if "." in href else ""
             if ext in IMAGE_EXTENSIONS:
-                self._current_url = href
+                self._current_url = urljoin(GALLERY_URL, href)
         elif tag == "figcaption" and self._in_item and self._current_url:
             self._capturing = True
             self._parts = []
@@ -407,10 +407,10 @@ def fetch_photos(limit=FEED_ITEM_LIMIT):
     return photos
 
 
-# ── WordPress directory scraping ──────────────────────────────────────────────
+# ── Site upload scraping ──────────────────────────────────────────────
 
-class DirListingParser(HTMLParser):
-    """Extract hrefs from an Apache/Nginx autoindex page."""
+class LinkParser(HTMLParser):
+    """Collect every <a href> on a page."""
 
     def __init__(self):
         super().__init__()
@@ -419,29 +419,43 @@ class DirListingParser(HTMLParser):
     def handle_starttag(self, tag, attrs):
         if tag == "a":
             href = dict(attrs).get("href", "")
-            if href and not href.startswith("?") and href not in ("../", "/"):
+            if href:
                 self.links.append(href)
 
 
-def fetch_wp_directory(year, month):
-    """Return absolute file URLs from a WordPress upload directory listing, or []."""
-    dir_url = f"{UPLOAD_BASE}/{year:04d}/{month:02d}/"
-    html_content, err = fetch_url(dir_url)
-    if err or not html_content or "<a href=" not in html_content:
+def page_links(page_url):
+    """Absolute link URLs (without fragments) on a page, or []."""
+    html_content, err = fetch_url(page_url)
+    if err or not html_content:
         return []
-
-    parser = DirListingParser()
+    parser = LinkParser()
     parser.feed(html_content)
+    return [urljoin(page_url, h).split("#")[0] for h in parser.links]
 
-    results = []
-    for link in parser.links:
-        if link.startswith("http"):
-            results.append(link)
-        elif link.startswith("/"):
-            results.append("https://www.gatewayprogram.org" + link)
-        else:
-            results.append(dir_url + link)
-    return results
+
+def collect_site_uploads(known_urls=()):
+    """Group upload files by (year, month) of their wp-content/uploads folder.
+
+    GDC no longer serves directory listings (403), so files are found from the
+    links on the site's own pages (the home page and every page it links to).
+    `known_urls` (the PDF index) are added too, so a file GDC stops linking
+    keeps its place in the feed.
+    """
+    site_host = urlparse(SITE_URL).netloc
+    pages = {u for u in page_links(SITE_URL + "/") if urlparse(u).netloc == site_host and u.endswith(".html")}
+    pages.add(SITE_URL + "/index.html")
+    urls = set(known_urls)
+    for page in sorted(pages):
+        urls.update(u for u in page_links(page) if "/wp-content/uploads/" in u)
+
+    by_month = {}
+    for u in sorted(urls):
+        try:
+            ym = year_month_from_url(u)
+        except (IndexError, ValueError):
+            continue
+        by_month.setdefault(ym, []).append(u)
+    return by_month
 
 
 def pdf_filename_to_title(filename):
@@ -697,6 +711,8 @@ def fetch_pdfs(client, index, n_press=FEED_ITEM_LIMIT, n_notices=FEED_ITEM_LIMIT
     print("Fetching press releases and construction notices...")
     press, notices, unclassified = [], [], []
 
+    uploads = collect_site_uploads(index.keys())
+
     now = datetime.now()
     year, month = now.year, now.month
 
@@ -704,7 +720,7 @@ def fetch_pdfs(client, index, n_press=FEED_ITEM_LIMIT, n_notices=FEED_ITEM_LIMIT
         if len(press) >= n_press and len(notices) >= n_notices:
             break
 
-        for furl in fetch_wp_directory(year, month):
+        for furl in uploads.get((year, month), []):
             fname = furl.rsplit("/", 1)[-1]
             fname_lower = fname.lower()
 
@@ -837,7 +853,12 @@ def fetch_videos(existing, limit=FEED_ITEM_LIMIT):
             date = existing[v["videoId"]]["date"]
         else:
             print(f"  fetching date: {v['videoId']}")
-            date = fetch_video_upload_date(v["videoId"]) or datetime.now().strftime("%Y-%m-%d")
+            date = fetch_video_upload_date(v["videoId"])
+            if not date:
+                # Private or removed videos stay embedded on GDC's page but have
+                # no upload date. Skip rather than dating them today; a later run retries.
+                print(f"    WARNING: no upload date for {v['videoId']} (private or removed?), skipping")
+                continue
         videos.append({"videoId": v["videoId"], "title": v["title"], "date": date})
 
     return videos
