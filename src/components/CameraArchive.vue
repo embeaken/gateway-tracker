@@ -202,12 +202,22 @@ watch(frame, async (f) => {
   imgLoading.value = false
   aspect.value = isPano && img.naturalWidth ? img.naturalWidth / img.naturalHeight : 16 / 9
   shown.value = { f, pano: isPano }
-  if (isFull.value) void upgrade(f, isPano)
   // Warm the neighbours so stepping either way is instant
   for (const n of [frames.value[index.value + 1], frames.value[index.value - 1]]) {
     if (n) new Image().src = src(n, zoom.value, isPano)
   }
+  // Full screen: best quality for this photo first, then for the neighbours
+  if (isFull.value) void upgradeAround(f, isPano)
 })
+
+async function upgradeAround(f: CamFrame, isPano: boolean) {
+  await upgrade(f, isPano)
+  if (!isFull.value || frame.value !== f) return
+  for (const n of [frames.value[index.value + 1], frames.value[index.value - 1]]) {
+    if (n) await upgrade(n, isPano)
+    if (!isFull.value || frame.value !== f) return
+  }
+}
 
 // --- Zoom and pan ---
 // Wheel / trackpad scroll / pinch zoom around the pointer, drag pans, and a
@@ -374,7 +384,7 @@ async function upgrade(f: CamFrame, isPano: boolean) {
 }
 
 watch(isFull, (full) => {
-  if (full && shown.value) void upgrade(shown.value.f, shown.value.pano)
+  if (full && shown.value) void upgradeAround(shown.value.f, shown.value.pano)
 })
 
 const onFullscreenChange = () => (fullscreen.value = !!root.value && document.fullscreenElement === root.value)
