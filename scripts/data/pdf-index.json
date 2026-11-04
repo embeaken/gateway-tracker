@@ -1518,5 +1518,13 @@
     "date": "2026-10-08",
     "dateIsFallback": false,
     "classifiedBy": "filename"
+  },
+  "https://www.gatewayprogram.org/wp-content/uploads/2026/11/Hudson-River-Tunnel-Section-November-Look-Ahead-2026.pdf": {
+    "category": "construction_notice",
+    "title": "Micropile and Underpinning Work Moves Forward: Hudson River Tunnel Section Project Update",
+    "date": "2026-11-04",
+    "dateIsFallback": true,
+    "classifiedBy": "llm",
+    "dateFrom": "upload"
   }
 }
