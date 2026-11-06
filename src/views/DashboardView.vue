@@ -83,13 +83,6 @@ const tbmProgress = useTbmProgress()
   gap: var(--spacing-sm);
 }
 
-/* Hidden on phones and tablets (where it would switch to the vertical list) until it's redesigned */
-@media (max-width: 1024px) {
-  .route-map {
-    display: none;
-  }
-}
-
 @media (min-width: 900px) {
   .tbms {
     grid-template-columns: repeat(2, minmax(0, 1fr));

@@ -5,17 +5,44 @@ import { useTbmProgress, formatFt, formatPct } from "../useTbmProgress";
 
 // Side view of the route, west → east. Horizontal is to scale; vertical is
 // stylised. The SVG and the HTML labels share one pixel coordinate system.
+// On phones the strip keeps a readable width (.strip's min-width) and pans
+// sideways, starting at the portal (west end), where the work is. Tablets and
+// narrow desktop windows get the whole route: not every mouse scrolls sideways.
 
+const pan = ref<HTMLElement | null>(null);
 const strip = ref<HTMLElement | null>(null);
 const W = ref(1200);
+
+// Which edges have more map past them, for the fades and the hint
+const moreLeft = ref(false);
+const moreRight = ref(false);
+const updateEdges = () => {
+  const el = pan.value;
+  if (!el) return;
+  moreLeft.value = el.scrollLeft > 1;
+  moreRight.value = el.scrollLeft + el.clientWidth < el.scrollWidth - 1;
+};
+/** Set once the reader has panned; the hint has done its job by then */
+const panned = ref(false);
+const pans = computed(() => moreLeft.value || moreRight.value);
+const onPan = () => {
+  updateEdges();
+  if (moreLeft.value) panned.value = true;
+};
+
 let observer: ResizeObserver | undefined;
 onMounted(() => {
-  if (!strip.value) return;
+  if (!strip.value || !pan.value) return;
   W.value = strip.value.clientWidth;
-  observer = new ResizeObserver(([entry]) => {
-    if (entry) W.value = entry.contentRect.width;
+  updateEdges();
+  observer = new ResizeObserver(() => {
+    if (strip.value) W.value = strip.value.clientWidth;
+    // After the re-render: until then, labels placed for the old width can
+    // overhang the strip and make it look scrollable
+    nextTick(updateEdges);
   });
   observer.observe(strip.value);
+  observer.observe(pan.value);
 });
 onBeforeUnmount(() => observer?.disconnect());
 
@@ -288,225 +315,183 @@ const glows = computed(() => [
   { id: casing.id, from: x(casing.fromFt) + 6, to: W.value + 4 },
 ]);
 
-// --- Mobile list: each stop, followed by the bored section that starts there ---
-const vrows = routeStops.map((stop) => ({
-  stop,
-  seg: routeSegments.find((seg) => seg.fromFt === stop.ft && seg.kind === "bored"),
-}));
 </script>
 
 <template>
   <section id="route" class="route" aria-labelledby="route-title">
       <div class="route-card">
-        <h2 id="route-title" class="route-title">Project overview</h2>
-        <!-- Side view (desktop) -->
-        <div ref="strip" class="strip" :style="{ height: `${H}px` }">
-          <svg class="profile" :width="W" :height="H" :viewBox="`0 0 ${W} ${H}`" aria-hidden="true">
-            <defs>
-              <pattern id="rm-waves" x="0" :y="SURF" :width="WAVE" height="16" patternUnits="userSpaceOnUse">
-                <path class="wave" d="M0 4 Q8 0 16 4 T32 4" />
-                <path class="wave" d="M-8 12 Q0 8 8 12 T24 12 T40 12" />
-              </pattern>
-              <clipPath v-for="g in glows" :id="`rm-clip-${g.id}`" :key="g.id">
-                <rect :x="g.from" y="0" :width="g.to - g.from" :height="H" />
-              </clipPath>
-              <clipPath id="rm-river">
-                <rect :x="water.from" :y="SURF - 4" :width="water.to - water.from" :height="WATER_DEPTH + 4" />
-              </clipPath>
-              <!-- East of the portal: the tunnel proper -->
-              <clipPath id="rm-inside">
-                <rect :x="x(0)" y="0" :width="W" :height="H" />
-              </clipPath>
-              <clipPath id="rm-ground">
-                <path :d="groundPath" />
-              </clipPath>
-            </defs>
-
-            <!-- Water, then the ground over it (the riverbed shapes the water's bottom) -->
-            <g clip-path="url(#rm-river)">
-              <path class="water" :d="water.body" />
-              <path class="water-waves" :d="water.body" />
-              <path class="water-surface" :d="water.surface" />
-            </g>
-            <path class="ground" :d="groundPath" />
-
-            <!-- Treated soil around the tunnel line -->
-            <rect
-              class="treated"
-              :class="hovered === stabilization.id && 'treated--hover'"
-              clip-path="url(#rm-ground)"
-              :x="x(ROUTE.stabilizedFromFt)"
-              :y="SURF"
-              :width="x(ROUTE.stabilizedToFt) - x(ROUTE.stabilizedFromFt)"
-              :height="cy(stabilization.ft) + 22 - SURF"
-              rx="3"
-            />
-
-            <g class="state-line">
-              <line :x1="stateLineX" :x2="stateLineX" :y1="SURF - 10" :y2="SURF + 28" />
-              <text :x="stateLineX - 6" :y="SURF - 4" text-anchor="end">NJ</text>
-              <text :x="stateLineX + 6" :y="SURF - 4">NY</text>
-            </g>
-
-            <!-- Active work bands: the TBM drive and the casing -->
-            <g clip-path="url(#rm-ground)">
-              <path class="band" clip-path="url(#rm-inside)" :d="`M${along(drive.fromFt, drive.toFt)}`" />
-            </g>
-            <path class="band band--casing" :d="`M${along(casing.fromFt + 40, ROUTE.eastFt + 400)}`" />
-
-            <!-- Twin tubes: surface track to the portal, then tunnel -->
-            <g v-for="dy in [-GAP, GAP]" :key="dy">
-              <path class="surface" :d="`M-4,${cy(0) + dy} L${x(0)},${cy(0) + dy}`" />
-              <path class="tube" :d="`M${along(0, ROUTE.eastFt, dy)}`" />
-              <!-- Hover glow: the whole tube clipped to the section, so its dashes line up -->
-              <path
-                v-for="g in glows"
-                :key="g.id"
-                class="glow"
-                :class="hovered === g.id && 'glow--on'"
-                :clip-path="`url(#rm-clip-${g.id})`"
-                :d="`M${along(0, ROUTE.eastFt, dy)}`"
-              />
-            </g>
-
-            <!-- Bored so far (estimated) -->
-            <path v-for="m in markers" :key="`b-${m.tbm.id}`" class="bored" :d="m.bored" />
-
-            <rect
-              v-for="s in shafts"
-              :key="s.id"
-              class="shaft"
-              :class="hovered === s.id && 'shaft--hover'"
-              :x="x(s.ft) - 6"
-              :y="SURF - 4"
-              width="12"
-              :height="cy(s.ft) + GAP + 8 - (SURF - 4)"
-              rx="2"
-            />
-
-            <!-- TBMs, leading edge at the estimated position -->
-            <g
-              v-for="m in markers"
-              :key="m.tbm.id"
-              class="tbm"
-              :class="`tbm--${m.status}`"
-              :transform="`translate(${m.x.toFixed(1)} ${m.y.toFixed(1)}) rotate(${m.angle.toFixed(2)})`"
-            >
-              <rect x="-18" y="-5" width="18" height="10" rx="5" />
-            </g>
-
-            <text class="terrain-label" :x="x(2600)" :y="SURF - 36" text-anchor="middle">The Palisades</text>
-            <text class="terrain-label terrain-label--water" :x="x(R0 + 1550)" :y="SURF + 28" text-anchor="middle">
-              Hudson River
-            </text>
-            <text
-              class="section-label"
-              :class="hovered === drive.id && 'section-label--hover'"
-              :x="(x(drive.fromFt) + x(drive.toFt)) / 2"
-              :y="SURF + 76"
-              text-anchor="middle"
-            >
-              {{ drive.label }}
-            </text>
-            <text class="section-label" :x="(x(river.fromFt) * 2 + x(river.toFt)) / 3" :y="SURF + 108" text-anchor="middle">
-              {{ river.label }}
-            </text>
-            <text class="section-label section-label--end" :x="W - 16" :y="SURF + 86" text-anchor="end">Penn Station →</text>
-          </svg>
-
-          <div class="labels" aria-hidden="true">
-            <template v-for="l in labels" :key="l.id">
-              <span
-                class="pin"
-                :class="hovered === l.id && 'pin--hover'"
-                :style="{ left: `${l.x}px`, top: `${l.base + 6}px`, height: `${Math.max(0, l.to - l.base - 6)}px` }"
-              ></span>
-              <span
-                class="flabel"
-                :class="[`flabel--${l.align}`, hovered === l.id && 'flabel--hover', l.wrapAt && 'flabel--wrap']"
-                :ref="(el) => el && (labelEls[l.id] = el as HTMLElement)"
-                :style="{ left: `${l.x + l.nudge}px`, bottom: `${H - l.base}px`, maxWidth: l.wrapAt && `${l.wrapAt}px` }"
-              >
-                <span class="flabel-name">{{ l.label }}</span>
-              </span>
-            </template>
-          </div>
-
-          <div class="hits" aria-hidden="true">
-            <div
-              v-for="hit in hits"
-              :key="hit.id"
-              class="hit"
-              :style="{ left: `${hit.left}px`, width: `${hit.width}px` }"
-              @mouseenter="hovered = hit.id"
-              @mouseleave="hovered = null"
-            ></div>
-          </div>
-
-          <div
-            v-for="m in markers"
-            :key="`t-${m.tbm.id}`"
-            class="tbm-tag"
-            :class="[`tbm-tag--${m.lane}`, `tbm-tag--${m.status}`]"
-            :style="{ left: `${m.x - 18}px`, top: `${m.y}px` }"
-            aria-hidden="true"
-          >
-            <span class="tbm-tag-text">
-              <strong>{{ m.tbm.label }}</strong> · {{ m.tag }}
-            </span>
-          </div>
+        <div class="route-head">
+          <h2 id="route-title" class="route-title">Project overview</h2>
+          <span v-if="pans" class="pan-hint" :class="panned && 'pan-hint--done'" aria-hidden="true">
+            <span class="pan-hint-touch">Swipe</span><span class="pan-hint-pointer">Scroll</span> to follow the route →
+          </span>
         </div>
+        <div
+          ref="pan"
+          class="pan"
+          :class="{ 'pan--more-left': moreLeft, 'pan--more-right': moreRight }"
+          :tabindex="pans ? 0 : undefined"
+          :role="pans ? 'group' : undefined"
+          :aria-labelledby="pans ? 'route-title' : undefined"
+          @scroll.passive="onPan"
+        >
+          <div ref="strip" class="strip" :style="{ height: `${H}px` }">
+            <svg class="profile" :width="W" :height="H" :viewBox="`0 0 ${W} ${H}`" aria-hidden="true">
+              <defs>
+                <pattern id="rm-waves" x="0" :y="SURF" :width="WAVE" height="16" patternUnits="userSpaceOnUse">
+                  <path class="wave" d="M0 4 Q8 0 16 4 T32 4" />
+                  <path class="wave" d="M-8 12 Q0 8 8 12 T24 12 T40 12" />
+                </pattern>
+                <clipPath v-for="g in glows" :id="`rm-clip-${g.id}`" :key="g.id">
+                  <rect :x="g.from" y="0" :width="g.to - g.from" :height="H" />
+                </clipPath>
+                <clipPath id="rm-river">
+                  <rect :x="water.from" :y="SURF - 4" :width="water.to - water.from" :height="WATER_DEPTH + 4" />
+                </clipPath>
+                <!-- East of the portal: the tunnel proper -->
+                <clipPath id="rm-inside">
+                  <rect :x="x(0)" y="0" :width="W" :height="H" />
+                </clipPath>
+                <clipPath id="rm-ground">
+                  <path :d="groundPath" />
+                </clipPath>
+              </defs>
 
-        <!-- Vertical line diagram (mobile) -->
-        <ol class="vline">
-          <template v-for="{ stop, seg } in vrows" :key="stop.id">
-            <li
-              class="vstop"
-              :class="[stop.id === 'river' && 'vstop--river', stop.ft === 0 && 'vstop--portal-west']"
-            >
-              <div class="vstop-link" :class="stop.cam && 'is-hoverable'">
-                <svg v-if="stop.ft === 0" class="vportal" viewBox="-20 -12 40 24" aria-hidden="true">
-                  <path d="M-8 0 H-13 L-19 -7 M8 0 H13 L19 -7" />
-                </svg>
-                <span v-else class="vstop-dot" aria-hidden="true"></span>
-                <span class="vstop-text">
-                  <span class="stop-label">{{ stop.label }}</span>
-                </span>
-              </div>
-            </li>
-            <li v-if="seg" class="vstop vseg" :class="`vseg--${seg.id}`">
-              <template v-if="stop.ft === 0">
+              <!-- Water, then the ground over it (the riverbed shapes the water's bottom) -->
+              <g clip-path="url(#rm-river)">
+                <path class="water" :d="water.body" />
+                <path class="water-waves" :d="water.body" />
+                <path class="water-surface" :d="water.surface" />
+              </g>
+              <path class="ground" :d="groundPath" />
+
+              <!-- Treated soil around the tunnel line -->
+              <rect
+                class="treated"
+                :class="hovered === stabilization.id && 'treated--hover'"
+                clip-path="url(#rm-ground)"
+                :x="x(ROUTE.stabilizedFromFt)"
+                :y="SURF"
+                :width="x(ROUTE.stabilizedToFt) - x(ROUTE.stabilizedFromFt)"
+                :height="cy(stabilization.ft) + 22 - SURF"
+                rx="3"
+              />
+
+              <g class="state-line">
+                <line :x1="stateLineX" :x2="stateLineX" :y1="SURF - 10" :y2="SURF + 28" />
+                <text :x="stateLineX - 6" :y="SURF - 4" text-anchor="end">NJ</text>
+                <text :x="stateLineX + 6" :y="SURF - 4">NY</text>
+              </g>
+
+              <!-- Active work bands: the TBM drive and the casing -->
+              <g clip-path="url(#rm-ground)">
+                <path class="band" clip-path="url(#rm-inside)" :d="`M${along(drive.fromFt, drive.toFt)}`" />
+              </g>
+              <path class="band band--casing" :d="`M${along(casing.fromFt + 40, ROUTE.eastFt + 400)}`" />
+
+              <!-- Twin tubes: surface track to the portal, then tunnel -->
+              <g v-for="dy in [-GAP, GAP]" :key="dy">
+                <path class="surface" :d="`M-4,${cy(0) + dy} L${x(0)},${cy(0) + dy}`" />
+                <path class="tube" :d="`M${along(0, ROUTE.eastFt, dy)}`" />
+                <!-- Hover glow: the whole tube clipped to the section, so its dashes line up -->
+                <path
+                  v-for="g in glows"
+                  :key="g.id"
+                  class="glow"
+                  :class="hovered === g.id && 'glow--on'"
+                  :clip-path="`url(#rm-clip-${g.id})`"
+                  :d="`M${along(0, ROUTE.eastFt, dy)}`"
+                />
+              </g>
+
+              <!-- Bored so far (estimated) -->
+              <path v-for="m in markers" :key="`b-${m.tbm.id}`" class="bored" :d="m.bored" />
+
+              <rect
+                v-for="s in shafts"
+                :key="s.id"
+                class="shaft"
+                :class="hovered === s.id && 'shaft--hover'"
+                :x="x(s.ft) - 6"
+                :y="SURF - 4"
+                width="12"
+                :height="cy(s.ft) + GAP + 8 - (SURF - 4)"
+                rx="2"
+              />
+
+              <!-- TBMs, leading edge at the estimated position -->
+              <g
+                v-for="m in markers"
+                :key="m.tbm.id"
+                class="tbm"
+                :class="`tbm--${m.status}`"
+                :transform="`translate(${m.x.toFixed(1)} ${m.y.toFixed(1)}) rotate(${m.angle.toFixed(2)})`"
+              >
+                <rect x="-18" y="-5" width="18" height="10" rx="5" />
+              </g>
+
+              <text class="terrain-label" :x="x(2600)" :y="SURF - 36" text-anchor="middle">The Palisades</text>
+              <text class="terrain-label terrain-label--water" :x="x(R0 + 1550)" :y="SURF + 28" text-anchor="middle">
+                Hudson River
+              </text>
+              <text
+                class="section-label"
+                :class="hovered === drive.id && 'section-label--hover'"
+                :x="(x(drive.fromFt) + x(drive.toFt)) / 2"
+                :y="SURF + 76"
+                text-anchor="middle"
+              >
+                {{ drive.label }}
+              </text>
+              <text class="section-label" :x="(x(river.fromFt) * 2 + x(river.toFt)) / 3" :y="SURF + 108" text-anchor="middle">
+                {{ river.label }}
+              </text>
+              <text class="section-label section-label--end" :x="W - 16" :y="SURF + 86" text-anchor="end">Penn Station →</text>
+            </svg>
+
+            <div class="labels" aria-hidden="true">
+              <template v-for="l in labels" :key="l.id">
                 <span
-                  v-for="m in markers"
-                  :key="m.tbm.id"
-                  class="vfill"
-                  :class="[`vfill--${m.lane}`, `vfill--${m.status}`]"
-                  :style="{ height: m.status === 'upcoming' ? '12px' : `max(26px, ${m.fraction * 100}%)` }"
-                  aria-hidden="true"
+                  class="pin"
+                  :class="hovered === l.id && 'pin--hover'"
+                  :style="{ left: `${l.x}px`, top: `${l.base + 6}px`, height: `${Math.max(0, l.to - l.base - 6)}px` }"
                 ></span>
+                <span
+                  class="flabel"
+                  :class="[`flabel--${l.align}`, hovered === l.id && 'flabel--hover', l.wrapAt && 'flabel--wrap']"
+                  :ref="(el) => el && (labelEls[l.id] = el as HTMLElement)"
+                  :style="{ left: `${l.x + l.nudge}px`, bottom: `${H - l.base}px`, maxWidth: l.wrapAt && `${l.wrapAt}px` }"
+                >
+                  <span class="flabel-name">{{ l.label }}</span>
+                </span>
               </template>
-              <span class="vseg-text" :class="seg.cam && 'is-hoverable'">
-                <span class="vseg-label">{{ seg.label }}</span>
-                <template v-if="stop.ft === 0">
-                  <span v-for="m in markers" :key="m.tbm.id" class="vseg-tbm">
-                    <strong>{{ m.tbm.label }}</strong> ·
-                    {{ m.status === "upcoming" ? `Launching in ${m.tbm.expected}` : `${formatPct(m.fraction)} done` }}
-                  </span>
-                </template>
-              </span>
-            </li>
-          </template>
-          <li class="vstop vcasing">
-            <div class="vstop-link" :class="casing.cam && 'is-hoverable'">
-              <span class="vstop-text">
-                <span class="stop-label">{{ casing.label }}</span>
+            </div>
+
+            <div class="hits" aria-hidden="true">
+              <div
+                v-for="hit in hits"
+                :key="hit.id"
+                class="hit"
+                :style="{ left: `${hit.left}px`, width: `${hit.width}px` }"
+                @mouseenter="hovered = hit.id"
+                @mouseleave="hovered = null"
+              ></div>
+            </div>
+
+            <div
+              v-for="m in markers"
+              :key="`t-${m.tbm.id}`"
+              class="tbm-tag"
+              :class="[`tbm-tag--${m.lane}`, `tbm-tag--${m.status}`]"
+              :style="{ left: `${m.x - 18}px`, top: `${m.y}px` }"
+              aria-hidden="true"
+            >
+              <span class="tbm-tag-text">
+                <strong>{{ m.tbm.label }}</strong> · {{ m.tag }}
               </span>
             </div>
-          </li>
-          <li class="vstop vterm" aria-hidden="true">
-            <span class="vterm-text">Penn Station ↓</span>
-          </li>
-        </ol>
+          </div>
+        </div>
 
         <details class="estimate">
           <summary>About this graphic</summary>
@@ -535,9 +520,16 @@ const vrows = routeStops.map((stop) => ({
   overflow: hidden;
 }
 
+.route-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  padding: 14px 16px 0;
+}
+
 /* Matches DashCard's title */
 .route-title {
-  padding: 14px 16px 0;
   font-family: var(--font-family-base);
   font-size: 12px;
   font-weight: var(--font-weight-semibold);
@@ -547,7 +539,75 @@ const vrows = routeStops.map((stop) => ({
   line-height: 1.3;
 }
 
+/* Same line height as the title, so it never changes the row's height */
+.pan-hint {
+  font-size: 12px;
+  line-height: 1.3;
+  color: var(--color-text-tertiary);
+  white-space: nowrap;
+  transition: opacity var(--transition-fast);
+}
+
+/* Faded, not removed, so nothing below moves */
+.pan-hint--done {
+  opacity: 0;
+}
+
+.pan-hint-pointer {
+  display: none;
+}
+
+@media (hover: hover) {
+  .pan-hint-touch {
+    display: none;
+  }
+
+  .pan-hint-pointer {
+    display: inline;
+  }
+}
+
 /* =========== Profile strip =========== */
+
+/* Pans sideways when the card is narrower than the strip's minimum width */
+.pan {
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  /* The hint and the edge fades say it scrolls */
+  scrollbar-width: none;
+  --fade-left: 0px;
+  --fade-right: 0px;
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 var(--fade-left),
+    #000 calc(100% - var(--fade-right)),
+    transparent
+  );
+}
+
+/* On the card: the scroller's edge fades would fade its own outline */
+.pan:focus-visible {
+  outline: none;
+}
+
+.route-card:has(.pan:focus-visible) {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.pan::-webkit-scrollbar {
+  display: none;
+}
+
+.pan--more-left {
+  --fade-left: 24px;
+}
+
+.pan--more-right {
+  --fade-right: 48px;
+}
 
 .strip {
   position: relative;
@@ -843,226 +903,21 @@ const vrows = routeStops.map((stop) => ({
   line-height: 1.5;
 }
 
-/* =========== Vertical line (mobile) =========== */
-
-.vline {
-  display: none;
-  list-style: none;
-  padding: 0;
+/* Touch: no hover highlights (a tap would leave one stuck on) */
+@media (hover: none) {
+  .hits {
+    display: none;
+  }
 }
 
-.vstop {
-  position: relative;
-  padding: 0 var(--spacing-sm) 0 54px;
-}
-
-/* twin tubes */
-.vstop::before,
-.vstop::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 3px;
-  background: repeating-linear-gradient(180deg, var(--color-map-line) 0 9px, transparent 9px 14px);
-  opacity: 0.75;
-}
-
-.vstop::before {
-  left: 22px;
-}
-
-.vstop::after {
-  left: 31px;
-}
-
-/* Portal: solid surface track above, dashed tunnel below */
-.vstop--portal-west::before,
-.vstop--portal-west::after {
-  background:
-    linear-gradient(var(--color-map-line) 0 50%, transparent 50%),
-    repeating-linear-gradient(180deg, var(--color-map-line) 0 9px, transparent 9px 14px) 0 50% / 100% 50% no-repeat;
-}
-
-.vportal {
-  position: absolute;
-  left: 8px;
-  top: calc(50% - 12px);
-  width: 40px;
-  height: 24px;
-  overflow: visible;
-  fill: none;
-  stroke: var(--color-map-line);
-  stroke-width: 3;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  transition: stroke var(--transition-fast);
-}
-
-.vstop-link.is-hoverable:hover .vportal {
-  stroke: var(--color-primary);
-}
-
-/* Terrain blocks: the ridge, then water from the river section onwards */
-.vseg--palisades {
-  min-height: 112px;
-  background: var(--color-ground);
-}
-
-.vseg--hudson-river,
-.vstop--river {
-  background: var(--river-waves) 0 0 / 40px 20px, var(--color-river);
-}
-
-.vstop-link {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 0;
-  color: var(--color-text-primary);
-}
-
-/* First row: room for the open-air track coming in from the top edge */
-.vstop--portal-west .vstop-link {
-  padding-block: 16px;
-}
-
-.vstop-dot {
-  position: absolute;
-  left: 16px;
-  width: 24px;
-  height: 20px;
-  border-radius: 10px;
-  border: 4px solid var(--color-map-line);
-  background: var(--color-card-bg);
-  z-index: 1;
-  transition: background var(--transition-fast);
-}
-
-.vstop-link.is-hoverable:hover .vstop-dot {
-  background: var(--color-primary);
-}
-
-.vstop-text {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-width: 0;
-}
-
-.stop-label {
-  font-family: var(--font-family-display);
-  font-size: 18px;
-  text-wrap: balance;
-  font-weight: var(--font-weight-semibold);
-  line-height: 1.15;
-}
-
-.vstop-link.is-hoverable:hover .stop-label {
-  color: var(--color-primary);
-}
-
-.vseg {
-  min-height: 64px;
-  display: flex;
-  align-items: center;
-}
-
-.vseg-text {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 10px 0;
-}
-
-.vseg-text.is-hoverable {
-  flex: 1;
-}
-
-.vseg-text.is-hoverable:hover .vseg-label {
-  color: var(--color-primary);
-}
-
-.vseg-label {
-  font-size: 13px;
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--color-text-secondary);
-}
-
-.vseg-tbm {
-  font-size: 13px;
-  color: var(--color-accent-ink);
-}
-
-.vterm {
-  display: flex;
-  align-items: center;
-  min-height: 44px;
-}
-
-.vcasing {
-  background: var(--color-band);
-}
-
-.vterm-text {
-  font-size: 12px;
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-text-secondary);
-}
-
-.vfill {
-  position: absolute;
-  top: -10px;
-  width: 3px;
-  max-height: calc(100% + 10px);
-  background: var(--color-accent);
-  z-index: 1;
-}
-
-/* The machine: a vertical pill at the leading (bottom) end of the fill */
-.vfill::after {
-  content: "";
-  position: absolute;
-  left: -2px;
-  bottom: -2px;
-  width: 7px;
-  height: 16px;
-  box-sizing: border-box;
-  border-radius: 4px;
-  background: var(--color-accent);
-  box-shadow: 0 0 0 2px var(--color-card-bg);
-}
-
-.vfill--upcoming {
-  background: transparent;
-}
-
-.vfill--upcoming::after {
-  background: var(--color-card-bg);
-  border: 2px solid var(--color-accent);
-}
-
-.vfill--north {
-  left: 22px;
-}
-
-.vfill--south {
-  left: 31px;
+/* Phones: full size, panned */
+@media (max-width: 767px) {
+  .strip {
+    min-width: 960px;
+  }
 }
 
 @media (max-width: 1024px) {
-  .strip {
-    display: none;
-  }
-
-  .vline {
-    display: block;
-  }
-
   .estimate {
     padding: 10px var(--spacing-sm);
   }

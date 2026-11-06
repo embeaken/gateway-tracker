@@ -15,24 +15,29 @@ const PIXEL = Buffer.from(
   'base64',
 )
 
+// The browser's clock is frozen here, so nothing depends on the day the tests
+// run. New York is on EDT (UTC−4) for weeks either side of it.
+const NOW = '2026-10-01T16:30:00.000Z'
+
 test.describe('dashboard smoke', () => {
   test.beforeEach(async ({ page }) => {
+    await page.clock.setFixedTime(new Date(NOW))
     await page.route('**/api/cams', (route) =>
       route.fulfill({
         json: {
-          fetchedAt: new Date().toISOString(),
+          fetchedAt: NOW,
           sites: [
             {
               projectId: 'hudson-county-shaft',
               views: [
-                { frame: '/api/cam-frame/resource6/test1', takenAt: new Date().toISOString(), camera: 'camera', ref: 'r1', since: '2026-01-01T12:00:00.000Z' },
-                { frame: '/api/cam-frame/resource6/test2', takenAt: new Date().toISOString(), camera: 'camera', ref: 'r2', since: '2026-01-01T12:00:00.000Z' },
+                { frame: '/api/cam-frame/resource6/test1', takenAt: NOW, camera: 'camera', ref: 'r1', since: '2026-01-01T12:00:00.000Z' },
+                { frame: '/api/cam-frame/resource6/test2', takenAt: NOW, camera: 'camera', ref: 'r2', since: '2026-01-01T12:00:00.000Z' },
               ],
               panoramas: ['camera'],
             },
             {
               projectId: 'hudson-yards',
-              views: [{ frame: '/api/cam-frame/resource6/test3', takenAt: new Date().toISOString(), camera: 'camera', ref: 'r3', since: '2026-01-01T12:00:00.000Z' }],
+              views: [{ frame: '/api/cam-frame/resource6/test3', takenAt: NOW, camera: 'camera', ref: 'r3', since: '2026-01-01T12:00:00.000Z' }],
               panoramas: ['camera'],
             },
           ],
@@ -43,6 +48,8 @@ test.describe('dashboard smoke', () => {
     // GDC photos go through hudson.tube's Image CDN; keep the tests off the network.
     await page.route('**/.netlify/images**', (route) => route.fulfill({ body: PIXEL, contentType: 'image/jpeg' }))
     await page.route('https://share.earthcam.net/**', (route) => route.fulfill({ body: '<html></html>', contentType: 'text/html' }))
+    // The explainer's video: a real player can take focus, and then it gets the key presses
+    await page.route('https://www.youtube.com/**', (route) => route.fulfill({ body: '<html></html>', contentType: 'text/html' }))
 
     await page.goto('/')
     await page.addStyleTag({
@@ -60,18 +67,27 @@ test.describe('dashboard smoke', () => {
 
   test('renders the dashboard', async ({ page }, testInfo) => {
     await expect(page.getByRole('link', { name: 'hudson.tube home' })).toBeVisible()
-    if (testInfo.project.name !== 'desktop') {
-      // The route map is hidden on phones and tablets for now
-      await expect(page.locator('#route')).toBeHidden()
+    await expect(page.locator('.route-card')).toBeVisible()
+    await expect(page.getByText('About this graphic')).toBeVisible()
+    const pan = page.locator('#route .pan')
+    const hint = page.locator('#route .pan-hint')
+    if (testInfo.project.name === 'mobile') {
+      // Phones: the side view pans, starting at the portal, and the hint fades
+      // (without moving anything) once it has been panned
+      await expect(page.locator('#route .flabel', { hasText: 'Tunnel Portal' })).toBeInViewport()
+      await expect(hint).toBeVisible()
+      const below = (await page.locator('.tbms').boundingBox())!.y
+      await pan.evaluate((el) => el.scrollBy(300, 0))
+      await expect(hint).toHaveCSS('opacity', '0')
+      expect((await page.locator('.tbms').boundingBox())!.y).toBe(below)
     } else {
-      await expect(page.locator('.route-card')).toBeVisible()
-      await expect(page.getByText('About this graphic')).toBeVisible()
+      await expect(hint).toHaveCount(0)
     }
     await expect(page.locator('.tbm-card')).toHaveCount(2)
     await expect(page.getByRole('heading', { name: 'Construction cameras' })).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Construction packages' })).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Financing' })).toBeVisible()
-    await expect(page.getByRole('heading', { name: 'Timeline' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Upcoming milestones' })).toBeVisible()
     await expect(page.getByRole('heading', { name: /Updates from the GDC/i })).toBeVisible()
 
     // One tile per project, even when a site has several views
@@ -79,6 +95,15 @@ test.describe('dashboard smoke', () => {
 
     await expectNoHorizontalOverflow(page)
     await page.locator('#app').screenshot({ path: testInfo.outputPath('dashboard-light.png') })
+  })
+
+  test('fits the whole route map from tablet width up', async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== 'tablet', 'Checks the narrowest tablet width')
+    // Not every mouse scrolls sideways, so tablets and narrow windows don't pan
+    await page.setViewportSize({ width: 768, height: 900 })
+    const pan = page.locator('#route .pan')
+    await expect.poll(() => pan.evaluate((el) => el.scrollWidth - el.clientWidth)).toBeLessThanOrEqual(1)
+    await expect(page.locator('#route .pan-hint')).toHaveCount(0)
   })
 
   test('supports core interactions', async ({ page }, testInfo) => {
@@ -125,7 +150,7 @@ test.describe('dashboard smoke', () => {
         json: {
           frames: ['09:00', '12:00', '15:00'].map((t, i) => ({
             frame: `/api/cam-frame/resource6/${date}-${i}`,
-            takenAt: `${date}T${t}:00.000-04:00`,
+            takenAt: `${date}T${t}:00.000-04:00`, // EDT, see NOW
           })),
         },
       })

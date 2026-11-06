@@ -52,7 +52,7 @@ All styling uses CSS custom properties defined in `src/assets/main.css`. No Tail
 
 **Card pattern:** `background: var(--color-card-bg)`, `border: 1px solid var(--color-border)`, `border-radius: var(--radius-md)`, `padding: var(--spacing-xl)`. Use `--color-card-bg` (not `--color-background`) — the page background is pale cool grey (`#F3F5F5`), cards stay white.
 
-**Breakpoints:** 768px (mobile), 900px (TBM cards side by side), 1024px (route map switches to the vertical list), 1200px (rail moves beside the main column), 1700px (photos and funding side by side). The camera wall picks its column count with container queries.
+**Breakpoints:** 768px (mobile; below it the route map keeps a 960px width and pans sideways), 900px (TBM cards side by side), 1200px (rail moves beside the main column), 1700px (photos and funding side by side). The camera wall picks its column count with container queries.
 
 **Numbers** on the dashboard use `--font-family-mono` (JetBrains Mono). Dashboard colors (`--color-line`, `--color-ok`, `--color-alert`, `--color-fund-*`, `--color-text-tertiary`) have dark-mode values in both dark blocks of `main.css`.
 
