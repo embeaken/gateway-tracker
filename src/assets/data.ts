@@ -145,10 +145,12 @@ export const routeStops: RouteStop[] = [
 // The Palisades drive, portal → Hudson County shaft. GDC says each machine
 // builds "roughly 30 feet of tunnel per day" while mining (weekdays only) and
 // will "reach the Hudson County Access Shaft approximately one year after
-// launching", so estimates follow the one-year schedule.
+// launching", so estimates follow the one-year schedule, counted in weekdays
+// (52 weeks × 5 = 260, minus the 11 US federal holidays) because the machines
+// don't mine on weekends or holidays. Our approximation, not a GDC figure.
 export const PALISADES_DRIVE = {
   lengthFt: HC_SHAFT_FT,
-  durationDays: 365,
+  durationWorkdays: 260 - 11,
   quotedFtPerDay: 30,
   sourceUrl:
     "https://www.gatewayprogram.org/wp-content/uploads/2026/09/September-2026-TBM-Launch-Press-Release.pdf",
@@ -191,20 +193,11 @@ export const fundingShares = [
   { key: "amtrak", label: "Amtrak", amount: 1_016_000_000, note: "" },
 ] as const;
 
-/**
- * What's done, then what GDC has scheduled, in order. Only facts and dates GDC
- * has stated; no estimates. Flip `done` by hand as things happen, never by date.
- */
 export const milestones: { when: string; text: string; done: boolean }[] = [
-  { when: "May 2021", text: "Federal approval", done: true },
-  { when: "Nov 2023", text: "Construction begins", done: true },
-  { when: "Jul 2024", text: "Funding secured", done: true },
-  { when: "Oct 2025", text: "Tonnelle Avenue bridge substantially complete", done: true },
-  { when: "Oct 2026", text: "Palisades Tunnel boring starts", done: true },
   { when: "2026", text: "Hudson Yards concrete casing finished", done: false },
   { when: "2027", text: "Palisades Tunnel boring finished", done: false },
   { when: "2028", text: "Pier 68 pile removal complete", done: false },
   { when: "2030", text: "Manhattan Tunnel boring finished", done: false },
-  { when: "2035", text: "New tunnel opens for service", done: false },
-  { when: "2038", text: "North River Tunnel rehabilitation complete", done: false },
+  { when: "2035", text: "New tunnel opens for service, old tunnel shuts down for rehabilitation", done: false },
+  { when: "2038", text: "Old tunnel rehabilitation complete", done: false },
 ];

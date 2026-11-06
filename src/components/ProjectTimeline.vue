@@ -1,24 +1,16 @@
 <script setup lang="ts">
 import { milestones } from '../assets/data'
 
-// Done items, a "Today" marker, then dates GDC has announced.
-const firstUpcoming = milestones.findIndex((m) => !m.done)
+const upcoming = milestones.filter((m) => !m.done)
 </script>
 
 <template>
   <ol class="timeline">
-    <template v-for="(m, i) in milestones" :key="m.text">
-      <li v-if="i === firstUpcoming" class="today" aria-label="Today">
-        <span class="when" />
-        <span class="dot" />
-        <span class="what">Today</span>
-      </li>
-      <li :class="m.done ? 'done' : 'upcoming'">
-        <span class="when">{{ m.when }}</span>
-        <span class="dot" />
-        <span class="what"><span class="sr-only">{{ m.done ? 'Done: ' : 'Scheduled: ' }}</span>{{ m.text }}</span>
-      </li>
-    </template>
+    <li v-for="m in upcoming" :key="m.text">
+      <span class="when">{{ m.when }}</span>
+      <span class="dot" />
+      <span class="what">{{ m.text }}</span>
+    </li>
   </ol>
 </template>
 
@@ -32,7 +24,7 @@ const firstUpcoming = milestones.findIndex((m) => !m.done)
 .timeline::before {
   content: "";
   position: absolute;
-  left: 85px;
+  left: 49px;
   top: 8px;
   bottom: 8px;
   width: 2px;
@@ -41,18 +33,19 @@ const firstUpcoming = milestones.findIndex((m) => !m.done)
 
 li {
   display: grid;
-  grid-template-columns: 76px 20px 1fr;
+  grid-template-columns: 40px 20px 1fr;
   align-items: start;
   padding: 3px 0;
   font-size: 13px;
   line-height: 1.4;
 }
 
+/* Flush left, like the date headers in the updates feed */
 .when {
   padding: 1px 2px 0 0;
   font-family: var(--font-family-mono);
   font-size: 11px;
-  text-align: right;
+  text-align: left;
   color: var(--color-text-secondary);
 }
 
@@ -63,28 +56,11 @@ li {
   height: 10px;
   margin: 4px 0 0 5px;
   border-radius: 50%;
-  background: var(--color-ok);
-}
-
-.upcoming .dot {
   background: var(--color-card-bg);
   border: 2px solid var(--color-accent);
 }
 
-.upcoming .what {
+.what {
   color: var(--color-text-secondary);
-}
-
-.today {
-  padding: 6px 0;
-  font-size: 11px;
-  font-weight: var(--font-weight-bold);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--color-accent-ink);
-}
-
-.today .dot {
-  background: var(--color-accent);
 }
 </style>

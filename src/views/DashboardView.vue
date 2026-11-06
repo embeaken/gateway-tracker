@@ -44,7 +44,7 @@ const tbmProgress = useTbmProgress()
     </div>
 
     <aside class="dash-rail">
-      <DashCard id="timeline" title="Timeline" title-id="timeline-title">
+      <DashCard id="timeline" title="Upcoming milestones" title-id="timeline-title">
         <ProjectTimeline />
       </DashCard>
       <DashCard id="activity" class="feed" title="Updates from the GDC" title-id="activity-title">

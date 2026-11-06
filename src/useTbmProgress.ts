@@ -28,8 +28,31 @@ export type TbmProgress = {
   arrival: Date | null
 }
 
-/** An even pace that finishes the drive on GDC's schedule */
-const FT_PER_DAY = PALISADES_DRIVE.lengthFt / PALISADES_DRIVE.durationDays
+/** An even pace per weekday that finishes the drive on GDC's schedule. The machines don't mine on weekends. */
+const FT_PER_WORKDAY = PALISADES_DRIVE.lengthFt / PALISADES_DRIVE.durationWorkdays
+
+const isWorkday = (day: number) => {
+  const dow = new Date(day).getUTCDay()
+  return dow !== 0 && dow !== 6
+}
+
+/** Whole weekdays in [from, to), both UTC-midnight day timestamps. */
+const workdaysBetween = (from: number, to: number) => {
+  let n = 0
+  for (let d = from; d < to; d += DAY_MS) if (isWorkday(d)) n++
+  return n
+}
+
+/** Midnight of the day on which `n` weekdays have passed since `from`. */
+const addWorkdays = (from: number, n: number) => {
+  let d = from
+  let left = n
+  while (left > 0) {
+    if (isWorkday(d)) left--
+    d += DAY_MS
+  }
+  return d
+}
 
 const estimate = (tbm: Tbm, now: Date): TbmProgress => {
   const { lengthFt } = PALISADES_DRIVE
@@ -38,9 +61,13 @@ const estimate = (tbm: Tbm, now: Date): TbmProgress => {
   // Run forward from the latest reported figure if there is one, else from launch.
   const anchorDay = dateDay(tbm.reported?.date ?? tbm.launched)
   const anchorFt = tbm.reported?.ft ?? 0
-  const days = Math.max(0, (nyDay(now) - anchorDay) / DAY_MS + nyDayFraction(now))
-  const ft = Math.min(lengthFt, anchorFt + days * FT_PER_DAY)
-  const arrival = new Date(anchorDay + ((lengthFt - anchorFt) / FT_PER_DAY) * DAY_MS)
+  const today = nyDay(now)
+  const workdays = Math.max(
+    0,
+    workdaysBetween(anchorDay, today) + (isWorkday(today) ? nyDayFraction(now) : 0),
+  )
+  const ft = Math.min(lengthFt, anchorFt + workdays * FT_PER_WORKDAY)
+  const arrival = new Date(addWorkdays(anchorDay, Math.ceil((lengthFt - anchorFt) / FT_PER_WORKDAY)))
 
   return { tbm, status: ft >= lengthFt ? 'arrived' : 'mining', ft, fraction: ft / lengthFt, arrival }
 }
