@@ -162,16 +162,4 @@ const frameStyle = computed(() => {
 .cam-modal-body strong {
   font-weight: var(--font-weight-semibold);
 }
-
-.map-link {
-  color: inherit;
-  text-decoration: underline;
-  text-decoration-color: var(--color-border);
-  text-underline-offset: 3px;
-}
-
-.map-link:hover {
-  color: var(--color-primary);
-  text-decoration-color: currentColor;
-}
 </style>

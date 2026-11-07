@@ -6,7 +6,7 @@ import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
 /**
- * Serves netlify/functions/* from the Vite dev server, so `npm run dev` works
+ * Serves netlify/functions/* from the Vite dev server, so `pnpm run dev` works
  * without `netlify dev`. Each function's `config.path` (with `:param`
  * segments) is matched against the request, like Netlify does in production.
  */

@@ -47,7 +47,6 @@ export const projects: Project[] = [
     desc: "TBMs will drill east from Tonnelle Avenue to this access shaft. The Hudson River Tunnel TBMs will then launch from here.",
     earthcam:
       "https://share.earthcam.net/public/tJ90CoLmq7TzrY396Yd88GNFxpIIqJR7pVbVOesSSvk/hudson_county_shaft_site",
-    featuredView: 0,
     status: "Shaft excavation in progress",
     location: "Hudson County, NJ",
     map: "https://maps.app.goo.gl/MRVpEswV6roRhxMh8",
@@ -157,8 +156,8 @@ export const PALISADES_DRIVE = {
 } as const;
 
 // ---------------------------------------------------------------------------
-// Dashboard facts. Every figure is from a GDC document; see
-// docs/research/data-catalog.md for the full source list.
+// Dashboard facts. Every figure is from a GDC document; the full source list
+// was docs/research/data-catalog.md.
 // ---------------------------------------------------------------------------
 
 export type ConstructionPackage = {

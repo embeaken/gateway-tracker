@@ -4,10 +4,10 @@ This file provides guidance for agents working in this repository.
 
 ## Commands
 
-- `npm run dev` — Start Vite dev server
-- `npm run build` — Type-check (`vue-tsc --build`) + Vite build in parallel
-- `npm run type-check` — TypeScript validation only
-- `npm run lint` — ESLint with auto-fix
+- `pnpm run dev` — Start Vite dev server
+- `pnpm run build` — Vite build only (no type-check; run `type-check` separately)
+- `pnpm run type-check` — TypeScript validation (`vue-tsc --build`)
+- `pnpm run lint` — ESLint with auto-fix
 
 ## Architecture
 
@@ -22,7 +22,7 @@ Vue 3 single-page app tracking the Gateway Hudson River tunnel project, with `vu
 Cards other than the route map and TBM cards use `DashCard` (small uppercase title, optional right-aligned meta). Camera tiles open `CameraModal` (EarthCam's interactive player). Photos open `PhotoLightbox`, which both the gallery and the feed use.
 
 **Data:**
-- `src/assets/data.ts`: hand-maintained facts (projects/cameras, route geometry, `tbms`, construction packages, funding split, milestones). Every figure comes from a GDC document; sources are in `docs/research/data-catalog.md`. TBM launch dates live only in `tbms`; the camera status text, explainer copy, map estimates and TBM cards all derive from it. Milestones are only facts and GDC-stated dates, and `done` is flipped by hand, never inferred from the date.
+- `src/assets/data.ts`: hand-maintained facts (projects/cameras, route geometry, `tbms`, construction packages, funding split, milestones). Every figure comes from a GDC document; sources are noted inline, and the full list was `docs/research/data-catalog.md`. TBM launch dates live only in `tbms`; the camera status text, explainer copy, map estimates and TBM cards all derive from it. Milestones are only facts and GDC-stated dates, and `done` is flipped by hand, never inferred from the date.
 - `src/assets/activityData.json`: the GDC feed, written by `scripts/update_data.py`.
 - `src/assets/fundingData.json`: federal grant payments, written by `scripts/update_funding.py`.
 
@@ -34,7 +34,7 @@ Types are in `src/types.ts`, `src/assets/activityDataTypes.ts` and `src/assets/f
 - `GET /api/cam-panoramas/:site/:camera` lists every capture (date only) of a camera's near-daily panorama, oldest first, from EarthCam's month listings (the first month comes from the site's page, so callers can't make it fetch arbitrary months). `/api/cams` also returns each site's `panoramas` (camera names). They appear as tabs in each camera card, and are served through `/api/cam-frame?size=half` when zoomed (the originals are 5–25MB). EarthCam's "Ultra HD" panoramas are deliberately not used: they're taken every few weeks.
 - `GET /api/cam-frame/:host/:id[?size=half|full]` proxies one still at EarthCam's `medium` size (1440px) or larger for zooming, cached forever; frame URLs are unique per still.
 - The browser never calls EarthCam for stills, so EarthCam's load stays flat regardless of traffic. Tiles go through Netlify Image CDN (`cdnSiteImage`).
-- In dev, `vite.config.ts` serves the functions from the Vite dev server (matching each function's `config.path`), so `npm run dev` works without `netlify dev`.
+- In dev, `vite.config.ts` serves the functions from the Vite dev server (matching each function's `config.path`), so `pnpm run dev` works without `netlify dev`.
 
 ## Design System
 
@@ -79,7 +79,7 @@ HUDSON_TUBE_ANTHROPIC_API_KEY=... uv run scripts/update_data.py [--force] [--sum
 - **Bluesky:** public AT Protocol API, `@gatewayprogram.bsky.social` (no reposts/replies)
 - **Photos:** scraped from `gatewayprogram.org/photo-gallery.html` (WordPress block gallery)
 - **Videos:** scraped from `gatewayprogram.org/video-gallery.html` (YouTube embed iframes). Upload dates come from each video's `youtube.com/watch` page.
-- **Press releases and construction notices:** PDFs under `gatewayprogram.org/wp-content/uploads/YYYY/MM/`. GDC serves no directory listings (403), so they're found from the PDF links on the site's pages (the home page and every `.html` page it links to), plus every URL already in `pdf-index.json`. Up to 100 of each, newest first.
+- **Press releases and construction notices:** PDFs under `gatewayprogram.org/wp-content/uploads/YYYY/MM/`. GDC serves no directory listings (403), so they're found from the PDF links on the site's pages (the home page and every `.html` page it links to), plus every URL already in `pdf-index.json`. Only `https://www.gatewayprogram.org` links are accepted (scraped URLs become links and image sources on the site). Up to 100 of each, newest first.
 
 **PDF classification:** filename patterns (`PRESS_RELEASE_PATTERNS`, `CONSTRUCTION_NOTICE_PATTERNS`, `IGNORED_PDF_PATTERNS`) are only a fast path. Any other PDF is downloaded and the LLM decides whether it's a press release, a construction notice, or "other" (board materials, procurement, reports, forms). GDC's filenames are too inconsistent for patterns alone: `CN-…`, `TBM-Mining-Starting_…` and `…-Look-Ahead-…` all slipped through before. A PDF that states no date gets, in order: an exact date from its filename; its upload day (the `Last-Modified` header of the download, if it falls in the folder's month; recorded as `dateFrom: "upload"`); else the folder month (`YYYY-MM-01`, or today for this month's folder). A month-only filename guess only replaces the folder month when it's a different month, and a bare year is never a date. All of these are flagged for review. The header is the upload day, usually the publication day, except when GDC bulk re-uploads old files (e.g. Oct 6–7, 2025): nothing detects that, so `--force` would give those files the dump day if they state no date. Whole upload months are processed, then items are de-duplicated (same title and date), sorted by date, and trimmed, because GDC sometimes re-uploads years of old files into one month.
 

@@ -14,7 +14,7 @@ export default defineConfig({
     screenshot: 'only-on-failure',
   },
   webServer: {
-    command: 'VITE_PLAYWRIGHT=1 pnpm run dev --host 127.0.0.1',
+    command: 'pnpm run dev --host 127.0.0.1',
     url: 'http://127.0.0.1:5173',
     reuseExistingServer: true,
     timeout: 30_000,

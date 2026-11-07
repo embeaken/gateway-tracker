@@ -24,7 +24,6 @@ Accuracy rules:
 import argparse
 import json
 import sys
-from datetime import date
 from pathlib import Path
 from urllib.request import Request, urlopen
 

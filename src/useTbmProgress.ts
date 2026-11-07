@@ -1,21 +1,6 @@
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { PALISADES_DRIVE, tbms, type Tbm } from './assets/data'
-
-const TZ = 'America/New_York'
-const DAY_MS = 86_400_000
-
-/** Calendar date in New York as a UTC-midnight timestamp (for day arithmetic). */
-const nyDay = (d: Date) => Date.parse(`${d.toLocaleDateString('en-CA', { timeZone: TZ })}T00:00:00Z`)
-const dateDay = (yyyyMmDd: string) => Date.parse(`${yyyyMmDd}T00:00:00Z`)
-
-/** Fraction of the current New York day that has elapsed, 0–1. */
-const nyDayFraction = (d: Date) => {
-  const [h = 0, m = 0] = d
-    .toLocaleTimeString('en-GB', { timeZone: TZ, hour: '2-digit', minute: '2-digit', hour12: false })
-    .split(':')
-    .map(Number)
-  return (h * 60 + m) / 1440
-}
+import { DAY_MS, nyDate, nyMinutes, utcDay } from './dates'
 
 export type TbmProgress = {
   tbm: Tbm
@@ -59,12 +44,12 @@ const estimate = (tbm: Tbm, now: Date): TbmProgress => {
   if (!tbm.launched) return { tbm, status: 'upcoming', ft: 0, fraction: 0, arrival: null }
 
   // Run forward from the latest reported figure if there is one, else from launch.
-  const anchorDay = dateDay(tbm.reported?.date ?? tbm.launched)
+  const anchorDay = utcDay(tbm.reported?.date ?? tbm.launched)
   const anchorFt = tbm.reported?.ft ?? 0
-  const today = nyDay(now)
+  const today = utcDay(nyDate(now))
   const workdays = Math.max(
     0,
-    workdaysBetween(anchorDay, today) + (isWorkday(today) ? nyDayFraction(now) : 0),
+    workdaysBetween(anchorDay, today) + (isWorkday(today) ? nyMinutes(now) / 1440 : 0),
   )
   const ft = Math.min(lengthFt, anchorFt + workdays * FT_PER_WORKDAY)
   const arrival = new Date(addWorkdays(anchorDay, Math.ceil((lengthFt - anchorFt) / FT_PER_WORKDAY)))

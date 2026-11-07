@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
-import { routeStops, routeSegments, PALISADES_DRIVE, ROUTE } from "../assets/data";
+import { routeStops, routeSegments, PALISADES_DRIVE, ROUTE, tbms } from "../assets/data";
+import { formatMonthYear, parseDate } from "../dates";
 import { useTbmProgress, formatFt, formatPct } from "../useTbmProgress";
 
 // Side view of the route, west → east. Horizontal is to scale; vertical is
@@ -310,6 +311,9 @@ const hits = computed(() => {
 
 const hovered = ref<string | null>(null);
 
+const firstLaunch = tbms.find((t) => t.launched)?.launched;
+const launch = firstLaunch ? `the ${formatMonthYear(parseDate(firstLaunch))} launch` : "launch";
+
 const glows = computed(() => [
   { id: drive.id, from: x(drive.fromFt), to: x(drive.toFt) },
   { id: casing.id, from: x(casing.fromFt) + 6, to: W.value + 4 },
@@ -498,7 +502,7 @@ const glows = computed(() => [
           <p>
             TBM positions are an estimate, not an
             official figure. GDC expects the machines to finish boring the {{ formatFt(PALISADES_DRIVE.lengthFt) }}
-            Palisades Tunnel "about a year" after the October 2026 launch.
+            Palisades Tunnel "about a year" after {{ launch }}.
             GDC also quotes a rate of {{ PALISADES_DRIVE.quotedFtPerDay }} feet per day while the machines are running.
             <a :href="PALISADES_DRIVE.sourceUrl" target="_blank" rel="noopener">Source</a>
           </p>

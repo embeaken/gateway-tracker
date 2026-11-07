@@ -14,8 +14,8 @@ type TimelineItem = {
   id: string;
   type: TimelineItemType;
   date: Date;
+  /** The post's text for Bluesky */
   title: string;
-  content: string;
   imageUrl?: string;
   link?: string;
   videoId?: string;
@@ -32,66 +32,39 @@ const formatTime = (date: Date): string => {
   return `${h % 12 || 12}:${m}${h >= 12 ? "pm" : "am"}`;
 };
 
-const timelineItems = computed<TimelineItem[]>(() => {
-  const items: TimelineItem[] = [];
-
-  blueskyPosts.forEach((post) => {
-    items.push({
-      id: post.link,
-      type: "bluesky",
-      date: parseDate(post.date),
-      title: post.text.substring(0, 60) + (post.text.length > 60 ? "..." : ""),
-      content: post.text,
-      link: post.link,
-      imageUrl: post.imageUrl,
-    });
-  });
-
-  pressReleases.forEach((press) => {
-    items.push({
-      id: press.link,
-      type: "press",
-      date: parseDate(press.date),
-      title: press.title,
-      content: "",
-      link: press.link,
-    });
-  });
-
-  constructionNotices.forEach((notice) => {
-    items.push({
-      id: notice.link,
-      type: "construction",
-      date: parseDate(notice.date),
-      title: notice.title,
-      content: "",
-      link: notice.link,
-    });
-  });
-
-  youtubeVideos.forEach((video) => {
-    items.push({
-      id: video.videoId,
-      type: "video",
-      date: parseDate(video.date),
-      title: video.title,
-      content: video.description || "",
-      videoId: video.videoId,
-    });
-  });
-
-  return items.sort((a, b) => b.date.getTime() - a.date.getTime());
+const pdfItem = (type: "press" | "construction") => (p: { title: string; date: string; link: string }): TimelineItem => ({
+  id: p.link,
+  type,
+  date: parseDate(p.date),
+  title: p.title,
+  link: p.link,
 });
 
+const items: TimelineItem[] = [
+  ...blueskyPosts.map((p): TimelineItem => ({
+    id: p.link,
+    type: "bluesky",
+    date: parseDate(p.date),
+    title: p.text,
+    link: p.link,
+    imageUrl: p.imageUrl,
+  })),
+  ...pressReleases.map(pdfItem("press")),
+  ...constructionNotices.map(pdfItem("construction")),
+  ...youtubeVideos.map((v): TimelineItem => ({
+    id: v.videoId,
+    type: "video",
+    date: parseDate(v.date),
+    title: v.title,
+    videoId: v.videoId,
+  })),
+]
+  .sort((a, b) => b.date.getTime() - a.date.getTime())
+  .slice(0, FEED_LIMIT);
+
 const visibleItemCount = ref(INITIAL_VISIBLE_ITEMS);
-
-const recentItems = computed(() => timelineItems.value.slice(0, FEED_LIMIT));
-const visibleItems = computed(() => recentItems.value.slice(0, visibleItemCount.value));
-const hasMoreItems = computed(() => visibleItems.value.length < recentItems.value.length);
-
-const showMoreItems = () => {
-  visibleItemCount.value = Math.min(visibleItemCount.value + PAGE_SIZE, recentItems.value.length);
-};
+const visibleItems = computed(() => items.slice(0, visibleItemCount.value));
+const hasMoreItems = computed(() => visibleItems.value.length < items.length);
 
 // --- Date grouping ---
 
@@ -146,8 +119,9 @@ const badgeLabel = (type: TimelineItemType): string =>
         <h4 class="date-header">{{ group.dateLabel }}</h4>
 
         <div class="date-group-items">
-          <template v-for="item in group.items" :key="item.id">
           <article
+            v-for="item in group.items"
+            :key="item.id"
             class="timeline-item"
             :class="[
               `timeline-item-${item.type}`,
@@ -166,8 +140,8 @@ const badgeLabel = (type: TimelineItemType): string =>
                   formatTime(item.date)
                 }}</time>
               </div>
-              <p class="compact-title">{{ item.type === "bluesky" ? item.content : item.title }}</p>
-              <a v-if="item.link" :href="item.link" target="_blank" class="item-link">
+              <p class="compact-title">{{ item.title }}</p>
+              <a v-if="item.link" :href="item.link" target="_blank" rel="noopener" class="item-link">
                 {{ item.type === "bluesky" ? "View on Bluesky →" : "Read the PDF →" }}
               </a>
             </template>
@@ -176,15 +150,15 @@ const badgeLabel = (type: TimelineItemType): string =>
             <template v-else-if="isThumb(item)">
               <div class="thumb-layout">
                 <div class="thumb-image">
-                  <img :src="item.imageUrl" :alt="item.title" loading="lazy" />
+                  <img :src="item.imageUrl" alt="" loading="lazy" />
                 </div>
                 <div class="thumb-content">
                   <div class="compact-header">
                     <span class="item-badge badge-bluesky">Bluesky</span>
                     <time class="item-time">{{ formatTime(item.date) }}</time>
                   </div>
-                  <p class="compact-caption">{{ item.content }}</p>
-                  <a v-if="item.link" :href="item.link" target="_blank" class="item-link">View on Bluesky →</a>
+                  <p class="compact-caption">{{ item.title }}</p>
+                  <a v-if="item.link" :href="item.link" target="_blank" rel="noopener" class="item-link">View on Bluesky →</a>
                 </div>
               </div>
             </template>
@@ -212,6 +186,7 @@ const badgeLabel = (type: TimelineItemType): string =>
                 <a
                   :href="`https://www.youtube.com/watch?v=${item.videoId}`"
                   target="_blank"
+                  rel="noopener"
                   class="item-link"
                 >
                   Watch on YouTube →
@@ -219,13 +194,12 @@ const badgeLabel = (type: TimelineItemType): string =>
               </div>
             </template>
           </article>
-          </template>
         </div>
       </section>
     </div>
 
     <div v-if="hasMoreItems" class="timeline-footer">
-      <button type="button" class="show-more" @click="showMoreItems">
+      <button type="button" class="show-more" @click="visibleItemCount += PAGE_SIZE">
         Show more updates
       </button>
     </div>

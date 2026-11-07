@@ -152,10 +152,18 @@ def fetch_bytes(url):
         return None, None, str(e)
 
 
+def is_gdc_url(url):
+    """Whether a URL is https on GDC's own site. Scraped links end up as links
+    and image sources on hudson.tube, so nothing else is accepted."""
+    parsed = urlparse(url)
+    return parsed.scheme == "https" and parsed.netloc == urlparse(SITE_URL).netloc
+
+
 # ── Existing data cache ───────────────────────────────────────────────────────
 
 def load_existing_data():
-    """Load activityData.json and return a dict keyed by URL/link for cache lookups."""
+    """Photo dates and video dates from activityData.json, keyed by photo URL
+    and video ID. (PDFs are cached in the PDF index instead.)"""
     if not DATA_FILE.exists():
         return {}
     try:
@@ -166,10 +174,6 @@ def load_existing_data():
     existing = {}
     for item in data.get("images", []):
         existing[item["url"]] = item
-    for item in data.get("pressReleases", []):
-        existing[item["link"]] = item
-    for item in data.get("constructionNotices", []):
-        existing[item["link"]] = item
     for item in data.get("youtubeVideos", []):
         existing[item["videoId"]] = item
     return existing
@@ -201,7 +205,7 @@ def upload_date(last_modified, year, month):
 
 
 def infer_date_from_filename(filename, fallback_year, fallback_month):
-    """Fallback date inference used when no API key is set.
+    """Date from a filename without the LLM (no API key, or the LLM found none).
 
     Only handles the unambiguous YYYYMMDD pattern; everything else falls back
     to the first of the month from the upload directory path.
@@ -358,8 +362,9 @@ class GalleryParser(HTMLParser):
         elif tag == "a" and self._in_item:
             href = attrs.get("href", "")
             ext = "." + href.rsplit(".", 1)[-1].lower() if "." in href else ""
-            if ext in IMAGE_EXTENSIONS:
-                self._current_url = urljoin(GALLERY_URL, href)
+            url = urljoin(GALLERY_URL, href)
+            if ext in IMAGE_EXTENSIONS and is_gdc_url(url):
+                self._current_url = url
         elif tag == "figcaption" and self._in_item and self._current_url:
             self._capturing = True
             self._parts = []
@@ -441,20 +446,15 @@ def collect_site_uploads(known_urls=()):
     `known_urls` (the PDF index) are added too, so a file GDC stops linking
     keeps its place in the feed.
     """
-    site_host = urlparse(SITE_URL).netloc
-    pages = {u for u in page_links(SITE_URL + "/") if urlparse(u).netloc == site_host and u.endswith(".html")}
+    pages = {u for u in page_links(SITE_URL + "/") if is_gdc_url(u) and u.endswith(".html")}
     pages.add(SITE_URL + "/index.html")
     urls = set(known_urls)
     for page in sorted(pages):
-        urls.update(u for u in page_links(page) if "/wp-content/uploads/" in u)
+        urls.update(u for u in page_links(page) if is_gdc_url(u) and "/wp-content/uploads/" in u)
 
     by_month = {}
     for u in sorted(urls):
-        try:
-            ym = year_month_from_url(u)
-        except (IndexError, ValueError):
-            continue
-        by_month.setdefault(ym, []).append(u)
+        by_month.setdefault(year_month_from_url(u), []).append(u)
     return by_month
 
 
@@ -596,27 +596,13 @@ def read_pdf(furl, category, client):
 
 
 def load_pdf_index():
-    """Load the PDF index, seeding it from activityData.json on first run."""
-    if PDF_INDEX_FILE.exists():
-        try:
-            return json.loads(PDF_INDEX_FILE.read_text())
-        except Exception as e:
-            print(f"  WARNING: could not parse {PDF_INDEX_FILE.name}: {e}")
-            return {}
-    if not DATA_FILE.exists():
+    if not PDF_INDEX_FILE.exists():
         return {}
-    data = json.loads(DATA_FILE.read_text())
-    index = {}
-    for key, category in (("pressReleases", "press_release"), ("constructionNotices", "construction_notice")):
-        for item in data.get(key, []):
-            index[item["link"]] = {
-                "category": category,
-                "title": item["title"],
-                "date": item["date"],
-                "dateIsFallback": is_folder_date_fallback(item),
-                "classifiedBy": "filename",
-            }
-    return index
+    try:
+        return json.loads(PDF_INDEX_FILE.read_text())
+    except Exception as e:
+        print(f"  WARNING: could not parse {PDF_INDEX_FILE.name}: {e}")
+        return {}
 
 
 def save_pdf_index(index):
@@ -689,15 +675,6 @@ def fill_dates_from_filenames(entries, client, index):
                 index[entries[i]["link"]].pop("dateFrom", None)
             entries[i].pop("_date_from", None)
     return entries
-
-
-def is_folder_date_fallback(entry):
-    """Return True when a cached PDF date is just its upload folder month."""
-    try:
-        folder_year, folder_month = year_month_from_url(entry["link"])
-    except KeyError:
-        return False
-    return entry.get("date") == f"{folder_year:04d}-{folder_month:02d}-01"
 
 
 def fetch_pdfs(client, index, n_press=FEED_ITEM_LIMIT, n_notices=FEED_ITEM_LIMIT):

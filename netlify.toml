@@ -11,3 +11,11 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+# The site is never framed by others; the browser shouldn't guess content types
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Content-Security-Policy = "frame-ancestors 'none'"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"

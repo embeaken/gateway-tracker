@@ -17,17 +17,20 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Set up uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5
 
       - name: Update activity data
         run: uv run scripts/update_data.py --summary-file "$RUNNER_TEMP/update-summary.md"
         env:
           HUDSON_TUBE_ANTHROPIC_API_KEY: ${{ secrets.HUDSON_TUBE_ANTHROPIC_API_KEY }}
 
+      # On failure the script leaves fundingData.json alone and says so in the
+      # summary; the activity data PR should still go out.
       - name: Update federal funding data
+        continue-on-error: true
         run: uv run scripts/update_funding.py --summary-file "$RUNNER_TEMP/update-summary.md"
 
       - name: Branch name
@@ -36,7 +39,7 @@ jobs:
 
       - name: Create or update pull request
         id: create-pr
-        uses: peter-evans/create-pull-request@v8
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8
         with:
           token: ${{ secrets.PAT_TOKEN }}
           branch: ci/update-data-${{ steps.branch-name.outputs.branch-name }}
