@@ -35,6 +35,6 @@ export const router = createRouter({
 
 // Per-page title and canonical URL (a single-page app has one index.html)
 router.afterEach((to) => {
-  document.title = to.meta.title ? `${to.meta.title} · hudson.tube` : 'hudson.tube Tunnel Tracker'
+  document.title = to.meta.title ? `${to.meta.title} | hudson.tube` : 'hudson.tube'
   document.querySelector('link[rel="canonical"]')?.setAttribute('href', `https://hudson.tube${to.path}`)
 })
