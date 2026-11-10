@@ -1526,5 +1526,13 @@
     "dateIsFallback": true,
     "classifiedBy": "llm",
     "dateFrom": "upload"
+  },
+  "https://www.gatewayprogram.org/wp-content/uploads/2026/11/P2A-DBE-Contacts-and-Subcontracting-Opportunities.pdf": {
+    "category": "other",
+    "title": "Package 2A DBE Contacts and Subcontracting Opportunities: A-Yard and 10th Avenue Tunnel",
+    "date": "2026-11-05",
+    "dateIsFallback": true,
+    "classifiedBy": "llm",
+    "dateFrom": "upload"
   }
 }
