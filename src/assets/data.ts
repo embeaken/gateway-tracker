@@ -11,13 +11,11 @@ export type Tbm = {
   expected?: string;
   /** Latest official progress figure; estimates run forward from it when set */
   reported?: { date: string; ft: number };
-  /** YYYY-MM-DD shown as the expected finish, overriding the pace-based estimate */
-  expectedDone?: string;
 };
 
 export const tbms: Tbm[] = [
   { id: "tbm-1", label: "TBM 1", tube: "North", launched: "2026-10-08" },
-  { id: "tbm-2", label: "TBM 2", tube: "South", launched: "2026-11-10", expectedDone: "2027-11-10" },
+  { id: "tbm-2", label: "TBM 2", tube: "South", launched: "2026-11-10" },
 ];
 
 /** e.g. "The north tube TBM started drilling in October 2026. The south tube TBM will launch in November." */
