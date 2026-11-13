@@ -52,7 +52,9 @@ const estimate = (tbm: Tbm, now: Date): TbmProgress => {
     workdaysBetween(anchorDay, today) + (isWorkday(today) ? nyMinutes(now) / 1440 : 0),
   )
   const ft = Math.min(lengthFt, anchorFt + workdays * FT_PER_WORKDAY)
-  const arrival = new Date(addWorkdays(anchorDay, Math.ceil((lengthFt - anchorFt) / FT_PER_WORKDAY)))
+  const arrival = tbm.expectedDone
+    ? new Date(utcDay(tbm.expectedDone))
+    : new Date(addWorkdays(anchorDay, Math.ceil((lengthFt - anchorFt) / FT_PER_WORKDAY)))
 
   return { tbm, status: ft >= lengthFt ? 'arrived' : 'mining', ft, fraction: ft / lengthFt, arrival }
 }
