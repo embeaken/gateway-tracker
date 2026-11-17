@@ -1,6 +1,6 @@
 {
   "source": "USAspending.gov",
-  "through": "2026-08",
+  "through": "2026-09",
   "awards": [
     {
       "key": "cig",
@@ -10,7 +10,7 @@
       "usaspendingUrl": "https://www.usaspending.gov/award/ASST_NON_NY-2024-015_069",
       "committed": 6880000000,
       "obligated": 2200000000.0,
-      "paid": 277492016.0,
+      "paid": 289559189.0,
       "lastModified": "2026-08-17",
       "monthly": [
         {
@@ -97,6 +97,11 @@
           "from": "2026-08",
           "to": "2026-08",
           "amount": 8706118.0
+        },
+        {
+          "from": "2026-09",
+          "to": "2026-09",
+          "amount": 12067173.0
         }
       ]
     },
@@ -107,8 +112,8 @@
       "recipient": "GDC",
       "usaspendingUrl": "https://www.usaspending.gov/award/ASST_NON_69A36524420700FSPNY_069",
       "committed": 3799999820,
-      "obligated": 2849999869.0,
-      "paid": 588866492.99,
+      "obligated": 3799999820.0,
+      "paid": 702736224.48,
       "lastModified": "2026-09-14",
       "monthly": [
         {
@@ -190,6 +195,11 @@
           "from": "2026-08",
           "to": "2026-08",
           "amount": 0.0
+        },
+        {
+          "from": "2026-09",
+          "to": "2026-09",
+          "amount": 113869731.49
         }
       ]
     },
@@ -201,7 +211,7 @@
       "usaspendingUrl": "https://www.usaspending.gov/award/ASST_NON_NY-2024-014_069",
       "committed": 25000000,
       "obligated": 25000000.0,
-      "paid": 19485088.0,
+      "paid": 19505062.0,
       "lastModified": "2025-01-30",
       "monthly": [
         {
@@ -288,6 +298,11 @@
           "from": "2026-08",
           "to": "2026-08",
           "amount": 828172.0
+        },
+        {
+          "from": "2026-09",
+          "to": "2026-09",
+          "amount": 19974.0
         }
       ]
     },
@@ -299,7 +314,7 @@
       "usaspendingUrl": "https://www.usaspending.gov/award/ASST_NON_69A36524400010MEGDC_069",
       "committed": 292171053,
       "obligated": 292171053.0,
-      "paid": 222031548.1,
+      "paid": 225836179.97,
       "lastModified": "2024-12-23",
       "monthly": [
         {
@@ -401,6 +416,11 @@
           "from": "2026-08",
           "to": "2026-08",
           "amount": 0.0
+        },
+        {
+          "from": "2026-09",
+          "to": "2026-09",
+          "amount": 3804631.87
         }
       ]
     }
