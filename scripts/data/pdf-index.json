@@ -1527,6 +1527,13 @@
     "classifiedBy": "llm",
     "dateFrom": "upload"
   },
+  "https://www.gatewayprogram.org/wp-content/uploads/2026/11/November%202026%20TBM%20Launch%20Press%20Release.pdf": {
+    "category": "press_release",
+    "title": "GDC Launches Second Hudson Tunnel Project Tunnel Boring Machine",
+    "date": "2026-11-18",
+    "dateIsFallback": false,
+    "classifiedBy": "filename"
+  },
   "https://www.gatewayprogram.org/wp-content/uploads/2026/11/P2A-DBE-Contacts-and-Subcontracting-Opportunities.pdf": {
     "category": "other",
     "title": "Package 2A DBE Contacts and Subcontracting Opportunities: A-Yard and 10th Avenue Tunnel",

@@ -503,6 +503,12 @@
   ],
   "blueskyPosts": [
     {
+      "text": "Our second tunnel boring machine has launched! Both of the new tunnel's tubes are now officially under construction.\n\nOver the next year, this machine and the one that started boring last month will chew through nearly a mile of rock, installing the tunnel lining as they go.",
+      "date": "2026-11-18T15:51:48.171Z",
+      "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3n2lvylmfb22n",
+      "imageUrl": "https://video.bsky.app/watch/did%3Aplc%3Askgfj7jggympcb2nxuiadj4i/bafkreibbma7jv33w6ozh6zualzdzqmzywb7wh2bfdieh6egjc6eajv2cty/thumbnail.jpg"
+    },
+    {
       "text": "GDC will hold a public Board Meeting on Wednesday, November 18, 2026, at 10:00 AM. Those wishing to participate virtually must submit written or pre-recorded video statements by 5:00 PM today via the form on www.gatewayprogram.org/board-meetin...",
       "date": "2026-11-17T14:59:02.039Z",
       "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3n2jclcoyhc2q"
@@ -1050,15 +1056,14 @@
       "date": "2026-02-24T19:49:55.435Z",
       "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3mfmwskwuic2g",
       "imageUrl": "https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:skgfj7jggympcb2nxuiadj4i/bafkreia4ve6zpvkgs26y2tll52jqbtjkbmrufdojw4g5gipue6e2h5nc3i"
-    },
-    {
-      "text": "Rudy Duarte is one of the hundreds of union workers impacted by the Hudson Tunnel Project construction pause. His message is clear: fund this urgent project now so workers like him can get back to work building the modern, reliable infrastructure America needs.",
-      "date": "2026-02-17T19:40:17.843Z",
-      "link": "https://bsky.app/profile/gatewayprogram.bsky.social/post/3mf3cyvutts2l",
-      "imageUrl": "https://video.bsky.app/watch/did%3Aplc%3Askgfj7jggympcb2nxuiadj4i/bafkreigkudpa6dubayui3kysgyz6dfiruccu7r2t63mvskehuyuvcaxqd4/thumbnail.jpg"
     }
   ],
   "pressReleases": [
+    {
+      "title": "GDC Launches Second Hudson Tunnel Project Tunnel Boring Machine",
+      "date": "2026-11-18",
+      "link": "https://www.gatewayprogram.org/wp-content/uploads/2026/11/November%202026%20TBM%20Launch%20Press%20Release.pdf"
+    },
     {
       "title": "Hudson Tunnel Project Tunnel Boring Machine Begins Mining",
       "date": "2026-10-08",
@@ -1553,11 +1558,6 @@
       "title": "Gateway Corporation Trustees Statement on Senator Schumer's Legislative Proposal",
       "date": "2019-03-04",
       "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2019-03-04-GDC-Statement-Schumer-Legislation.pdf"
-    },
-    {
-      "title": "Gateway Corporation Trustees Statement on RPA Report Regarding Hudson River Rail Tunnel",
-      "date": "2019-02-26",
-      "link": "https://www.gatewayprogram.org/wp-content/uploads/2025/10/2019-02-26-Statement-on-RPA-Report.pdf"
     }
   ],
   "constructionNotices": [
