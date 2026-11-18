@@ -39,20 +39,23 @@ const addWorkdays = (from: number, n: number) => {
   return d
 }
 
-const estimate = (tbm: Tbm, now: Date): TbmProgress => {
+export const estimateTbmProgress = (tbm: Tbm, now: Date): TbmProgress => {
   const { lengthFt } = PALISADES_DRIVE
   if (!tbm.launched) return { tbm, status: 'upcoming', ft: 0, fraction: 0, arrival: null }
 
-  // Run forward from the latest reported figure if there is one, else from launch.
-  const anchorDay = utcDay(tbm.reported?.date ?? tbm.launched)
-  const anchorFt = tbm.reported?.ft ?? 0
   const today = utcDay(nyDate(now))
-  const workdays = Math.max(
-    0,
-    workdaysBetween(anchorDay, today) + (isWorkday(today) ? nyMinutes(now) / 1440 : 0),
-  )
+  const reportDay = tbm.reported ? utcDay(tbm.reported.date) : Infinity
+  const report = today >= reportDay ? tbm.reported : undefined
+  const anchorFt = report?.ft ?? 0
+  // The report is the estimate for its whole NY calendar day. Start adding
+  // progress the next day so we don't count any of the report day twice.
+  const startDay = report ? reportDay + DAY_MS : utcDay(tbm.launched)
+  const workdays =
+    today < startDay
+      ? 0
+      : workdaysBetween(startDay, today) + (isWorkday(today) ? nyMinutes(now) / 1440 : 0)
   const ft = Math.min(lengthFt, anchorFt + workdays * FT_PER_WORKDAY)
-  const arrival = new Date(addWorkdays(anchorDay, Math.ceil((lengthFt - anchorFt) / FT_PER_WORKDAY)))
+  const arrival = new Date(addWorkdays(startDay, Math.ceil((lengthFt - anchorFt) / FT_PER_WORKDAY)))
 
   return { tbm, status: ft >= lengthFt ? 'arrived' : 'mining', ft, fraction: ft / lengthFt, arrival }
 }
@@ -67,7 +70,7 @@ export function useTbmProgress() {
   })
   onUnmounted(() => window.clearInterval(timer))
 
-  return computed(() => tbms.map((tbm) => estimate(tbm, now.value)))
+  return computed(() => tbms.map((tbm) => estimateTbmProgress(tbm, now.value)))
 }
 
 export const formatPct = (fraction: number) => {

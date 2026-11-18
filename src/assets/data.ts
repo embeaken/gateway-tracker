@@ -9,12 +9,18 @@ export type Tbm = {
   launched: string | null;
   /** Month it's expected to launch, while `launched` is null */
   expected?: string;
-  /** Latest official progress figure; estimates run forward from it when set */
+  /** Latest official progress figure, dated in New York (YYYY-MM-DD). */
   reported?: { date: string; ft: number };
 };
 
 export const tbms: Tbm[] = [
-  { id: "tbm-1", label: "TBM 1", tube: "North", launched: "2026-10-08" },
+  {
+    id: "tbm-1",
+    label: "TBM 1",
+    tube: "North",
+    launched: "2026-10-08",
+    reported: { date: "2026-11-17", ft: 400 },
+  },
   { id: "tbm-2", label: "TBM 2", tube: "South", launched: "2026-11-10" },
 ];
 
