@@ -1,12 +1,15 @@
 <script setup lang="ts">
+import { useRoute } from 'vue-router'
 import BrandMark from './BrandMark.vue'
+
+const route = useRoute()
 
 defineProps<{ explainerOpen: boolean }>()
 const emit = defineEmits<{ (e: 'open-explainer'): void }>()
 </script>
 
 <template>
-  <header class="app-header">
+  <header class="app-header" :class="{ 'has-beta-notice': route.name === 'cameras' }">
     <div class="container header-content">
       <RouterLink to="/" class="brand-lockup" aria-label="hudson.tube home">
         <BrandMark class="brand-icon" />
@@ -29,6 +32,11 @@ const emit = defineEmits<{ (e: 'open-explainer'): void }>()
         What is this?
       </button>
     </div>
+    <div v-if="route.name === 'cameras'" class="beta-row">
+      <div class="container">
+        <p>This page is somewhat experimental.</p>
+      </div>
+    </div>
   </header>
 </template>
 
@@ -37,6 +45,37 @@ const emit = defineEmits<{ (e: 'open-explainer'): void }>()
   background: var(--color-chrome);
   color: white;
   border-bottom: 3px solid var(--color-accent);
+}
+
+.app-header.has-beta-notice {
+  border-bottom: 0;
+}
+
+.beta-row {
+  border-top: 3px solid var(--beta-line, #e6b535);
+  background: var(--beta-bg, #e8eef5);
+  color: var(--beta-text, #30465b);
+  font-size: var(--font-size-base);
+}
+
+.beta-row p {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding-block: var(--spacing-xs);
+}
+
+[data-theme="dark"] .beta-row {
+  --beta-line: #c99930;
+  --beta-bg: #3c3017;
+  --beta-text: #ffe194;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .beta-row {
+    --beta-line: #c99930;
+    --beta-bg: #3c3017;
+    --beta-text: #ffe194;
+  }
 }
 
 .header-content {

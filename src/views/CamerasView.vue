@@ -12,8 +12,6 @@ const today = computed(() => nyDate(new Date(data.value?.fetchedAt ?? Date.now()
 
 <template>
   <main class="cams container">
-    <h1 class="cams-title">Construction cameras</h1>
-
     <CameraArchive
       v-for="p in projects"
       :key="p.id"
@@ -38,14 +36,5 @@ const today = computed(() => nyDate(new Date(data.value?.fetchedAt ?? Date.now()
 
 .cams > * {
   min-width: 0;
-}
-
-.cams-title {
-  /* Same column as the cards (see CameraArchive) */
-  width: 100%;
-  max-width: 1280px;
-  margin-inline: auto;
-  font-size: 28px;
-  line-height: 1.15;
 }
 </style>
