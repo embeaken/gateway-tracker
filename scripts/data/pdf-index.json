@@ -1527,6 +1527,14 @@
     "classifiedBy": "llm",
     "dateFrom": "upload"
   },
+  "https://www.gatewayprogram.org/wp-content/uploads/2026/11/NJ%20Surface%20Alignment_Test%20Pitting_November%202026%20Update_FV.pdf": {
+    "category": "construction_notice",
+    "title": "Construction Update: Test Pitting on Penhorn Avenue and Secaucus Road (NJ Surface Alignment Project)",
+    "date": "2026-11-20",
+    "dateIsFallback": true,
+    "classifiedBy": "llm",
+    "dateFrom": "upload"
+  },
   "https://www.gatewayprogram.org/wp-content/uploads/2026/11/November%202026%20TBM%20Launch%20Press%20Release.pdf": {
     "category": "press_release",
     "title": "GDC Launches Second Hudson Tunnel Project Tunnel Boring Machine",
