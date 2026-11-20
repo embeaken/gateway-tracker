@@ -4,6 +4,7 @@ import { addDays, daysBetween, formatLongDate, formatNyDate, formatNyTime, nyDat
 import type { CamFrame, CamFramesResponse, CamView } from '../earthcam'
 import { cdnSiteImage } from '../imageCdn'
 import type { Project } from '../types'
+import EquirectangularPanorama from './EquirectangularPanorama.vue'
 
 // One site's archive: pick a view and scrub through its days and times on one
 // slider, or pick a panorama (dated, not timed). Nothing is fetched until the
@@ -177,8 +178,17 @@ const src = (f: CamFrame, zoomLevel: number, isPano: boolean, max = isFull.value
 }
 /** What's on screen. `pano` is kept so it still renders right while a switch to the other kind fades in. */
 const shown = ref<{ f: CamFrame; pano: boolean } | null>(null)
-/** The photo's shape: 16:9 for stills, its own for panoramas. The stage matches it, except on phones (see .stage). */
-const aspect = ref(16 / 9)
+/** The viewport is 16:9, not the shape of the unwrapped panorama texture. */
+const aspect = 16 / 9
+// The shaft and yards captures are partial sweeps with unrelated left/right edges.
+const panoramaGeometry = computed(() => {
+  switch (props.project.id) {
+    case 'hudson-county-shaft': return { sweep: Math.PI, horizon: 0.40 }
+    case 'hudson-yards': return { sweep: Math.PI, horizon: 0.26 }
+    default: return { sweep: 2 * Math.PI, horizon: 0.27 }
+  }
+})
+const wrapsPanorama = computed(() => panoramaGeometry.value.sweep > Math.PI)
 /** The photo for the current frame is still downloading (it shows once decoded) */
 const imgLoading = ref(false)
 
@@ -200,7 +210,6 @@ watch(frame, async (f) => {
   // A newer frame is loading: leave the spinner to it
   if (frame.value !== f) return
   imgLoading.value = false
-  aspect.value = isPano && img.naturalWidth ? img.naturalWidth / img.naturalHeight : 16 / 9
   shown.value = { f, pano: isPano }
   // Warm the neighbours so stepping either way is instant
   for (const n of [frames.value[index.value + 1], frames.value[index.value - 1]]) {
@@ -228,6 +237,11 @@ const resetHint = window.matchMedia('(pointer: coarse)').matches ? 'double-tap' 
 const stage = ref<HTMLElement | null>(null)
 const stageSize = ref({ w: 0, h: 0 })
 const zoom = ref(1)
+let wheelFrame = 0
+let wheelTarget = 1
+let wheelAnchor = { x: 0, y: 0 }
+let wheelTime = 0
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
 const pan = ref({ x: 0, y: 0 })
 const dragging = ref(false)
 /** Set once the visitor has dragged, to drop the "drag to look around" hint */
@@ -252,7 +266,9 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
  */
 const photo = computed(() => {
   const { w, h } = stageSize.value
-  return w / h > aspect.value ? { w, h: w / aspect.value } : { w: h * aspect.value, h }
+  // At fit, panoramas rotate horizontally but stay centred vertically.
+  if (shown.value?.pano) return { w: Math.max(w * 2.1, h * aspect), h }
+  return w / h > aspect ? { w, h: w / aspect } : { w: h * aspect, h }
 })
 /** At 100%, the photo is wider (or taller) than the stage */
 const croppedAtFit = computed(() => photo.value.w > stageSize.value.w + 1 || photo.value.h > stageSize.value.h + 1)
@@ -262,7 +278,9 @@ const canPan = computed(() => zoom.value > 1 || croppedAtFit.value)
 const clampPan = (x: number, y: number) => {
   const { w, h } = stageSize.value
   return {
-    x: Math.min(0, Math.max(w - photo.value.w * zoom.value, x)),
+    x: shown.value?.pano && wrapsPanorama.value && photo.value.w > 0
+      ? w / 2 - ((w / 2 - x) % (photo.value.w * zoom.value) + photo.value.w * zoom.value) % (photo.value.w * zoom.value)
+      : Math.min(0, Math.max(w - photo.value.w * zoom.value, x)),
     y: Math.min(0, Math.max(h - photo.value.h * zoom.value, y)),
   }
 }
@@ -287,6 +305,7 @@ function zoomAt(factor: number, cx: number, cy: number) {
 }
 
 function resetZoom() {
+  stopWheelZoom()
   zoom.value = 1
   pan.value = centre()
 }
@@ -295,6 +314,7 @@ function resetZoom() {
 function toggleZoom(point: { clientX: number; clientY: number }) {
   if (zoom.value > 1) return resetZoom()
   const { x, y } = stagePoint(point)
+  stopWheelZoom()
   zoomAt(1.4, x, y)
 }
 // A double tap is already handled in onPointerUp; some browsers also send dblclick for it
@@ -305,18 +325,46 @@ const stagePoint = (e: { clientX: number; clientY: number }) => {
   return { x: e.clientX - r.left, y: e.clientY - r.top }
 }
 
+function stopWheelZoom() {
+  if (wheelFrame) cancelAnimationFrame(wheelFrame)
+  wheelFrame = 0
+}
+onBeforeUnmount(stopWheelZoom)
+watch(shown, stopWheelZoom)
+
+function animateWheelZoom(now: number) {
+  const dt = Math.max(0, now - wheelTime)
+  wheelTime = now
+  const remaining = Math.log(wheelTarget / zoom.value)
+  const done = Math.abs(remaining) < 0.001
+  const factor = Math.exp(remaining * (done ? 1 : 1 - Math.exp(-dt / 45)))
+  zoomAt(factor, wheelAnchor.x, wheelAnchor.y)
+  wheelFrame = done ? 0 : requestAnimationFrame(animateWheelZoom)
+}
+
 function onWheel(e: WheelEvent) {
-  // Pinch on a trackpad arrives as a wheel event with ctrlKey and small deltas
-  const { x, y } = stagePoint(e)
-  zoomAt(Math.exp(-e.deltaY * (e.ctrlKey ? 0.01 : 0.002)), x, y)
+  const anchor = stagePoint(e)
+  const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? stageSize.value.h : 1
+  const factor = Math.exp(-e.deltaY * unit * (e.ctrlKey ? 0.01 : 0.002))
+  // Trackpad pinch already provides continuous input.
+  if (e.ctrlKey || reducedMotion.matches) {
+    stopWheelZoom()
+    return zoomAt(factor, anchor.x, anchor.y)
+  }
+  wheelAnchor = anchor
+  wheelTarget = Math.min(maxZoom(), Math.max(1, (wheelFrame ? wheelTarget : zoom.value) * factor))
+  if (!wheelFrame && wheelTarget !== zoom.value) {
+    wheelTime = performance.now()
+    wheelFrame = requestAnimationFrame(animateWheelZoom)
+  }
 }
 
 const pointers = new Map<number, { x: number; y: number }>()
 let pinchStart: { dist: number; zoom: number } | null = null
-let lastTap = 0
+let lastTap = -Infinity
 let lastTouch = -Infinity
-/** Where a one-finger drag started, until it has moved far enough to count (not a tap) */
-let dragStart: { x: number; y: number } | null = null
+// Track each gesture independently of `dragged`, which only hides the hint.
+let tapStart: { x: number; y: number; time: number } | null = null
 
 const pinchDistance = () => {
   const [a, b] = [...pointers.values()]
@@ -324,11 +372,13 @@ const pinchDistance = () => {
 }
 
 function onPointerDown(e: PointerEvent) {
+  stopWheelZoom()
   stage.value?.setPointerCapture(e.pointerId)
   pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
   if (pointers.size === 2) pinchStart = { dist: pinchDistance(), zoom: zoom.value }
   dragging.value = pointers.size === 1 && canPan.value
-  dragStart = dragged.value ? null : { x: e.clientX, y: e.clientY }
+  tapStart = pointers.size === 1 ? { x: e.clientX, y: e.clientY, time: e.timeStamp } : null
+  if (!tapStart) lastTap = -Infinity
 }
 
 function onPointerMove(e: PointerEvent) {
@@ -336,24 +386,47 @@ function onPointerMove(e: PointerEvent) {
   if (!prev) return
   const cur = { x: e.clientX, y: e.clientY }
   pointers.set(e.pointerId, cur)
+  if (tapStart && Math.hypot(cur.x - tapStart.x, cur.y - tapStart.y) > 5) {
+    tapStart = null
+    lastTap = -Infinity
+    if (canPan.value) dragged.value = true
+  }
   if (pointers.size === 2 && pinchStart) {
     const [a, b] = [...pointers.values()]
     const mid = stagePoint({ clientX: (a!.x + b!.x) / 2, clientY: (a!.y + b!.y) / 2 })
     zoomAt((pinchStart.zoom * pinchDistance()) / pinchStart.dist / zoom.value, mid.x, mid.y)
   } else if (pointers.size === 1 && canPan.value) {
-    pan.value = clampPan(pan.value.x + cur.x - prev.x, pan.value.y + cur.y - prev.y)
-    if (dragStart && Math.hypot(cur.x - dragStart.x, cur.y - dragStart.y) > 5) dragged.value = true
+    // Just above fit, the virtual vertical range is tiny. Scale the drag
+    // with that range so a small movement doesn't jump between pitch limits.
+    const verticalGain = shown.value?.pano ? Math.min(0.7, 0.7 * Math.sqrt(Math.max(0, zoom.value - 1))) : 1
+    const partial = shown.value?.pano && !wrapsPanorama.value
+    const touchPano = e.pointerType === 'touch' && shown.value?.pano
+    const horizontalGain = touchPano
+      ? (partial ? (props.project.id === 'hudson-yards' ? 1.25 : 1) : 1.3)
+      : partial ? (props.project.id === 'hudson-yards' ? 2.5 : 2) : 1
+    const pitchGain = touchPano
+      ? (partial ? (props.project.id === 'hudson-yards' ? 1.65 : 2.1) : 1.4)
+      : partial ? 1.5 : 1
+    pan.value = clampPan(pan.value.x + (cur.x - prev.x) * horizontalGain, pan.value.y + (cur.y - prev.y) * verticalGain * pitchGain)
   }
 }
 
 function onPointerUp(e: PointerEvent) {
-  pointers.delete(e.pointerId)
+  if (!pointers.delete(e.pointerId)) return
   pinchStart = null
   dragging.value = false
   // Browsers don't send dblclick for touch when pinch-zoom is ours, so spot a double tap
   if (e.pointerType === 'touch') lastTouch = e.timeStamp
-  if (e.pointerType === 'touch' && pointers.size === 0) {
-    if (e.timeStamp - lastTap < 300) toggleZoom(e)
+  const tap = tapStart
+  tapStart = null
+  if (e.pointerType !== 'touch' || pointers.size > 0) return
+  if (!tap || e.type !== 'pointerup' || e.timeStamp - tap.time > 250 ||
+    Math.hypot(e.clientX - tap.x, e.clientY - tap.y) > 5) {
+    lastTap = -Infinity
+  } else if (e.timeStamp - lastTap < 300) {
+    lastTap = -Infinity
+    toggleZoom(e)
+  } else {
     lastTap = e.timeStamp
   }
 }
@@ -565,7 +638,22 @@ watch([sourceUrl, frame, shown, targetMin, zoom, scrubPos, loading], (_, __, onC
         @pointerup="onPointerUp"
         @pointercancel="onPointerUp"
       >
+        <EquirectangularPanorama
+          v-if="shown?.pano"
+          :src="src(shown.f, zoom, true)"
+          :alt="`${project.name}, ${shownLabel}`"
+          :width="stageSize.w"
+          :height="stageSize.h"
+          :sweep="panoramaGeometry.sweep"
+          :horizon="panoramaGeometry.horizon"
+          :yaw="wrapsPanorama
+            ? (stageSize.w / 2 - pan.x) / Math.max(1, photo.w * zoom)
+            : -pan.x / Math.max(1, photo.w * zoom - stageSize.w)"
+          :vertical="zoom > 1 && photo.h > 0 ? -pan.y / (photo.h * (zoom - 1)) : 0.5"
+          :zoom="zoom"
+        />
         <TransitionGroup
+          v-else
           name="fade"
           tag="div"
           class="pan"
